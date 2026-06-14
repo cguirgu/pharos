@@ -1,0 +1,40 @@
+{
+  "source": "coptic.io (used with permission)",
+  "offices": [
+    {
+      "key": "matins",
+      "name": "Midnight",
+      "sections": 17
+    },
+    {
+      "key": "prime",
+      "name": "Prime",
+      "sections": 9
+    },
+    {
+      "key": "terce",
+      "name": "Terce",
+      "sections": 8
+    },
+    {
+      "key": "sext",
+      "name": "Sext",
+      "sections": 8
+    },
+    {
+      "key": "none",
+      "name": "None",
+      "sections": 8
+    },
+    {
+      "key": "vespers",
+      "name": "Vespers",
+      "sections": 8
+    },
+    {
+      "key": "compline",
+      "name": "Compline",
+      "sections": 8
+    }
+  ]
+}

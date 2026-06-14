@@ -1,0 +1,174 @@
+{
+  "source": "coptic.io (references/structure only; verse text rendered from KJV)",
+  "draft": true,
+  "offices": {
+    "matins": {
+      "psalm50": "Psalm 50",
+      "psalms": [
+        "Psalm 3",
+        "Psalm 6",
+        "Psalm 12",
+        "Psalm 69",
+        "Psalm 85",
+        "Psalm 90",
+        "Psalm 116",
+        "Psalm 117",
+        "Psalm 118",
+        "Psalm 119",
+        "Psalm 120",
+        "Psalm 121",
+        "Psalm 122",
+        "Psalm 123",
+        "Psalm 124",
+        "Psalm 125",
+        "Psalm 126",
+        "Psalm 127",
+        "Psalm 128",
+        "Psalm 129",
+        "Psalm 130",
+        "Psalm 131",
+        "Psalm 132",
+        "Psalm 133",
+        "Psalm 136",
+        "Psalm 137",
+        "Psalm 140",
+        "Psalm 141",
+        "Psalm 145",
+        "Psalm 146",
+        "Psalm 147"
+      ],
+      "gospels": [
+        "Matthew 25:1-13",
+        "Luke 7:36-50",
+        "Luke 12:32-46"
+      ]
+    },
+    "prime": {
+      "psalm50": "Psalm 50",
+      "psalms": [
+        "Psalm 1",
+        "Psalm 2",
+        "Psalm 3",
+        "Psalm 4",
+        "Psalm 5",
+        "Psalm 6",
+        "Psalm 8",
+        "Psalm 11",
+        "Psalm 12",
+        "Psalm 14",
+        "Psalm 15",
+        "Psalm 18",
+        "Psalm 24",
+        "Psalm 26",
+        "Psalm 62",
+        "Psalm 66",
+        "Psalm 69",
+        "Psalm 112",
+        "Psalm 142"
+      ],
+      "gospels": [
+        "John 1:1-17"
+      ]
+    },
+    "terce": {
+      "psalm50": "Psalm 50",
+      "psalms": [
+        "Psalm 19",
+        "Psalm 22",
+        "Psalm 23",
+        "Psalm 25",
+        "Psalm 28",
+        "Psalm 29",
+        "Psalm 33",
+        "Psalm 40",
+        "Psalm 42",
+        "Psalm 44",
+        "Psalm 45",
+        "Psalm 46"
+      ],
+      "gospels": [
+        "John 14:26-31"
+      ]
+    },
+    "sext": {
+      "psalm50": "Psalm 50",
+      "psalms": [
+        "Psalm 53",
+        "Psalm 56",
+        "Psalm 60",
+        "Psalm 62",
+        "Psalm 66",
+        "Psalm 69",
+        "Psalm 83",
+        "Psalm 84",
+        "Psalm 85",
+        "Psalm 86",
+        "Psalm 90",
+        "Psalm 92"
+      ],
+      "gospels": [
+        "Matthew 5:1-16"
+      ]
+    },
+    "none": {
+      "psalm50": "Psalm 50",
+      "psalms": [
+        "Psalm 95",
+        "Psalm 96",
+        "Psalm 97",
+        "Psalm 98",
+        "Psalm 99",
+        "Psalm 100",
+        "Psalm 109",
+        "Psalm 110",
+        "Psalm 111",
+        "Psalm 112",
+        "Psalm 114",
+        "Psalm 115"
+      ],
+      "gospels": [
+        "Luke 9:10-17"
+      ]
+    },
+    "vespers": {
+      "psalm50": "Psalm 50",
+      "psalms": [
+        "Psalm 116",
+        "Psalm 117",
+        "Psalm 119",
+        "Psalm 120",
+        "Psalm 121",
+        "Psalm 122",
+        "Psalm 123",
+        "Psalm 124",
+        "Psalm 125",
+        "Psalm 126",
+        "Psalm 127",
+        "Psalm 128"
+      ],
+      "gospels": [
+        "Luke 4:38-41"
+      ]
+    },
+    "compline": {
+      "psalm50": "Psalm 50",
+      "psalms": [
+        "Psalm 129",
+        "Psalm 130",
+        "Psalm 131",
+        "Psalm 132",
+        "Psalm 133",
+        "Psalm 136",
+        "Psalm 137",
+        "Psalm 140",
+        "Psalm 141",
+        "Psalm 145",
+        "Psalm 146",
+        "Psalm 147"
+      ],
+      "gospels": [
+        "Luke 2:25-32"
+      ]
+    }
+  }
+}

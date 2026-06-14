@@ -1,0 +1,42 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "types": [
+      "node",
+      "jest",
+      "react"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@domain/*": [
+        "src/domain/*"
+      ],
+      "@ui/*": [
+        "src/ui/*"
+      ],
+      "@db/*": [
+        "src/db/*"
+      ],
+      "@state/*": [
+        "src/state/*"
+      ]
+    }
+  },
+  "include": [
+    "app",
+    "src",
+    "__tests__",
+    "*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "handoff"
+  ]
+}

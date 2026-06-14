@@ -1,0 +1,193 @@
+/**
+ * All user-facing strings — one place for voice consistency and future i18n
+ * (CLAUDE.md "Voice": warm, literary, liturgical; never gamified or guilt-driven).
+ */
+export const copy = {
+  tabs: { today: 'Today', hours: 'Hours', word: 'Word', rule: 'Rule', you: 'You' },
+
+  today: {
+    account: "The day's account",
+    greeting: (name: string) => `Peace to you,\n${name}`,
+    streak: 'day streak',
+    kept: (n: number, m: number) => `Kept ${n} / ${m}`,
+    ruleToday: 'Your rule today',
+    resting: 'Resting today',
+    emptyTitle: 'Your rule is unwritten',
+    emptyBody: 'Begin with a single practice. The lamp is tended, not stormed.',
+    toRule: 'Open the Rule',
+  },
+
+  rule: {
+    head: 'Your rule of life',
+    title: 'A living rule',
+    subtitle: 'Small and steady. Reorder, measure, or ease it whenever the season turns.',
+    add: '＋ Add a practice',
+    lighten: 'Lighten the rule for a season',
+    groups: { prayer: 'Prayer', word: 'The Word', fast: 'The Fast', devotion: 'Devotion' },
+  },
+
+  checkin: {
+    keep: 'Mark kept',
+    part: 'Kept in part',
+    cancel: 'Close',
+  },
+
+  lighten: {
+    title: 'Tend, don’t storm',
+    rest: 'Rest today — the flame stays lit',
+    pause: 'Pause one practice',
+    lighter: 'Keep a lighter rule',
+    note: 'Rest days never break the streak.',
+  },
+
+  placeholder: {
+    soon: 'Tended soon',
+    body: 'This part of the book is still being illuminated.',
+  },
+
+  auth: {
+    era: 'Anno Martyrum 1742',
+    wordmark: 'Pharos',
+    coptic: 'ⲡⲓⲫⲁⲣⲟⲥ',
+    promise:
+      'A guiding light into the faith of the Copts — prayer, fasting, and the Word, one day at a time.',
+    begin: 'Begin the journey',
+    haveAccount: 'I already keep an account',
+    signUpTitle: 'Keep an account',
+    signUpSub: 'It stays on this device. No sharing, no noise.',
+    signInTitle: 'Welcome back',
+    signInSub: 'Sign in to return to your rule.',
+    email: 'Email',
+    password: 'Password',
+    createAccount: 'Create account',
+    signIn: 'Sign in',
+    toSignIn: 'Already have an account? Sign in',
+    toSignUp: 'New here? Create an account',
+    errors: {
+      'invalid-email': 'That email does not look right.',
+      'weak-password': 'Use at least four characters.',
+      'email-taken': 'An account already keeps that email.',
+      'invalid-credentials': 'Those credentials do not match.',
+    } as Record<string, string>,
+  },
+
+  onboarding: {
+    journeyKicker: 'The first question',
+    journeyTitle: 'Where are you\non the journey?',
+    journeySub: 'Your rule is shaped around the answer. It may be changed at any hour.',
+    nameLabel: 'Your first name',
+    namePlaceholder: 'What shall we call you?',
+    journey: {
+      'grew-up': { title: 'I grew up in the Church', sub: 'Deepen a faith I already know' },
+      returning: { title: 'I am returning', sub: 'Finding my way back to the rhythm' },
+      exploring: { title: 'I am exploring', sub: 'Curious about Coptic Orthodoxy' },
+    },
+    rhythmKicker: 'Your rule of life',
+    rhythmTitle: 'Set the daily\nhours you will keep',
+    rhythmSub: 'Small and steady. The lamp is tended, not stormed.',
+    lightLamp: 'Light the lamp →',
+    continue: 'Continue →',
+    notifKicker: 'One last thing',
+    notifTitle: 'A gentle word\nat the hour',
+    notifSub:
+      'Reminders arrive only when a practice is due, in a quiet voice — never to shame, only to tend.',
+    notifAllow: 'Allow reminders',
+    notifSkip: 'Not now',
+  },
+
+  you: {
+    head: 'You',
+    signOut: 'Sign out',
+    switch: 'Switch account',
+    addAccount: 'Create another account',
+    reminders: 'Reminders',
+    marks: 'The marks',
+    about: 'About & attributions',
+    journeyLabel: 'On the journey',
+    stats: { streak: 'streak', prayers: 'prayers', wedfri: '% wed/fri' },
+    streakTitle: 'The lamp, tended',
+    streakBody: 'Keep one practice each day to tend the flame.',
+    streakUnit: 'days kept in a row',
+    settings: 'Settings',
+    fastingNuance: 'Show fish-allowed nuance',
+    aboutBody:
+      'Pharos keeps your rule on this device alone. Liturgical and scriptural texts are drawn from the verified sources credited below; anything not yet supplied is clearly marked as a placeholder.',
+    attributionsTitle: 'Attributions & sources',
+    attributions: [
+      {
+        title: 'Holy Scripture',
+        body: 'The Holy Bible, King James Version (KJV) — public domain. The KJV is the historically approved English translation for Coptic Orthodox use.',
+      },
+      {
+        title: 'The Synaxarium',
+        body: 'Daily commemorations from the open “coptic-synaxarium” dataset (randogoth, Codeberg). English text by St. George Coptic Orthodox Church, Chicago. Used in draft pending written permission.',
+      },
+      {
+        title: 'Daily readings · the Katameros',
+        body: 'Lectionary references (which passages are read each day) from the Katameros API at katameros.app, an open-source project. The verse text shown is the King James Version.',
+      },
+      {
+        title: 'The liturgical calendar',
+        body: 'The Coptic calendar, fasts, and feasts are computed within Pharos (Anno Martyrum dating and the Julian Paschal computus) and cross-checked against published Coptic sources.',
+      },
+      {
+        title: 'The Agpeya',
+        body: 'The Coptic Book of Hours (the Agpeya) — its prayers, psalms, and gospels for all seven canonical hours — is provided by the open coptic.io project and used with permission.',
+      },
+      {
+        title: 'Typefaces',
+        body: 'Cormorant Garamond and Spectral, under the SIL Open Font License.',
+      },
+    ],
+    awaiting: 'Still to be supplied (from verified, official sources)',
+    awaitingItems: [
+      'Confirmation/clearance of the Synaxarium translation for release.',
+      'The NKJV, if licensed (served online; KJV remains the offline default).',
+    ],
+  },
+
+  hours: {
+    head: 'The Hours',
+    title: 'The Agpeya',
+    subtitle: 'Seven times a day I praise You.',
+    pray: 'Pray',
+    kept: 'Kept',
+    now: 'Now',
+    saint: 'Commemoration of the day',
+    noSaint: '⟨ commemoration to be supplied from a verified Synaxarium ⟩',
+    ordo: 'Open the Ordo →',
+    markKept: 'Mark this hour kept',
+    lordHaveMercy: 'Lord, have mercy',
+    draftNote: 'Prayer text to be supplied from a verified Agpeya.',
+  },
+
+  ordo: {
+    head: 'The Ordo',
+    title: 'Calendar of the Church',
+    legend: { feast: 'Feast', fast: 'Fast', today: 'Today' },
+  },
+
+  word: {
+    head: 'The Word',
+    title: 'The Word',
+    nowReading: 'Now reading',
+    continue: 'Continue reading →',
+    dayOf: (n: number, total: number) => `Day ${n} of ${total}`,
+    journal: 'The journal',
+    openJournal: 'Open the journal →',
+    markKept: 'Mark the day kept',
+    tbd: '⟨ scripture text to be supplied from a verified, approved source ⟩',
+  },
+
+  journal: {
+    head: 'The commonplace book',
+    title: 'The journal',
+    prompt: 'Where did you sense God’s presence today?',
+    take: 'Take up the pen →',
+    save: 'Save',
+    titlePlaceholder: 'A title',
+    bodyPlaceholder: 'One ruled line is enough…',
+    empty: 'No entries yet.',
+    words: (n: number) => `${n} ${n === 1 ? 'word' : 'words'}`,
+  },
+} as const;
