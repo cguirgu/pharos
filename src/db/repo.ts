@@ -17,6 +17,8 @@
 import { Platform } from 'react-native';
 import type { Practice, PracticeLog, DayStatus } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
+import { isScripture, type Highlight, type HighlightSource } from '../domain/highlights';
+import type { BookId } from '../domain/content/bible';
 
 /** Where the user is on the journey (onboarding §1). */
 export type JourneyStage = 'grew-up' | 'returning' | 'exploring';
@@ -49,6 +51,15 @@ export interface ReadingEnrollment {
   createdAt: number;
 }
 
+/** Optional narrowing for highlight queries (used by the reader overlay). */
+export interface HighlightFilter {
+  source?: HighlightSource;
+  book?: BookId; // scripture
+  chapter?: number; // scripture
+  copticMonth?: number; // synaxarium
+  copticDay?: number; // synaxarium
+}
+
 export interface Repo {
   init(): Promise<void>;
 
@@ -75,6 +86,11 @@ export interface Repo {
   upsertJournal(accountId: string, entry: JournalEntry): Promise<void>;
   deleteJournal(accountId: string, id: string): Promise<void>;
 
+  // --- per-account: highlights ---
+  listHighlights(accountId: string, filter?: HighlightFilter): Promise<Highlight[]>;
+  upsertHighlight(accountId: string, h: Highlight): Promise<void>;
+  deleteHighlight(accountId: string, id: string): Promise<void>;
+
   // --- per-account: reading plan ---
   getEnrollment(accountId: string, planId: string): Promise<ReadingEnrollment | null>;
   enroll(accountId: string, enrollment: ReadingEnrollment): Promise<void>;
@@ -96,6 +112,24 @@ const normalizeEmail = (email: string) => email.trim().toLowerCase();
 const logKey = (l: { practiceId: string; date: CivilDate }) =>
   `${l.practiceId}|${l.date.year}-${l.date.month}-${l.date.day}`;
 
+/** Whether a highlight matches an optional filter (shared by both repos). */
+export function matchesHighlightFilter(h: Highlight, filter?: HighlightFilter): boolean {
+  if (!filter) return true;
+  if (filter.source && h.anchor.source !== filter.source) return false;
+  // A scripture-location filter implies scripture-only; a coptic-date filter implies synaxarium-only.
+  if (filter.book != null || filter.chapter != null) {
+    if (!isScripture(h.anchor)) return false;
+    if (filter.book != null && h.anchor.book !== filter.book) return false;
+    if (filter.chapter != null && h.anchor.chapter !== filter.chapter) return false;
+  }
+  if (filter.copticMonth != null || filter.copticDay != null) {
+    if (isScripture(h.anchor)) return false;
+    if (filter.copticMonth != null && h.anchor.copticMonth !== filter.copticMonth) return false;
+    if (filter.copticDay != null && h.anchor.copticDay !== filter.copticDay) return false;
+  }
+  return true;
+}
+
 /** In-memory repository (tests, web, fallback). Data isolated per account. */
 export class MemoryRepo implements Repo {
   private accounts = new Map<string, Account>();
@@ -103,6 +137,7 @@ export class MemoryRepo implements Repo {
   private logs = new Map<string, Map<string, PracticeLog>>();
   private rest = new Map<string, Set<string>>();
   private journal = new Map<string, Map<string, JournalEntry>>();
+  private highlights = new Map<string, Map<string, Highlight>>();
   private enrollments = new Map<string, Map<string, ReadingEnrollment>>();
   private readDays = new Map<string, Map<string, Set<number>>>(); // account → plan → days
   private offices = new Map<string, Set<string>>(); // account → "dateKey|officeKey"
@@ -183,6 +218,19 @@ export class MemoryRepo implements Repo {
   }
   async deleteJournal(accountId: string, id: string): Promise<void> {
     this.bucket(this.journal, accountId).delete(id);
+  }
+
+  // highlights
+  async listHighlights(accountId: string, filter?: HighlightFilter): Promise<Highlight[]> {
+    return [...this.bucket(this.highlights, accountId).values()]
+      .filter((h) => matchesHighlightFilter(h, filter))
+      .sort((a, b) => b.createdAt - a.createdAt);
+  }
+  async upsertHighlight(accountId: string, h: Highlight): Promise<void> {
+    this.bucket(this.highlights, accountId).set(h.id, h);
+  }
+  async deleteHighlight(accountId: string, id: string): Promise<void> {
+    this.bucket(this.highlights, accountId).delete(id);
   }
 
   // reading plan

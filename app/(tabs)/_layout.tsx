@@ -15,6 +15,7 @@ const TABS: readonly NavTab[] = [
   { key: 'hours', label: copy.tabs.hours },
   { key: 'word', label: copy.tabs.word },
   { key: 'rule', label: copy.tabs.rule },
+  { key: 'saved', label: copy.tabs.saved },
   { key: 'you', label: copy.tabs.you },
 ];
 
@@ -33,6 +34,7 @@ export default function TabsLayout() {
         <Tabs.Screen name="hours" />
         <Tabs.Screen name="word" />
         <Tabs.Screen name="rule" />
+        <Tabs.Screen name="saved" />
         <Tabs.Screen name="you" />
       </Tabs>
       <View style={{ paddingBottom: insets.bottom, backgroundColor: K.bg }}>

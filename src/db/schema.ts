@@ -70,6 +70,20 @@ export const journalEntries = sqliteTable('journal_entries', {
   updatedAt: integer('updated_at').notNull(),
 }, (t) => ({ pk: primaryKey({ columns: [t.accountId, t.id] }) }));
 
+export const highlights = sqliteTable('highlights', {
+  accountId: text('account_id').notNull(),
+  id: text('id').notNull(),
+  source: text('source').notNull(), // 'scripture' | 'synaxarium' (filterable)
+  anchor: text('anchor').notNull(), // JSON HighlightAnchor
+  textSnapshot: text('text_snapshot').notNull(),
+  referenceLabel: text('reference_label').notNull(),
+  note: text('note'),
+  color: text('color'),
+  label: text('label'),
+  createdAt: integer('created_at').notNull(),
+  updatedAt: integer('updated_at').notNull(),
+}, (t) => ({ pk: primaryKey({ columns: [t.accountId, t.id] }) }));
+
 export const readingPlans = sqliteTable('reading_plans', {
   accountId: text('account_id').notNull(),
   planId: text('plan_id').notNull(),
@@ -120,6 +134,12 @@ CREATE TABLE IF NOT EXISTS rest_days (
 CREATE TABLE IF NOT EXISTS journal_entries (
   account_id TEXT NOT NULL, id TEXT NOT NULL, date TEXT NOT NULL, title TEXT NOT NULL,
   body TEXT NOT NULL, passage_ref TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
+  PRIMARY KEY (account_id, id)
+);
+CREATE TABLE IF NOT EXISTS highlights (
+  account_id TEXT NOT NULL, id TEXT NOT NULL, source TEXT NOT NULL, anchor TEXT NOT NULL,
+  text_snapshot TEXT NOT NULL, reference_label TEXT NOT NULL, note TEXT, color TEXT, label TEXT,
+  created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
   PRIMARY KEY (account_id, id)
 );
 CREATE TABLE IF NOT EXISTS reading_plans (

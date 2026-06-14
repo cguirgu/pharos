@@ -65,3 +65,22 @@ export const space = {
 } as const;
 
 export type Palette = typeof K;
+
+/**
+ * Highlight palette — the four user-pickable highlight colours (see
+ * `HighlightColor` in @domain/highlights). `ink` is the solid swatch/underline;
+ * `wash` is the translucent background laid behind highlighted text.
+ */
+export const highlightInk = {
+  gold: K.gold,
+  rubric: K.rubric,
+  sky: '#6FA8C7', // pale lapis
+  sage: K.feast,
+} as const;
+
+export const highlightWash = {
+  gold: 'rgba(201,168,74,0.18)',
+  rubric: 'rgba(184,69,58,0.18)',
+  sky: 'rgba(111,168,199,0.18)',
+  sage: 'rgba(127,191,154,0.16)',
+} as const;

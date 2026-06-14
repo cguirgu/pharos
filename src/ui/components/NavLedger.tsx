@@ -1,7 +1,7 @@
 /**
  * NavLedger — the bottom nav (DESIGN-SPEC §4, "Nav3").
- * 1px gold rule on top, 5 equal columns divided by structural hairlines, a
- * lozenge indicator above the active label, caps labels (no icons).
+ * 1px gold rule on top, equal columns (one per tab) divided by structural
+ * hairlines, a lozenge indicator above the active label, caps labels (no icons).
  */
 import React from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';

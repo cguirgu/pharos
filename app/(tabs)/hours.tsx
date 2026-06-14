@@ -13,6 +13,7 @@ import { copy } from '../../src/ui/copy';
 import { folioDate, liturgicalLabel } from '../../src/ui/format';
 import { useClock } from '../../src/state/clock';
 import { useOffices } from '../../src/state/offices';
+import { useHighlights } from '../../src/state/highlights';
 import { getDayInfo } from '../../src/domain/coptic';
 import { officesForDay, officeForHour } from '../../src/domain/content/agpeya';
 import { primarySaint } from '../../src/domain/content/synaxarium';
@@ -39,6 +40,20 @@ export default function HoursScreen() {
   const current = officeForHour(nowHour());
   const prayed = new Set(prayedOn(today));
   const saint = primarySaint(info.coptic);
+  const saveHighlight = useHighlights((s) => s.save);
+
+  // INTERIM: marks the whole life prose. The snapshot is the durable record.
+  // TODO(gesture): wire RN text selection over the life → free char-range
+  // SynaxariumAnchor (copticMonth/copticDay + start/endOffset) → saveHighlight().
+  const markSaint = async () => {
+    if (!saint) return;
+    const id = await saveHighlight({
+      anchor: { source: 'synaxarium', copticMonth: info.coptic.month, copticDay: info.coptic.day, startOffset: 0, endOffset: saint.life.length },
+      textSnapshot: saint.life,
+      referenceLabel: `${info.coptic.monthName} ${info.coptic.day} · ${saint.name}`,
+    });
+    if (id) router.push(`/highlights/${id}`);
+  };
 
   return (
     <Page>
@@ -91,6 +106,11 @@ export default function HoursScreen() {
           ) : null}
           <Fleuron />
           <Text style={styles.saintLife}>{saint?.life ?? copy.hours.noSaint}</Text>
+          {saint ? (
+            <Btn kind="line" style={{ marginTop: 12 }} onPress={markSaint}>
+              {copy.highlights.saveMark}
+            </Btn>
+          ) : null}
         </View>
 
         <View style={{ height: 24 }} />

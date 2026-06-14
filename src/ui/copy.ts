@@ -3,7 +3,7 @@
  * (CLAUDE.md "Voice": warm, literary, liturgical; never gamified or guilt-driven).
  */
 export const copy = {
-  tabs: { today: 'Today', hours: 'Hours', word: 'Word', rule: 'Rule', you: 'You' },
+  tabs: { today: 'Today', hours: 'Hours', word: 'Word', rule: 'Rule', you: 'You', saved: 'Saved' },
 
   today: {
     account: "The day's account",
@@ -177,6 +177,22 @@ export const copy = {
     openJournal: 'Open the journal →',
     markKept: 'Mark the day kept',
     tbd: '⟨ scripture text to be supplied from a verified, approved source ⟩',
+  },
+
+  highlights: {
+    head: 'What you have marked',
+    title: 'Saved',
+    searchPlaceholder: 'Search your marks…',
+    empty: 'Nothing marked yet. Press and hold a passage to mark it.',
+    noResults: 'No marks match that search.',
+    save: 'Save',
+    saveMark: 'Save highlight',
+    note: 'A note',
+    notePlaceholder: 'A note on this passage…',
+    colour: 'Colour',
+    remove: 'Remove highlight',
+    sources: { all: 'All', scripture: 'Scripture', synaxarium: 'Synaxarium' },
+    count: (n: number) => `${n} ${n === 1 ? 'mark' : 'marks'}`,
   },
 
   journal: {
