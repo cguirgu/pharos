@@ -4,7 +4,8 @@
  */
 import React from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
-import { K } from '../theme';
+import { type Palette } from '../theme';
+import { useStyles, useThemeColors } from '../useStyles';
 import { Caps } from './primitives';
 
 export function SheetBar({
@@ -18,16 +19,18 @@ export function SheetBar({
   right?: React.ReactNode;
   onBack?: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View>
       <View style={styles.row}>
         <Pressable onPress={onBack} style={styles.side} hitSlop={10}>
-          <Caps color={K.goldHi} size={10} ls={2}>
+          <Caps color={t.goldHi} size={10} ls={2}>
             ‹ {left}
           </Caps>
         </Pressable>
         {title ? (
-          <Caps color={K.ink2} size={10.5} ls={2.6} style={{ flex: 1, textAlign: 'center' }}>
+          <Caps color={t.ink2} size={10.5} ls={2.6} style={{ flex: 1, textAlign: 'center' }}>
             {title}
           </Caps>
         ) : (
@@ -40,8 +43,8 @@ export function SheetBar({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: Palette) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, gap: 10 },
   side: { minWidth: 64, justifyContent: 'center' },
-  rule: { height: 1, backgroundColor: K.rule, marginBottom: 10 },
+  rule: { height: 1, backgroundColor: t.rule, marginBottom: 10 },
 });

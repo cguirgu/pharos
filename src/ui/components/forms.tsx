@@ -4,11 +4,14 @@
  */
 import React from 'react';
 import { View, Text, TextInput, StyleSheet, type TextInputProps } from 'react-native';
-import { K, font } from '../theme';
+import { font, type Palette } from '../theme';
+import { useStyles, useThemeColors } from '../useStyles';
 import { Caps } from './primitives';
 
 /** Diamond step indicator: ◇ ─ ◇ ─ ◇ (active steps filled). */
 export function StepDots({ total, active }: { total: number; active: number }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const items: React.ReactNode[] = [];
   for (let i = 0; i < total; i++) {
     const on = i <= active;
@@ -18,7 +21,7 @@ export function StepDots({ total, active }: { total: number; active: number }) {
         key={`d${i}`}
         style={[
           styles.diamond,
-          on ? { backgroundColor: K.gold } : { borderWidth: 1, borderColor: K.rule },
+          on ? { backgroundColor: t.gold } : { borderWidth: 1, borderColor: t.rule },
         ]}
       />,
     );
@@ -31,32 +34,34 @@ export function Field({
   label,
   ...props
 }: { label: string } & TextInputProps) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View style={styles.field}>
-      <Caps size={8.5} ls={1.6} color={K.ink2}>
+      <Caps size={8.5} ls={1.6} color={t.ink2}>
         {label}
       </Caps>
       <TextInput
-        placeholderTextColor={K.ink3}
+        placeholderTextColor={t.ink3}
         style={styles.input}
-        selectionColor={K.gold}
+        selectionColor={t.gold}
         {...props}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: Palette) => StyleSheet.create({
   steps: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 26 },
   diamond: { width: 8, height: 8, transform: [{ rotate: '45deg' }] },
-  stepRule: { width: 22, height: 1, backgroundColor: K.ruleDim },
+  stepRule: { width: 22, height: 1, backgroundColor: t.ruleDim },
   field: { marginTop: 18, gap: 8 },
   input: {
     fontFamily: font.body,
     fontSize: 17,
-    color: K.parch,
+    color: t.parch,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: K.ruleDim,
+    borderBottomColor: t.ruleDim,
   },
 });

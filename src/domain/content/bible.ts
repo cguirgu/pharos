@@ -11,24 +11,20 @@
  * authoritative Coptic Katameros lectionary (see TESTING.md).
  */
 
-export type BookId = 'matthew' | 'mark' | 'luke' | 'john' | 'psalms';
+import { BOOK_DATA, BOOK_IDS, type BookId, type BookMeta, type Testament } from './bible.gen';
 
-export interface BookMeta {
-  readonly id: BookId;
-  readonly name: string;
-  /** Coptic-script heading (ornament). */
-  readonly coptic?: string;
-  readonly chapters: number;
+export { BOOK_DATA, BOOK_IDS };
+export type { BookId, BookMeta, Testament };
+
+/** Full 66-book structural metadata, keyed by id (chapter counts are universal, not content). */
+export const BOOKS: Readonly<Record<BookId, BookMeta>> = Object.fromEntries(
+  BOOK_DATA.map((b) => [b.id, b]),
+) as Record<BookId, BookMeta>;
+
+/** Books grouped by testament, in canonical order — for the book picker. */
+export function booksByTestament(testament: Testament): readonly BookMeta[] {
+  return BOOK_DATA.filter((b) => b.testament === testament);
 }
-
-/** Structural metadata (chapter counts are universal, not content). */
-export const BOOKS: Readonly<Record<BookId, BookMeta>> = {
-  matthew: { id: 'matthew', name: 'Matthew', coptic: 'Ⲕⲁⲧⲁ Ⲙⲁⲑⲑⲉⲟⲛ', chapters: 28 },
-  mark: { id: 'mark', name: 'Mark', coptic: 'Ⲕⲁⲧⲁ Ⲙⲁⲣⲕⲟⲛ', chapters: 16 },
-  luke: { id: 'luke', name: 'Luke', coptic: 'Ⲕⲁⲧⲁ Ⲗⲟⲩⲕⲁⲛ', chapters: 24 },
-  john: { id: 'john', name: 'John', coptic: 'Ⲕⲁⲧⲁ Ⲓⲱⲁⲛⲛⲏⲛ', chapters: 21 },
-  psalms: { id: 'psalms', name: 'Psalms', chapters: 150 },
-};
 
 export interface ScriptureRef {
   readonly book: BookId;
@@ -88,13 +84,21 @@ export function refLabel(ref: ScriptureRef): string {
   return `${BOOKS[ref.book].name} ${ref.chapter}`;
 }
 
-const NAME_TO_ID: Record<string, BookId> = {
-  psalm: 'psalms', psalms: 'psalms', matthew: 'matthew', mark: 'mark', luke: 'luke', john: 'john',
-};
+/** Lookup of squashed lowercase book names → id (built from the canon, plus aliases). */
+const NAME_TO_ID: Record<string, BookId> = (() => {
+  const map: Record<string, BookId> = {};
+  for (const b of BOOK_DATA) map[b.id] = b.id; // id already equals the squashed name
+  map.psalm = 'psalms'; // common singular alias
+  return map;
+})();
 
-/** Parse a reference label like "Psalm 50" or "John 1:1-17" → ScriptureRef. */
+/**
+ * Parse a reference label like "Psalm 50", "1 Corinthians 13:4-7", or
+ * "Song of Solomon 2:1" → ScriptureRef. The book name may contain internal
+ * spaces (multi-word / numbered books); it is squashed before lookup.
+ */
 export function parseScriptureRef(label: string): (ScriptureRef & { fromVerse?: number; toVerse?: number }) | null {
-  const m = label.trim().match(/^(\d?\s?[A-Za-z]+)\s+(\d+)(?::(\d+)(?:[-–](\d+))?)?$/);
+  const m = label.trim().match(/^([1-3]?\s?[A-Za-z][A-Za-z\s]*?)\s+(\d+)(?::(\d+)(?:[-–](\d+))?)?$/);
   if (!m) return null;
   const id = NAME_TO_ID[m[1]!.toLowerCase().replace(/\s+/g, '')];
   if (!id) return null;

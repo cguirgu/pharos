@@ -7,7 +7,8 @@ import { View, Text, TextInput, ScrollView, Pressable, StyleSheet } from 'react-
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
 import { SheetBar, Rubric, Caps, Segmented, Chip, Stepper, Btn, Mark } from '../../src/ui/components';
-import { K, font } from '../../src/ui/theme';
+import { font, type Palette } from '../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { useRule } from '../../src/state/rule';
 import { id as newId } from '../../src/platform/id';
 import type { Cadence, Category, Measure, Practice } from '../../src/domain/rule';
@@ -35,6 +36,8 @@ const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const COUNT_PRESETS = [3, 12, 40, 100];
 
 export default function ComposeScreen() {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { practices, savePractice } = useRule();
@@ -105,7 +108,7 @@ export default function ComposeScreen() {
           value={name}
           onChangeText={setName}
           placeholder="Name this practice"
-          placeholderTextColor={K.ink3}
+          placeholderTextColor={t.ink3}
           style={styles.nameInput}
         />
         <Segmented options={CATEGORIES} active={category} onChange={(k) => setCategory(k as Category)} />
@@ -165,10 +168,10 @@ export default function ComposeScreen() {
               value={partsText}
               onChangeText={setPartsText}
               placeholder="Morning, Noon, Vespers"
-              placeholderTextColor={K.ink3}
+              placeholderTextColor={t.ink3}
               style={styles.input}
             />
-            <Caps size={8.5} ls={1.2} color={K.ink3} style={{ marginTop: 6 }}>
+            <Caps size={8.5} ls={1.2} color={t.ink3} style={{ marginTop: 6 }}>
               Comma-separated parts
             </Caps>
           </View>
@@ -179,7 +182,7 @@ export default function ComposeScreen() {
           value={intention}
           onChangeText={setIntention}
           placeholder="An intention, in a line"
-          placeholderTextColor={K.ink3}
+          placeholderTextColor={t.ink3}
           multiline
           style={[styles.input, { minHeight: 60 }]}
         />
@@ -193,11 +196,11 @@ export default function ComposeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  nameInput: { fontFamily: font.display, fontSize: 30, color: K.parch, paddingVertical: 8, marginBottom: 14, borderBottomWidth: 1, borderBottomColor: K.ruleDim },
-  optRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: K.ruleDim },
-  optLabel: { fontFamily: font.display, fontSize: 19, color: K.parch },
+const makeStyles = (t: Palette) => StyleSheet.create({
+  nameInput: { fontFamily: font.display, fontSize: 30, color: t.parch, paddingVertical: 8, marginBottom: 14, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
+  optRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
+  optLabel: { fontFamily: font.display, fontSize: 19, color: t.parch },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
   sub: { marginTop: 14 },
-  input: { fontFamily: font.body, fontSize: 15, color: K.parch, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: K.ruleDim },
+  input: { fontFamily: font.body, fontSize: 15, color: t.parch, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
 });

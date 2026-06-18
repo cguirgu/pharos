@@ -8,7 +8,8 @@ import { useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
 import { Folio, Rubric, Caps, Btn } from '../../src/ui/components';
 import { LightenSheet } from '../../src/ui/LightenSheet';
-import { K, font } from '../../src/ui/theme';
+import { font, type Palette } from '../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 import { practiceSubtitle } from '../../src/ui/format';
 import { useRule } from '../../src/state/rule';
@@ -22,6 +23,8 @@ const GROUPS: { key: Category; label: string; glyph: string }[] = [
 ];
 
 export default function RuleScreen() {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const router = useRouter();
   const { practices } = useRule();
   const [lighten, setLighten] = useState(false);
@@ -53,7 +56,7 @@ export default function RuleScreen() {
           {copy.rule.add}
         </Btn>
         <Pressable onPress={() => setLighten(true)} style={styles.lighten}>
-          <Caps color={K.ink3} size={10} ls={1.6}>
+          <Caps color={t.ink3} size={10} ls={1.6}>
             {copy.rule.lighten}
           </Caps>
         </Pressable>
@@ -65,25 +68,27 @@ export default function RuleScreen() {
 }
 
 function PracticeRow({ practice, onPress }: { practice: Practice; onPress: () => void }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <Pressable style={styles.row} onPress={onPress}>
       <View style={{ flex: 1 }}>
         <Text style={styles.rowName}>{practice.name}</Text>
-        <Caps size={8.5} ls={1.4} color={K.ink2}>
+        <Caps size={8.5} ls={1.4} color={t.ink2}>
           {practiceSubtitle(practice)}
         </Caps>
       </View>
-      <Caps size={16} ls={0} color={K.ink3}>
+      <Caps size={16} ls={0} color={t.ink3}>
         ›
       </Caps>
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  title: { fontFamily: font.display, fontSize: 36, color: K.parch, marginTop: 6 },
-  subtitle: { fontFamily: font.bodyItalic, fontSize: 15, color: K.ink2, marginTop: 6, lineHeight: 21 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: K.ruleDim },
-  rowName: { fontFamily: font.display, fontSize: 20, color: K.parch },
+const makeStyles = (t: Palette) => StyleSheet.create({
+  title: { fontFamily: font.display, fontSize: 36, color: t.parch, marginTop: 6 },
+  subtitle: { fontFamily: font.bodyItalic, fontSize: 15, color: t.ink2, marginTop: 6, lineHeight: 21 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
+  rowName: { fontFamily: font.display, fontSize: 20, color: t.parch },
   lighten: { alignItems: 'center', paddingVertical: 18 },
 });

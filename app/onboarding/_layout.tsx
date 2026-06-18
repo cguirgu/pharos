@@ -1,7 +1,8 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import { K } from '../../src/ui/theme';
+import { useThemeColors } from '../../src/ui/useStyles';
 
 export default function OnboardingLayout() {
-  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: K.bg } }} />;
+  const t = useThemeColors();
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: t.bg } }} />;
 }

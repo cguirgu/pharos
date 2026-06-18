@@ -61,6 +61,15 @@ export function progressPercent(completedDays: number, total: number): number {
   return Math.min(100, Math.round((completedDays / total) * 100));
 }
 
+/**
+ * Whether the plan is finished — every scheduled day has been kept. Derived
+ * (no stored completion flag): completion is just "kept days ≥ schedule length".
+ * `completedDays` is the count of distinct days marked read.
+ */
+export function isPlanComplete(plan: ReadingPlan, completedDays: number): boolean {
+  return plan.schedule.length > 0 && completedDays >= plan.schedule.length;
+}
+
 export interface PlanProgress {
   readonly dayNumber: number;
   readonly total: number;

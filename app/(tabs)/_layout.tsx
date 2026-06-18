@@ -8,7 +8,7 @@ import { Tabs, useRouter, useSegments } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NavLedger, type NavTab } from '../../src/ui/components';
 import { copy } from '../../src/ui/copy';
-import { K } from '../../src/ui/theme';
+import { useThemeColors } from '../../src/ui/useStyles';
 
 const TABS: readonly NavTab[] = [
   { key: 'today', label: copy.tabs.today },
@@ -23,12 +23,13 @@ export default function TabsLayout() {
   const router = useRouter();
   const segments = useSegments();
   const insets = useSafeAreaInsets();
+  const t = useThemeColors();
   const active = (segments[segments.length - 1] as string) ?? 'today';
 
   return (
-    <View style={{ flex: 1, backgroundColor: K.bg }}>
+    <View style={{ flex: 1, backgroundColor: t.bg }}>
       <Tabs
-        screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' }, sceneStyle: { backgroundColor: K.bg } }}
+        screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' }, sceneStyle: { backgroundColor: t.bg } }}
       >
         <Tabs.Screen name="today" />
         <Tabs.Screen name="hours" />
@@ -37,7 +38,7 @@ export default function TabsLayout() {
         <Tabs.Screen name="saved" />
         <Tabs.Screen name="you" />
       </Tabs>
-      <View style={{ paddingBottom: insets.bottom, backgroundColor: K.bg }}>
+      <View style={{ paddingBottom: insets.bottom, backgroundColor: t.bg }}>
         <NavLedger
           tabs={TABS}
           active={TABS.some((t) => t.key === active) ? active : 'today'}

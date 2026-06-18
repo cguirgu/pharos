@@ -4,6 +4,7 @@ import {
   dayNumberFor,
   progressPercent,
   planProgress,
+  isPlanComplete,
 } from '../../src/domain/content/readingPlan';
 import type { CivilDate } from '../../src/domain/coptic';
 
@@ -44,5 +45,12 @@ describe('readingPlan — Four Gospels', () => {
     expect(p.todayLabel).toBe('Mark 1');
     // day number never exceeds the total
     expect(planProgress(FOUR_GOSPELS_90, D(1, 1), D(12, 31), 0).dayNumber).toBe(89);
+  });
+
+  test('isPlanComplete is derived from kept-day count vs schedule length', () => {
+    expect(isPlanComplete(FOUR_GOSPELS_90, 0)).toBe(false);
+    expect(isPlanComplete(FOUR_GOSPELS_90, 88)).toBe(false);
+    expect(isPlanComplete(FOUR_GOSPELS_90, 89)).toBe(true);
+    expect(isPlanComplete(FOUR_GOSPELS_90, 90)).toBe(true);
   });
 });

@@ -7,7 +7,8 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
 import { SheetBar, Rubric, Caps, Numeral, Tag, Btn } from '../../src/ui/components';
-import { K, font } from '../../src/ui/theme';
+import { font, type Palette } from '../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { practiceSubtitle } from '../../src/ui/format';
 import { useClock } from '../../src/state/clock';
 import { useRule } from '../../src/state/rule';
@@ -17,6 +18,8 @@ const WD = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const GLYPH = { kept: '✓', part: '╱', missed: '×', open: '◆' } as const;
 
 export default function PracticeDetail() {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const today = useClock((s) => s.today);
@@ -50,7 +53,7 @@ export default function PracticeDetail() {
       />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         <Text style={styles.name}>{practice.name}</Text>
-        <Caps size={9} ls={1.6} color={K.ink2} style={{ marginTop: 4 }}>
+        <Caps size={9} ls={1.6} color={t.ink2} style={{ marginTop: 4 }}>
           {practiceSubtitle(practice)}
         </Caps>
         {practice.intention ? <Text style={styles.intention}>{practice.intention}</Text> : null}
@@ -65,7 +68,7 @@ export default function PracticeDetail() {
         <Rubric>The last four weeks</Rubric>
         <View style={styles.weekHead}>
           {WD.map((d, i) => (
-            <Caps key={i} size={8} ls={0} color={K.ink3} style={styles.cellLabel}>
+            <Caps key={i} size={8} ls={0} color={t.ink3} style={styles.cellLabel}>
               {d}
             </Caps>
           ))}
@@ -80,14 +83,14 @@ export default function PracticeDetail() {
                       styles.glyph,
                       {
                         color: cell.isToday
-                          ? K.goldHi
+                          ? t.goldHi
                           : cell.status === 'kept'
-                            ? K.gold
+                            ? t.gold
                             : cell.status === 'part'
-                              ? K.ink2
+                              ? t.ink2
                               : cell.status === 'missed'
-                                ? K.ink3
-                                : K.ink2,
+                                ? t.ink3
+                                : t.ink2,
                       },
                     ]}
                   >
@@ -126,29 +129,31 @@ export default function PracticeDetail() {
 }
 
 function Stat({ value, label }: { value: string; label: string }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View style={styles.stat}>
-      <Numeral size={40} color={K.goldHi}>
+      <Numeral size={40} color={t.goldHi}>
         {value}
       </Numeral>
-      <Caps size={8.5} ls={1.4} color={K.ink3}>
+      <Caps size={8.5} ls={1.4} color={t.ink3}>
         {label}
       </Caps>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  edit: { fontFamily: font.caps, fontSize: 10, letterSpacing: 2, color: K.goldHi, textTransform: 'uppercase' },
-  name: { fontFamily: font.display, fontSize: 34, color: K.parch, marginTop: 6 },
-  intention: { fontFamily: font.bodyItalic, fontSize: 15, color: K.ink2, marginTop: 10, lineHeight: 21 },
-  stats: { flexDirection: 'row', marginVertical: 22, borderTopWidth: 1, borderBottomWidth: 1, borderColor: K.ruleDim, paddingVertical: 14 },
+const makeStyles = (t: Palette) => StyleSheet.create({
+  edit: { fontFamily: font.caps, fontSize: 10, letterSpacing: 2, color: t.goldHi, textTransform: 'uppercase' },
+  name: { fontFamily: font.display, fontSize: 34, color: t.parch, marginTop: 6 },
+  intention: { fontFamily: font.bodyItalic, fontSize: 15, color: t.ink2, marginTop: 10, lineHeight: 21 },
+  stats: { flexDirection: 'row', marginVertical: 22, borderTopWidth: 1, borderBottomWidth: 1, borderColor: t.ruleDim, paddingVertical: 14 },
   stat: { flex: 1, alignItems: 'center', gap: 2 },
   weekHead: { flexDirection: 'row', marginTop: 4 },
   weekRow: { flexDirection: 'row', marginVertical: 3 },
   cell: { flex: 1, alignItems: 'center', justifyContent: 'center', height: 26 },
   cellLabel: { flex: 1, textAlign: 'center' },
   glyph: { fontFamily: font.body, fontSize: 14 },
-  blank: { width: 4, height: 4, backgroundColor: K.ruleDim },
+  blank: { width: 4, height: 4, backgroundColor: t.ruleDim },
   tags: { flexDirection: 'row', gap: 8, marginTop: 20 },
 });

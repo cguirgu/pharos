@@ -9,7 +9,8 @@ import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { Page } from '../../src/ui/Page';
 import { StepDots, Field, Caps, Copt, Mark, Toggle, Btn, Fleuron, PharosSeal } from '../../src/ui/components';
-import { K, font } from '../../src/ui/theme';
+import { font, type Palette } from '../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 import { useAuth } from '../../src/state/auth';
 import { STARTERS, DEFAULT_SELECTION, type StarterKey } from '../../src/db/seed';
@@ -23,6 +24,8 @@ const JOURNEY: { key: JourneyStage; glyph: string }[] = [
 
 export default function Onboarding() {
   const router = useRouter();
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const completeOnboarding = useAuth((s) => s.completeOnboarding);
 
   const [step, setStep] = useState(0);
@@ -69,7 +72,7 @@ export default function Onboarding() {
       {step === 0 ? (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
           <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-            <Caps color={K.rubricHi} size={10} ls={2.4}>
+            <Caps color={t.rubricHi} size={10} ls={2.4}>
               {copy.onboarding.journeyKicker}
             </Caps>
             <Text style={styles.title}>{copy.onboarding.journeyTitle}</Text>
@@ -82,14 +85,14 @@ export default function Onboarding() {
                 <Pressable
                   key={j.key}
                   onPress={() => setJourney(j.key)}
-                  style={[styles.journeyRow, on && { backgroundColor: K.selWashLo }]}
+                  style={[styles.journeyRow, on && { backgroundColor: t.selWashLo }]}
                 >
-                  <Copt size={26} color={on ? K.goldHi : K.ink3} style={{ width: 30, textAlign: 'center' }}>
+                  <Copt size={26} color={on ? t.goldHi : t.ink3} style={{ width: 30, textAlign: 'center' }}>
                     {j.glyph}
                   </Copt>
                   <View style={{ flex: 1 }}>
-                    <Text style={[styles.journeyTitle, on && { color: K.goldHi }]}>{c.title}</Text>
-                    <Caps size={8.5} ls={1.2} color={K.ink2}>
+                    <Text style={[styles.journeyTitle, on && { color: t.goldHi }]}>{c.title}</Text>
+                    <Caps size={8.5} ls={1.2} color={t.ink2}>
                       {c.sub}
                     </Caps>
                   </View>
@@ -116,22 +119,22 @@ export default function Onboarding() {
 
       {step === 1 ? (
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Caps color={K.rubricHi} size={10} ls={2.4}>
+          <Caps color={t.rubricHi} size={10} ls={2.4}>
             {copy.onboarding.rhythmKicker}
           </Caps>
           <Text style={styles.title}>{copy.onboarding.rhythmTitle}</Text>
           <Text style={styles.sub}>{copy.onboarding.rhythmSub}</Text>
 
           <View style={{ marginTop: 18 }}>
-            {STARTERS.map((t, i) => (
-              <View key={t.key} style={[styles.toggleRow, i === 0 && styles.toggleRowTop]}>
+            {STARTERS.map((st, i) => (
+              <View key={st.key} style={[styles.toggleRow, i === 0 && styles.toggleRowTop]}>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.toggleName}>{t.name}</Text>
-                  <Caps size={8.5} ls={1.2} color={K.ink2}>
-                    {t.subtitle}
+                  <Text style={styles.toggleName}>{st.name}</Text>
+                  <Caps size={8.5} ls={1.2} color={t.ink2}>
+                    {st.subtitle}
                   </Caps>
                 </View>
-                <Toggle value={selected.has(t.key)} onChange={() => toggle(t.key)} />
+                <Toggle value={selected.has(st.key)} onChange={() => toggle(st.key)} />
               </View>
             ))}
           </View>
@@ -148,7 +151,7 @@ export default function Onboarding() {
           <View style={styles.notifCenter}>
             <PharosSeal size={72} />
             <Fleuron />
-            <Caps color={K.rubricHi} size={10} ls={2.4}>
+            <Caps color={t.rubricHi} size={10} ls={2.4}>
               {copy.onboarding.notifKicker}
             </Caps>
             <Text style={[styles.title, { textAlign: 'center' }]}>{copy.onboarding.notifTitle}</Text>
@@ -168,13 +171,13 @@ export default function Onboarding() {
   );
 }
 
-const styles = StyleSheet.create({
-  title: { fontFamily: font.display, fontSize: 42, color: K.parch, marginTop: 8, lineHeight: 44 },
-  sub: { fontFamily: font.bodyItalic, fontSize: 15, color: K.ink2, marginTop: 8, lineHeight: 21 },
-  journeyRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 16, paddingHorizontal: 6, borderBottomWidth: 1, borderBottomColor: K.ruleDim },
-  journeyTitle: { fontFamily: font.display, fontSize: 20, color: K.parch },
-  toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: K.ruleDim },
-  toggleRowTop: { borderTopWidth: 1, borderTopColor: K.ruleDim },
-  toggleName: { fontFamily: font.display, fontSize: 20, color: K.parch },
+const makeStyles = (t: Palette) => StyleSheet.create({
+  title: { fontFamily: font.display, fontSize: 42, color: t.parch, marginTop: 8, lineHeight: 44 },
+  sub: { fontFamily: font.bodyItalic, fontSize: 15, color: t.ink2, marginTop: 8, lineHeight: 21 },
+  journeyRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 16, paddingHorizontal: 6, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
+  journeyTitle: { fontFamily: font.display, fontSize: 20, color: t.parch },
+  toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
+  toggleRowTop: { borderTopWidth: 1, borderTopColor: t.ruleDim },
+  toggleName: { fontFamily: font.display, fontSize: 20, color: t.parch },
   notifCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10 },
 });

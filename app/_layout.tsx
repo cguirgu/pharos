@@ -21,10 +21,10 @@ import {
   Spectral_600SemiBold,
   Spectral_400Regular_Italic,
 } from '@expo-google-fonts/spectral';
-import { K } from '../src/ui/theme';
 import { useClock } from '../src/state/clock';
 import { useAuth } from '../src/state/auth';
 import { useRule } from '../src/state/rule';
+import { useTheme } from '../src/state/theme';
 import { rescheduleReminders } from '../src/platform/notifications';
 import { initContent } from '../src/state/content';
 
@@ -38,6 +38,14 @@ export default function RootLayout() {
   useEffect(() => {
     initContent();
   }, []);
+
+  // Restore the persisted theme before first paint (gates the splash below).
+  const palette = useTheme((s) => s.palette);
+  const themeReady = useTheme((s) => s.ready);
+  const loadTheme = useTheme((s) => s.load);
+  useEffect(() => {
+    void loadTheme();
+  }, [loadTheme]);
 
   // Restore the session on first mount (auth.load also loads the active
   // account's rule + devotion data), then reschedule due-day reminders.
@@ -62,16 +70,16 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded) void SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    if (fontsLoaded && themeReady) void SplashScreen.hideAsync();
+  }, [fontsLoaded, themeReady]);
 
-  if (!fontsLoaded) return null;
+  if (!fontsLoaded || !themeReady) return null;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: K.bg }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: palette.bg }}>
       <SafeAreaProvider>
-        <StatusBar style="light" />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: K.bg } }}>
+        <StatusBar style={palette.barStyle} />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: palette.bg } }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="auth" />
           <Stack.Screen name="onboarding" />

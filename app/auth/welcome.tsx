@@ -6,15 +6,18 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
 import { PharosSeal, Caps, Btn, Fleuron } from '../../src/ui/components';
-import { K, font } from '../../src/ui/theme';
+import { font, type Palette } from '../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 
 export default function Welcome() {
   const router = useRouter();
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <Page>
       <View style={styles.top}>
-        <Caps size={9.5} ls={2.6} color={K.ink3}>
+        <Caps size={9.5} ls={2.6} color={t.ink3}>
           {copy.auth.era}
         </Caps>
       </View>
@@ -30,7 +33,7 @@ export default function Welcome() {
           {copy.auth.begin}
         </Btn>
         <Pressable onPress={() => router.push('/auth/sign-in')} style={styles.link} hitSlop={8}>
-          <Caps size={10} ls={1.6} color={K.ink3}>
+          <Caps size={10} ls={1.6} color={t.ink3}>
             {copy.auth.haveAccount}
           </Caps>
         </Pressable>
@@ -39,15 +42,15 @@ export default function Welcome() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: Palette) => StyleSheet.create({
   top: { alignItems: 'center', paddingTop: 8 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  wordmark: { fontFamily: font.display, fontSize: 72, color: K.parch, marginTop: 14, lineHeight: 76 },
-  coptic: { fontFamily: font.coptic, fontSize: 22, color: K.gold, marginTop: 2 },
+  wordmark: { fontFamily: font.display, fontSize: 72, color: t.parch, marginTop: 14, lineHeight: 76 },
+  coptic: { fontFamily: font.coptic, fontSize: 22, color: t.gold, marginTop: 2 },
   promise: {
     fontFamily: font.displayItalic,
     fontSize: 24,
-    color: K.goldHi,
+    color: t.goldHi,
     textAlign: 'center',
     lineHeight: 32,
     maxWidth: 320,

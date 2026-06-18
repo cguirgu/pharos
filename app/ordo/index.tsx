@@ -7,7 +7,8 @@ import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
 import { SheetBar, Caps, Mark } from '../../src/ui/components';
-import { K, font } from '../../src/ui/theme';
+import { font, type Palette } from '../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 import { useClock } from '../../src/state/clock';
 import { monthGrid } from '../../src/domain/ordo';
@@ -18,6 +19,8 @@ const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function Ordo() {
   const router = useRouter();
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const today = useClock((s) => s.today);
   const [ym, setYm] = useState({ year: today.year, month: today.month });
   const grid = monthGrid(ym.year, ym.month, today);
@@ -43,7 +46,7 @@ export default function Ordo() {
           </View>
         }
       />
-      <Caps size={10} ls={2.4} color={K.rubricHi}>{copy.ordo.title}</Caps>
+      <Caps size={10} ls={2.4} color={t.rubricHi}>{copy.ordo.title}</Caps>
       <Text style={styles.month}>{MONTHS[ym.month - 1]} {ym.year}</Text>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
@@ -52,16 +55,16 @@ export default function Ordo() {
           return (
             <Pressable
               key={dateKey(d.date)}
-              style={[styles.row, d.isToday && { backgroundColor: K.selWashLo }]}
+              style={[styles.row, d.isToday && { backgroundColor: t.selWashLo }]}
               onPress={() => router.push(`/ordo/${dateKey(d.date)}`)}
             >
-              <Text style={[styles.day, d.isToday && { color: K.goldHi }]}>{d.date.day}</Text>
-              <Caps size={8} ls={1} color={K.ink3} style={{ width: 30 }}>{WD[d.weekday]}</Caps>
+              <Text style={[styles.day, d.isToday && { color: t.goldHi }]}>{d.date.day}</Text>
+              <Caps size={8} ls={1} color={t.ink3} style={{ width: 30 }}>{WD[d.weekday]}</Caps>
               <View style={{ width: 22, alignItems: 'center' }}>
                 {d.feast ? <Mark state="kept" size={12} /> : isFast ? <View style={styles.fastDot} /> : null}
               </View>
               <Text
-                style={[styles.title, d.feast ? { fontFamily: font.display, color: K.parch } : { color: K.ink2 }]}
+                style={[styles.title, d.feast ? { fontFamily: font.display, color: t.parch } : { color: t.ink2 }]}
                 numberOfLines={1}
               >
                 {d.feast?.name ?? d.season?.name ?? `${d.coptic.day} ${d.coptic.monthName}`}
@@ -80,21 +83,23 @@ export default function Ordo() {
 }
 
 function Legend({ mark, label }: { mark: React.ReactNode; label: string }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View style={styles.legendItem}>
       {mark}
-      <Caps size={8.5} ls={1.6} color={K.ink3}>{label}</Caps>
+      <Caps size={8.5} ls={1.6} color={t.ink3}>{label}</Caps>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  chev: { fontFamily: font.display, fontSize: 24, color: K.goldHi, paddingHorizontal: 4 },
-  month: { fontFamily: font.display, fontSize: 34, color: K.parch, marginTop: 4, marginBottom: 10 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: K.ruleDim },
-  day: { fontFamily: font.display, fontSize: 20, color: K.ink2, width: 26, fontVariant: ['oldstyle-nums'] },
+const makeStyles = (t: Palette) => StyleSheet.create({
+  chev: { fontFamily: font.display, fontSize: 24, color: t.goldHi, paddingHorizontal: 4 },
+  month: { fontFamily: font.display, fontSize: 34, color: t.parch, marginTop: 4, marginBottom: 10 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
+  day: { fontFamily: font.display, fontSize: 20, color: t.ink2, width: 26, fontVariant: ['oldstyle-nums'] },
   title: { flex: 1, fontFamily: font.body, fontSize: 15 },
-  fastDot: { width: 7, height: 7, borderRadius: 0, backgroundColor: K.rubric, transform: [{ rotate: '45deg' }] },
+  fastDot: { width: 7, height: 7, borderRadius: 0, backgroundColor: t.rubric, transform: [{ rotate: '45deg' }] },
   legend: { flexDirection: 'row', justifyContent: 'center', gap: 24, marginTop: 20 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 });

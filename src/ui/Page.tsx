@@ -5,7 +5,8 @@
 import React from 'react';
 import { View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { K, space } from './theme';
+import { space, type Palette } from './theme';
+import { useStyles, useThemeColors } from './useStyles';
 
 export function Page({
   children,
@@ -16,25 +17,24 @@ export function Page({
   pad?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      {/* faint top vignette */}
-      <View pointerEvents="none" style={styles.vignette} />
+      {/* faint top vignette — a banded fade (no hard edge / seam) */}
+      <View pointerEvents="none" style={styles.vignette}>
+        {t.vignetteBands.map((color, i) => (
+          <View key={i} style={{ height: 24, backgroundColor: color }} />
+        ))}
+      </View>
       <View style={[styles.body, pad && { paddingHorizontal: space.page }, style]}>{children}</View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: K.bg },
+const makeStyles = (t: Palette) => StyleSheet.create({
+  root: { flex: 1, backgroundColor: t.bg },
   body: { flex: 1, minHeight: 0 },
-  vignette: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 220,
-    backgroundColor: 'rgba(201,168,74,0.03)',
-  },
+  vignette: { position: 'absolute', top: 0, left: 0, right: 0 },
 });

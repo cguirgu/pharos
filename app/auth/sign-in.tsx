@@ -6,12 +6,15 @@ import { View, Text, ScrollView, KeyboardAvoidingView, Platform, StyleSheet } fr
 import { useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
 import { SheetBar, Caps, Btn, Field } from '../../src/ui/components';
-import { K, font } from '../../src/ui/theme';
+import { font, type Palette } from '../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 import { useAuth } from '../../src/state/auth';
 
 export default function SignIn() {
   const router = useRouter();
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const signIn = useAuth((s) => s.signIn);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,7 +63,7 @@ export default function SignIn() {
             placeholder="••••"
           />
           {error ? (
-            <Caps size={9} ls={1} color={K.rubricHi} style={{ marginTop: 16 }}>
+            <Caps size={9} ls={1} color={t.rubricHi} style={{ marginTop: 16 }}>
               {error}
             </Caps>
           ) : null}
@@ -78,7 +81,7 @@ export default function SignIn() {
   );
 }
 
-const styles = StyleSheet.create({
-  title: { fontFamily: font.display, fontSize: 34, color: K.parch, marginTop: 8 },
-  sub: { fontFamily: font.bodyItalic, fontSize: 15, color: K.ink2, marginTop: 6, lineHeight: 21 },
+const makeStyles = (t: Palette) => StyleSheet.create({
+  title: { fontFamily: font.display, fontSize: 34, color: t.parch, marginTop: 8 },
+  sub: { fontFamily: font.bodyItalic, fontSize: 15, color: t.ink2, marginTop: 6, lineHeight: 21 },
 });

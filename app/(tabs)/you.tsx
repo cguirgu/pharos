@@ -5,9 +5,11 @@ import React, { useMemo } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
-import { Folio, Rubric, Caps, Numeral, Btn, Register } from '../../src/ui/components';
-import { K, font } from '../../src/ui/theme';
+import { Folio, Rubric, Caps, Numeral, Btn, Register, Segmented } from '../../src/ui/components';
+import { font, type Palette } from '../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
+import { useTheme, type ThemeMode } from '../../src/state/theme';
 import { useAuth } from '../../src/state/auth';
 import { useRule } from '../../src/state/rule';
 import { useJournal } from '../../src/state/journal';
@@ -23,14 +25,18 @@ const journeyLabel = (j: JourneyStage | null): string =>
   j ? copy.onboarding.journey[j].title : '—';
 
 export default function YouScreen() {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const router = useRouter();
+  const themeMode = useTheme((s) => s.mode);
+  const setThemeMode = useTheme((s) => s.setMode);
   const { account, accounts, signOut, switchAccount } = useAuth();
   const today = useClock((s) => s.today);
   const practices = useRule((s) => s.practices);
   const logs = useRule((s) => s.logs);
   const restDays = useRule((s) => s.restDays);
   const journalCount = useJournal((s) => s.entries.length);
-  const planDaysCompleted = useReading((s) => s.completedDays.length);
+  const planDaysCompleted = useReading((s) => s.totalDaysKept());
   const officeTotal = useOffices((s) => s.total);
   const others = accounts.filter((a) => a.id !== account?.id);
 
@@ -49,7 +55,7 @@ export default function YouScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
         <View style={styles.head}>
           <Text style={styles.name}>{account?.displayName ?? 'Friend'}</Text>
-          <Caps size={9} ls={1.4} color={K.ink2} style={{ marginTop: 6 }}>
+          <Caps size={9} ls={1.4} color={t.ink2} style={{ marginTop: 6 }}>
             {copy.you.journeyLabel} · {journeyLabel(account?.journeyStage ?? null)}
           </Caps>
         </View>
@@ -66,8 +72,8 @@ export default function YouScreen() {
         <View style={styles.marks}>
           {marks.map((m) => (
             <View key={m.key} style={[styles.mark, !m.earned && { opacity: 0.42 }]}>
-              <Text style={[styles.markGlyph, { color: m.earned ? K.goldHi : K.ink3 }]}>☩</Text>
-              <Caps size={8} ls={1.2} color={m.earned ? K.ink2 : K.ink3} style={{ textAlign: 'center' }}>
+              <Text style={[styles.markGlyph, { color: m.earned ? t.goldHi : t.ink3 }]}>☩</Text>
+              <Caps size={8} ls={1.2} color={m.earned ? t.ink2 : t.ink3} style={{ textAlign: 'center' }}>
                 {m.name}
               </Caps>
             </View>
@@ -76,6 +82,16 @@ export default function YouScreen() {
 
         {/* settings */}
         <Rubric>{copy.you.settings}</Rubric>
+        <Register onTop>
+          <Text style={styles.rowLabel}>{copy.you.theme}</Text>
+        </Register>
+        <View style={{ marginTop: 12, marginBottom: 4 }}>
+          <Segmented
+            options={copy.you.themeModes}
+            active={themeMode}
+            onChange={(key) => void setThemeMode(key as ThemeMode)}
+          />
+        </View>
         <SettingRow label={copy.you.reminders} />
         <SettingRow label={copy.you.fastingNuance} />
         <SettingRow label={copy.you.about} onPress={() => router.push('/you/about')} />
@@ -94,7 +110,7 @@ export default function YouScreen() {
                 }}
               >
                 <Text style={styles.acctName}>{a.displayName ?? a.email}</Text>
-                <Caps size={14} color={K.ink3}>›</Caps>
+                <Caps size={14} color={t.ink3}>›</Caps>
               </Pressable>
             ))}
           </>
@@ -118,34 +134,38 @@ export default function YouScreen() {
 }
 
 function Stat({ value, label }: { value: string; label: string }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View style={styles.stat}>
-      <Numeral size={36} color={K.goldHi}>{value}</Numeral>
-      <Caps size={8} ls={1.4} color={K.ink3}>{label}</Caps>
+      <Numeral size={36} color={t.goldHi}>{value}</Numeral>
+      <Caps size={8} ls={1.4} color={t.ink3}>{label}</Caps>
     </View>
   );
 }
 
 function SettingRow({ label, onPress }: { label: string; onPress?: () => void }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <Pressable onPress={onPress}>
       <Register>
         <Text style={styles.rowLabel}>{label}</Text>
-        <Caps size={14} color={K.ink3}>{onPress ? '›' : ''}</Caps>
+        <Caps size={14} color={t.ink3}>{onPress ? '›' : ''}</Caps>
       </Register>
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: Palette) => StyleSheet.create({
   head: { marginTop: 10, marginBottom: 8 },
-  name: { fontFamily: font.display, fontSize: 36, color: K.parch },
-  stats: { flexDirection: 'row', marginVertical: 18, borderTopWidth: 1, borderBottomWidth: 1, borderColor: K.ruleDim, paddingVertical: 16 },
+  name: { fontFamily: font.display, fontSize: 36, color: t.parch },
+  stats: { flexDirection: 'row', marginVertical: 18, borderTopWidth: 1, borderBottomWidth: 1, borderColor: t.ruleDim, paddingVertical: 16 },
   stat: { flex: 1, alignItems: 'center', gap: 2 },
   marks: { flexDirection: 'row', flexWrap: 'wrap' },
-  mark: { width: '33.33%', alignItems: 'center', gap: 6, paddingVertical: 16, borderWidth: 1, borderColor: K.ruleDim, marginLeft: -1, marginTop: -1 },
+  mark: { width: '33.33%', alignItems: 'center', gap: 6, paddingVertical: 16, borderWidth: 1, borderColor: t.ruleDim, marginLeft: -1, marginTop: -1 },
   markGlyph: { fontFamily: font.display, fontSize: 26 },
-  rowLabel: { flex: 1, fontFamily: font.display, fontSize: 19, color: K.parch },
-  acctRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: K.ruleDim },
-  acctName: { flex: 1, fontFamily: font.display, fontSize: 19, color: K.parch },
+  rowLabel: { flex: 1, fontFamily: font.display, fontSize: 19, color: t.parch },
+  acctRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
+  acctName: { flex: 1, fontFamily: font.display, fontSize: 19, color: t.parch },
 });

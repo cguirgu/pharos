@@ -5,7 +5,8 @@
  */
 import React from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
-import { K } from '../theme';
+import { type Palette } from '../theme';
+import { useStyles, useThemeColors } from '../useStyles';
 import { Caps } from './primitives';
 
 export interface NavTab {
@@ -22,19 +23,21 @@ export function NavLedger({
   active: string;
   onPress: (key: string) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View style={styles.bar}>
-      {tabs.map((t, i) => {
-        const isActive = t.key === active;
+      {tabs.map((tab, i) => {
+        const isActive = tab.key === active;
         return (
           <Pressable
-            key={t.key}
-            onPress={() => onPress(t.key)}
+            key={tab.key}
+            onPress={() => onPress(tab.key)}
             style={[styles.col, i > 0 && styles.divider]}
           >
-            <View style={[styles.marker, { backgroundColor: isActive ? K.goldHi : 'transparent' }]} />
-            <Caps size={9} ls={1.6} color={isActive ? K.goldHi : K.ink3}>
-              {t.label}
+            <View style={[styles.marker, { backgroundColor: isActive ? t.goldHi : 'transparent' }]} />
+            <Caps size={9} ls={1.6} color={isActive ? t.goldHi : t.ink3}>
+              {tab.label}
             </Caps>
           </Pressable>
         );
@@ -43,14 +46,14 @@ export function NavLedger({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: Palette) => StyleSheet.create({
   bar: {
     flexDirection: 'row',
     borderTopWidth: 1,
-    borderTopColor: K.rule,
-    backgroundColor: K.bg,
+    borderTopColor: t.rule,
+    backgroundColor: t.bg,
   },
   col: { flex: 1, alignItems: 'center', paddingTop: 10, paddingBottom: 8, gap: 6 },
-  divider: { borderLeftWidth: 1, borderLeftColor: K.ruleDim },
+  divider: { borderLeftWidth: 1, borderLeftColor: t.ruleDim },
   marker: { width: 6, height: 6, transform: [{ rotate: '45deg' }] },
 });
