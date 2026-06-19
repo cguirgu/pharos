@@ -49,6 +49,16 @@ const config: ExpoConfig = {
     },
   },
   plugins: [
+    // Build Google pods (GoogleSignIn → AppCheckCore → GoogleUtilities,
+    // RecaptchaInterop) as static frameworks so the Swift pods get module maps.
+    // Without this, `pod install` fails: those C pods "do not define modules"
+    // and can't be linked as static libraries.
+    [
+      'expo-build-properties',
+      {
+        ios: { useFrameworks: 'static' },
+      },
+    ],
     'expo-router',
     'expo-sqlite',
     'expo-audio',
