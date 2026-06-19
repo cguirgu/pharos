@@ -47,6 +47,15 @@ const config: ExpoConfig = {
         color: '#C9A84A', // gold accent on Android
       },
     ],
+    'expo-secure-store',
+    [
+      '@react-native-google-signin/google-signin',
+      {
+        // The iOS reversed-client-id URL scheme (from the Google iOS OAuth
+        // client). Provide via the GOOGLE_IOS_URL_SCHEME env / EAS secret.
+        iosUrlScheme: process.env.GOOGLE_IOS_URL_SCHEME ?? 'com.googleusercontent.apps.PLACEHOLDER',
+      },
+    ],
   ],
   // typedRoutes is intentionally OFF: its generated route union only refreshes
   // under `expo start`, which made `tsc` reject valid new routes. Hrefs are
@@ -58,6 +67,14 @@ const config: ExpoConfig = {
     eas: {
       projectId: 'eab8c3fa-f2dc-498b-a065-91f799b0930d',
     },
+    // Backend + auth keys (injected from env / EAS secrets; never committed).
+    // When supabaseUrl + supabaseAnonKey are present the app runs against
+    // Supabase with Google sign-in; otherwise it falls back to the local dev
+    // store + a local dev sign-in (so it still runs in Expo Go without keys).
+    supabaseUrl: process.env.SUPABASE_URL ?? null,
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY ?? null,
+    googleIosClientId: process.env.GOOGLE_IOS_CLIENT_ID ?? null,
+    googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID ?? null,
   },
 };
 

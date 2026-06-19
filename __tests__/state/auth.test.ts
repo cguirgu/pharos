@@ -1,6 +1,7 @@
 /**
- * Auth store tests (MemoryRepo): account creation, sign-in, session restore,
- * onboarding, and per-account data isolation — the multi-account testbed logic.
+ * Auth store tests (MemoryRepo, unconfigured = local dev path): the single
+ * signed-in user, session restore, onboarding, and per-account data wiring.
+ * (Google/Supabase paths require keys + a device and are owner-verified.)
  */
 import { useAuth } from '../../src/state/auth';
 import { useRule } from '../../src/state/rule';
@@ -14,45 +15,27 @@ beforeEach(async () => {
 
 const auth = () => useAuth.getState();
 
-test('sign-up creates an account, opens a session, and is not yet onboarded', async () => {
-  const res = await auth().signUp('Mina@Example.com', 'lamp1');
-  expect(res.ok).toBe(true);
-  const acc = auth().account!;
-  expect(acc.email).toBe('mina@example.com'); // normalized
-  expect(acc.onboardingComplete).toBe(false);
-  expect(auth().accounts).toHaveLength(1);
+test('starts loaded and signed out', () => {
+  expect(auth().loaded).toBe(true);
+  expect(auth().account).toBeNull();
 });
 
-test('rejects duplicate email, bad email, and weak password', async () => {
-  await auth().signUp('a@x.com', 'lamp1');
-  expect(await auth().signUp('A@x.com', 'other')).toEqual({ ok: false, error: 'email-taken' });
-  expect(await auth().signUp('nope', 'lamp1')).toEqual({ ok: false, error: 'invalid-email' });
-  expect(await auth().signUp('b@x.com', 'no')).toEqual({ ok: false, error: 'weak-password' });
+test('sign-in opens a session, not yet onboarded', async () => {
+  const ok = await auth().signInWithGoogle();
+  expect(ok).toBe(true);
+  expect(auth().account).not.toBeNull();
+  expect(auth().account?.onboardingComplete).toBe(false);
 });
 
-test('sign-in verifies the password', async () => {
-  await auth().signUp('a@x.com', 'lamp1');
-  await auth().signOut();
-  expect(await auth().signIn('a@x.com', 'wrong')).toEqual({ ok: false, error: 'invalid-credentials' });
-  const res = await auth().signIn('a@x.com', 'lamp1');
-  expect(res.ok).toBe(true);
-  expect(auth().account?.email).toBe('a@x.com');
-});
-
-test('session is restored on a fresh load', async () => {
-  await auth().signUp('a@x.com', 'lamp1');
-  // Simulate app relaunch: reload from the same repo.
-  await auth().load();
-  expect(auth().account?.email).toBe('a@x.com');
+test('the session is restored on a fresh load', async () => {
+  await auth().signInWithGoogle();
+  await auth().load(); // simulate relaunch against the same repo
+  expect(auth().account).not.toBeNull();
 });
 
 test('completeOnboarding writes the profile and creates the chosen rule', async () => {
-  await auth().signUp('a@x.com', 'lamp1');
-  await auth().completeOnboarding({
-    displayName: 'Mina',
-    journeyStage: 'returning',
-    selection: ['agpeya', 'word'],
-  });
+  await auth().signInWithGoogle();
+  await auth().completeOnboarding({ displayName: 'Mina', journeyStage: 'returning', selection: ['agpeya', 'word'] });
   const acc = auth().account!;
   expect(acc.displayName).toBe('Mina');
   expect(acc.journeyStage).toBe('returning');
@@ -60,21 +43,15 @@ test('completeOnboarding writes the profile and creates the chosen rule', async 
   expect(useRule.getState().practices.map((p) => p.name)).toEqual(['Pray the Agpeya', 'Read the Word']);
 });
 
-test('accounts are fully isolated', async () => {
-  const a = await auth().signUp('a@x.com', 'lamp1');
-  expect(a.ok).toBe(true);
+test('sign-out clears data; signing back in restores it', async () => {
+  await auth().signInWithGoogle();
   await auth().completeOnboarding({ displayName: 'A', journeyStage: 'returning', selection: ['agpeya'] });
   expect(useRule.getState().practices).toHaveLength(1);
-  const accAId = a.ok ? a.account.id : '';
 
   await auth().signOut();
+  expect(auth().account).toBeNull();
   expect(useRule.getState().practices).toHaveLength(0);
 
-  await auth().signUp('b@x.com', 'lamp2');
-  expect(useRule.getState().practices).toHaveLength(0); // fresh account, empty rule
-  await auth().completeOnboarding({ displayName: 'B', journeyStage: 'exploring', selection: ['word', 'fasts'] });
-  expect(useRule.getState().practices).toHaveLength(2);
-
-  await auth().switchAccount(accAId); // back to A
-  expect(useRule.getState().practices.map((p) => p.name)).toEqual(['Pray the Agpeya']);
+  await auth().signInWithGoogle();
+  expect(useRule.getState().practices).toHaveLength(1); // same account, data persisted
 });

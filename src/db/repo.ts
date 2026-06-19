@@ -299,9 +299,26 @@ export class MemoryRepo implements Repo {
 
 let repo: Repo | null = null;
 
-/** The active repository for this platform (SQLite on device, memory elsewhere). */
+/**
+ * The active repository. Supabase when configured (online-first, RLS-scoped),
+ * otherwise the local store (SQLite on device, memory on web/tests) — so the app
+ * still runs in Expo Go / dev without backend keys.
+ */
 export function getRepo(): Repo {
   if (repo) return repo;
+  // Lazy require so the Supabase client (and its native deps) load only when needed.
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { isBackendConfigured } = require('../lib/config') as typeof import('../lib/config');
+    if (isBackendConfigured()) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { SupabaseRepo } = require('./supabaseRepo') as typeof import('./supabaseRepo');
+      repo = new SupabaseRepo();
+      return repo;
+    }
+  } catch {
+    // fall through to the local repo
+  }
   if (Platform.OS === 'web' || Platform.OS === 'windows' || Platform.OS === 'macos') {
     repo = new MemoryRepo();
   } else {

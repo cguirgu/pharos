@@ -33,7 +33,7 @@ export default function YouScreen() {
   const router = useRouter();
   const themeMode = useTheme((s) => s.mode);
   const setThemeMode = useTheme((s) => s.setMode);
-  const { account, accounts, signOut, switchAccount } = useAuth();
+  const { account, signOut } = useAuth();
   const today = useClock((s) => s.today);
   const practices = useRule((s) => s.practices);
   const logs = useRule((s) => s.logs);
@@ -41,7 +41,6 @@ export default function YouScreen() {
   const journalCount = useJournal((s) => s.entries.length);
   const planDaysCompleted = useReading((s) => s.totalDaysKept());
   const officeTotal = useOffices((s) => s.total);
-  const others = accounts.filter((a) => a.id !== account?.id);
 
   const logsByPractice = useMemo(() => {
     const out: Record<string, PracticeLog[]> = {};
@@ -105,31 +104,9 @@ export default function YouScreen() {
         <SettingRow label={copy.you.fastingNuance} />
         <SettingRow label={copy.you.about} onPress={() => router.push('/you/about')} />
 
-        {/* accounts */}
-        {others.length > 0 ? (
-          <>
-            <Rubric>{copy.you.switch}</Rubric>
-            {others.map((a) => (
-              <Pressable
-                key={a.id}
-                style={styles.acctRow}
-                onPress={async () => {
-                  await switchAccount(a.id);
-                  router.replace(a.onboardingComplete ? '/(tabs)/today' : '/onboarding');
-                }}
-              >
-                <Text style={styles.acctName}>{a.displayName ?? a.email}</Text>
-                <Caps size={14} color={t.ink3}>›</Caps>
-              </Pressable>
-            ))}
-          </>
-        ) : null}
-
         <View style={{ height: 24 }} />
-        <Btn kind="line" onPress={() => router.push('/auth/sign-up')}>{copy.you.addAccount}</Btn>
         <Btn
           kind="rubric"
-          style={{ marginTop: 10 }}
           onPress={async () => {
             await signOut();
             router.replace('/auth/welcome');

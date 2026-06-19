@@ -55,6 +55,9 @@ export const copy = {
     promise:
       'A guiding light into the faith of the Copts — prayer, fasting, and the Word, one day at a time.',
     begin: 'Begin the journey',
+    continueGoogle: 'Continue with Google',
+    signingIn: 'Signing in…',
+    signInError: 'Sign-in did not complete. Please try again.',
     haveAccount: 'I already keep an account',
     signUpTitle: 'Keep an account',
     signUpSub: 'It stays on this device. No sharing, no noise.',

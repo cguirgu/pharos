@@ -1,15 +1,13 @@
 /**
- * Auth store — local, multi-account, swappable. This is the seam where a real
- * backend (e.g. Supabase) would slot in later; for now everything is stored in
- * the device repo. Credentials are local/test-only (src/platform/hash.ts).
- *
- * On every account change it drives `useRule` (load that account's rule, or
- * clear on sign-out), keeping the two stores in sync.
+ * Auth store — Google sign-in via Supabase. When the backend is configured
+ * (keys present) it signs in with Google and a single signed-in user maps to a
+ * Supabase session + `profiles` row. When NOT configured it falls back to a
+ * local dev sign-in against the device store, so the app still runs in Expo Go
+ * without keys. Either way, account changes drive every per-account store.
  */
 import { create } from 'zustand';
 import { getRepo, type Account, type JourneyStage } from '../db/repo';
-import { id } from '../platform/id';
-import { makeSalt, hashPassword, verifyPassword } from '../platform/hash';
+import { isBackendConfigured } from '../lib/config';
 import { starterPractices, type StarterKey } from '../db/seed';
 import { useRule } from './rule';
 import { useJournal } from './journal';
@@ -18,6 +16,8 @@ import { useOffices } from './offices';
 import { useHighlights } from './highlights';
 import { useLearning } from './learning';
 import { useClock } from './clock';
+
+const DEV_ACCOUNT_ID = 'dev-local';
 
 /** Load all per-account data (rule + journal + reading + offices + highlights + learn). */
 async function loadAccountData(accountId: string): Promise<void> {
@@ -40,9 +40,6 @@ function clearAccountData(): void {
   useLearning.getState().clear();
 }
 
-export type AuthError = 'email-taken' | 'invalid-credentials' | 'invalid-email' | 'weak-password';
-export type AuthResult = { ok: true; account: Account } | { ok: false; error: AuthError };
-
 export interface OnboardingInput {
   displayName: string;
   journeyStage: JourneyStage;
@@ -52,91 +49,127 @@ export interface OnboardingInput {
 interface AuthState {
   loaded: boolean;
   account: Account | null;
-  accounts: Account[];
+  signingIn: boolean;
+  authError: string | null;
 
   load: () => Promise<void>;
-  refreshAccounts: () => Promise<void>;
-  signUp: (email: string, password: string) => Promise<AuthResult>;
-  signIn: (email: string, password: string) => Promise<AuthResult>;
+  signInWithGoogle: () => Promise<boolean>;
   signOut: () => Promise<void>;
-  switchAccount: (accountId: string) => Promise<void>;
   completeOnboarding: (input: OnboardingInput) => Promise<void>;
 }
 
-const isEmail = (e: string) => /^\S+@\S+\.\S+$/.test(e.trim());
-const MIN_PASSWORD = 4; // local testbed minimum
+/** Build the app Account from the Supabase session user (profile row, or a fallback). */
+async function accountFromSupabase(userId: string, email: string | null, name: string | null): Promise<Account> {
+  const profile = await getRepo().getAccount(userId);
+  if (profile) return profile;
+  return {
+    id: userId,
+    email: email ?? '',
+    passwordHash: '',
+    salt: '',
+    createdAt: Date.now(),
+    displayName: name,
+    journeyStage: null,
+    onboardingComplete: false,
+  };
+}
 
-export const useAuth = create<AuthState>((set, get) => ({
-  loaded: false,
-  account: null,
-  accounts: [],
-
-  load: async () => {
-    const repo = getRepo();
-    await repo.init();
-    const accounts = await repo.listAccounts();
-    const sessionId = await repo.getSession();
-    const account = sessionId ? await repo.getAccount(sessionId) : null;
-    if (account) await loadAccountData(account.id);
-    set({ loaded: true, account, accounts });
-  },
-
-  refreshAccounts: async () => {
-    set({ accounts: await getRepo().listAccounts() });
-  },
-
-  signUp: async (email, password) => {
-    if (!isEmail(email)) return { ok: false, error: 'invalid-email' };
-    if (password.length < MIN_PASSWORD) return { ok: false, error: 'weak-password' };
-    const repo = getRepo();
-    if (await repo.findAccountByEmail(email)) return { ok: false, error: 'email-taken' };
-
-    const salt = makeSalt();
-    const account: Account = {
-      id: id(),
-      email: email.trim().toLowerCase(),
-      passwordHash: hashPassword(password, salt),
-      salt,
+/** Ensure (and return) the single local dev account for the unconfigured fallback. */
+async function ensureDevAccount(): Promise<Account> {
+  const repo = getRepo();
+  let account = await repo.getAccount(DEV_ACCOUNT_ID);
+  if (!account) {
+    account = {
+      id: DEV_ACCOUNT_ID,
+      email: 'dev@local',
+      passwordHash: '',
+      salt: '',
       createdAt: Date.now(),
       displayName: null,
       journeyStage: null,
       onboardingComplete: false,
     };
     await repo.createAccount(account);
-    await repo.setSession(account.id);
-    clearAccountData();
-    await loadAccountData(account.id); // empty data for the new account
-    await get().refreshAccounts();
-    set({ account });
-    return { ok: true, account };
+  }
+  return account;
+}
+
+export const useAuth = create<AuthState>((set, get) => ({
+  loaded: false,
+  account: null,
+  signingIn: false,
+  authError: null,
+
+  load: async () => {
+    const repo = getRepo();
+    await repo.init();
+    let account: Account | null = null;
+    if (isBackendConfigured()) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
+      const { data } = await getSupabase().auth.getSession();
+      const user = data.session?.user;
+      if (user) {
+        account = await accountFromSupabase(user.id, user.email ?? null, (user.user_metadata?.full_name as string) ?? null);
+        await loadAccountData(user.id);
+      }
+    } else {
+      const sessionId = await repo.getSession();
+      account = sessionId ? await repo.getAccount(sessionId) : null;
+      if (account) await loadAccountData(account.id);
+    }
+    set({ loaded: true, account });
   },
 
-  signIn: async (email, password) => {
-    if (!isEmail(email)) return { ok: false, error: 'invalid-email' };
-    const repo = getRepo();
-    const account = await repo.findAccountByEmail(email);
-    if (!account || !verifyPassword(password, account.salt, account.passwordHash)) {
-      return { ok: false, error: 'invalid-credentials' };
+  signInWithGoogle: async () => {
+    set({ signingIn: true, authError: null });
+    try {
+      if (isBackendConfigured()) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { signInWithGoogle } = require('../platform/googleAuth') as typeof import('../platform/googleAuth');
+        const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
+        const res = await signInWithGoogle();
+        if (!res.ok) {
+          set({ authError: res.error === 'cancelled' ? null : res.error });
+          return false;
+        }
+        const { data } = await getSupabase().auth.getUser();
+        const account = await accountFromSupabase(res.userId, data.user?.email ?? null, (data.user?.user_metadata?.full_name as string) ?? null);
+        clearAccountData();
+        await loadAccountData(res.userId);
+        set({ account });
+        return true;
+      }
+      // dev fallback (no keys) — one local account, no real auth
+      const account = await ensureDevAccount();
+      await getRepo().setSession(account.id);
+      clearAccountData();
+      await loadAccountData(account.id);
+      set({ account });
+      return true;
+    } catch (e) {
+      set({ authError: e instanceof Error ? e.message : 'Sign-in failed' });
+      return false;
+    } finally {
+      set({ signingIn: false });
     }
-    await repo.setSession(account.id);
-    await loadAccountData(account.id);
-    set({ account });
-    return { ok: true, account };
   },
 
   signOut: async () => {
-    await getRepo().setSession(null);
-    clearAccountData();
-    set({ account: null });
-  },
-
-  switchAccount: async (accountId) => {
-    const repo = getRepo();
-    const account = await repo.getAccount(accountId);
-    if (!account) return;
-    await repo.setSession(account.id);
-    await loadAccountData(account.id);
-    set({ account });
+    try {
+      if (isBackendConfigured()) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
+        const { googleSignOut } = require('../platform/googleAuth') as typeof import('../platform/googleAuth');
+        await getSupabase().auth.signOut();
+        await googleSignOut();
+      } else {
+        await getRepo().setSession(null);
+      }
+    } finally {
+      clearAccountData();
+      set({ account: null });
+    }
   },
 
   completeOnboarding: async ({ displayName, journeyStage, selection }) => {
@@ -155,7 +188,6 @@ export const useAuth = create<AuthState>((set, get) => ({
     };
     await repo.updateAccount(updated);
     await loadAccountData(current.id);
-    await get().refreshAccounts();
     set({ account: updated });
   },
 }));

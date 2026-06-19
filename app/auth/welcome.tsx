@@ -2,7 +2,7 @@
  * Welcome (from OnbWelcome2): the seal, the promise, and the way in.
  */
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Page } from '../../src/ui/Page';
@@ -11,6 +11,7 @@ import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { useResponsive } from '../../src/ui/useResponsive';
 import { copy } from '../../src/ui/copy';
+import { useAuth } from '../../src/state/auth';
 
 export default function Welcome() {
   const router = useRouter();
@@ -19,6 +20,14 @@ export default function Welcome() {
   const r = useResponsive();
   const insets = useSafeAreaInsets();
   const wordmarkSize = r.scale(64);
+  const signInWithGoogle = useAuth((s) => s.signInWithGoogle);
+  const signingIn = useAuth((s) => s.signingIn);
+  const authError = useAuth((s) => s.authError);
+
+  const onGoogle = async () => {
+    const ok = await signInWithGoogle();
+    if (ok) router.replace('/'); // the routing gate sends to onboarding or the tabs
+  };
   return (
     <Page>
       <View style={styles.top}>
@@ -34,14 +43,14 @@ export default function Welcome() {
         <Text style={[styles.promise, { fontSize: r.scale(22), maxWidth: r.textWidth }]}>{copy.auth.promise}</Text>
       </View>
       <View style={[styles.bottom, { paddingBottom: insets.bottom + 8 }]}>
-        <Btn kind="solid" onPress={() => router.push('/auth/sign-up')}>
-          {copy.auth.begin}
+        <Btn kind="solid" onPress={onGoogle} disabled={signingIn}>
+          {signingIn ? copy.auth.signingIn : copy.auth.continueGoogle}
         </Btn>
-        <Pressable onPress={() => router.push('/auth/sign-in')} style={styles.link} hitSlop={8}>
-          <Caps size={10} ls={1.6} color={t.ink3}>
-            {copy.auth.haveAccount}
-          </Caps>
-        </Pressable>
+        {authError ? (
+          <View style={styles.link}>
+            <Caps size={9} ls={1.4} color={t.rubricHi}>{copy.auth.signInError}</Caps>
+          </View>
+        ) : null}
       </View>
     </Page>
   );
