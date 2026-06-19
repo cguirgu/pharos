@@ -85,6 +85,90 @@ export const WORD_UNITS: readonly WordUnit[] = [
       { id: 'tenouosht', coptic: 'ⲧⲉⲛⲟⲩⲱϣⲧ', translit: 'tenouōsht', sound: 'ten-oo-OSHT', english: 'We worship' },
     ],
   },
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Extended vocabulary (7 units · 21 words). Same accuracy discipline as above:
+  // TODO(verify-content): owner (Coptic Orthodox) review of spellings, glosses,
+  // and Greco-Bohairic pronunciations. Exact spellings are locked in
+  // __tests__/learn/alphabet.test.ts so any correction is a single guarded edit.
+  // ───────────────────────────────────────────────────────────────────────────
+  {
+    id: 'faith',
+    title: 'Words of Faith',
+    subtitle: 'Mercy, love, and faith — the heart of every prayer.',
+    glyph: 'Ⲍ',
+    words: [
+      { id: 'nai', coptic: 'ⲛⲁⲓ', translit: 'nai', sound: 'NA-i', english: 'mercy / have mercy' },
+      { id: 'agapi', coptic: 'ⲁⲅⲁⲡⲏ', translit: 'agapē', sound: 'a-GHA-pi', english: 'love' },
+      { id: 'pistis', coptic: 'ⲡⲓⲥⲧⲓⲥ', translit: 'pistis', sound: 'PIS-tis', english: 'faith' },
+    ],
+  },
+  {
+    id: 'light',
+    title: 'Light & Life',
+    subtitle: 'What the Lord gives to the world.',
+    glyph: 'Ⲏ',
+    words: [
+      { id: 'ouoini', coptic: 'ⲟⲩⲱⲓⲛⲓ', translit: 'ouōini', sound: 'oo-OH-ee-ni', english: 'light' },
+      { id: 'onkh', coptic: 'ⲱⲛϧ', translit: 'ōnkh', sound: 'OHNKH', english: 'life' },
+      { id: 'sotir', coptic: 'ⲥⲱⲧⲏⲣ', translit: 'sōtēr', sound: 'soh-TEER', english: 'Saviour' },
+    ],
+  },
+  {
+    id: 'saints',
+    title: 'The Holy Ones',
+    subtitle: 'The cloud of witnesses named in the church.',
+    glyph: 'Ⲑ',
+    words: [
+      { id: 'apostolos', coptic: 'ⲁⲡⲟⲥⲧⲟⲗⲟⲥ', translit: 'apostolos', sound: 'a-PO-sto-los', english: 'apostle' },
+      { id: 'martyros', coptic: 'ⲙⲁⲣⲧⲩⲣⲟⲥ', translit: 'martyros', sound: 'mar-TI-ros', english: 'martyr' },
+      { id: 'ethouab', coptic: 'ⲉⲑⲟⲩⲁⲃ', translit: 'ethouab', sound: 'eth-oo-AB', english: 'holy / saint' },
+    ],
+  },
+  {
+    id: 'kingdom',
+    title: 'Heaven & Kingdom',
+    subtitle: 'Where the prayers are lifted.',
+    glyph: 'Ⲓ',
+    words: [
+      { id: 'tfe', coptic: 'ⲧⲫⲉ', translit: 'tfe', sound: 'et-FEH', english: 'the heaven' },
+      { id: 'metouro', coptic: 'ⲙⲉⲧⲟⲩⲣⲟ', translit: 'metouro', sound: 'met-OO-ro', english: 'kingdom' },
+      { id: 'stavros', coptic: 'ⲥⲧⲁⲩⲣⲟⲥ', translit: 'stavros', sound: 'es-TAV-ros', english: 'the cross' },
+    ],
+  },
+  {
+    id: 'praises2',
+    title: 'Songs of Praise',
+    subtitle: 'How the people lift up their voice.',
+    glyph: 'Ⲕ',
+    words: [
+      { id: 'tenhos', coptic: 'ⲧⲉⲛϩⲱⲥ', translit: 'tenhōs', sound: 'ten-HOHS', english: 'we praise' },
+      { id: 'axios', coptic: 'ⲁⲝⲓⲟⲥ', translit: 'axios', sound: 'AK-si-os', english: 'worthy' },
+      { id: 'osanna', coptic: 'ⲱⲥⲁⲛⲛⲁ', translit: 'ōsanna', sound: 'oh-SAN-na', english: 'Hosanna' },
+    ],
+  },
+  {
+    id: 'responses',
+    title: 'Words We Reply',
+    subtitle: 'The answers the people give in the prayers.',
+    glyph: 'Ⲗ',
+    words: [
+      { id: 'alithos', coptic: 'ⲁⲗⲏⲑⲱⲥ', translit: 'alēthōs', sound: 'a-lee-THOHS', english: 'truly' },
+      { id: 'palin', coptic: 'ⲡⲁⲗⲓⲛ', translit: 'palin', sound: 'PA-lin', english: 'again' },
+      { id: 'doxa-si', coptic: 'ⲇⲟⲝⲁ ⲥⲓ', translit: 'doxa si', sound: 'DOK-sa see', english: 'Glory to You' },
+    ],
+  },
+  {
+    id: 'feasts',
+    title: 'Word of the Feast',
+    subtitle: 'The joy proclaimed on the great days.',
+    glyph: 'Ⲙ',
+    words: [
+      { id: 'aftonf', coptic: 'ⲁϥⲧⲱⲛϥ', translit: 'aftōnf', sound: 'af-TOHNF', english: 'He is risen' },
+      { id: 'emmanouil', coptic: 'ⲉⲙⲙⲁⲛⲟⲩⲏⲗ', translit: 'emmanouēl', sound: 'em-ma-noo-EEL', english: 'Emmanuel' },
+      { id: 'piouro', coptic: 'ⲡⲓⲟⲩⲣⲟ', translit: 'piouro', sound: 'pi-OO-ro', english: 'the King' },
+    ],
+  },
 ];
 
 /** Flat list of every word, across all units. */

@@ -12,18 +12,32 @@ import {
   courseLevel,
   xpFor,
   isLessonUnlocked,
+  gradedCount,
 } from '../../src/domain/learn/course';
 import { ALPHABET } from '../../src/domain/learn/alphabet';
 import { WORDS } from '../../src/domain/learn/words';
 
 describe('course structure', () => {
-  test('alphabet unit + word units; alphabet covers all 32 letters; word lessons cover all words', () => {
+  test('alphabet unit + sounds bridge + word units; alphabet covers all 32 letters; word lessons cover all words', () => {
     expect(UNITS[0]!.id).toBe('alphabet');
-    expect(UNITS.map((u) => u.id)).toEqual(['alphabet', 'words', 'names', 'liturgy', 'praise']);
+    expect(UNITS.map((u) => u.id)).toEqual([
+      'alphabet', 'sounds', 'words', 'names', 'liturgy', 'praise',
+      'faith', 'light', 'saints', 'kingdom', 'praises2', 'responses', 'feasts',
+    ]);
     const alphaIds = LESSONS.filter((l) => l.unitId === 'alphabet').flatMap((l) => l.itemIds);
     expect(alphaIds).toEqual(ALPHABET.map((l) => l.id));
     const wordIds = LESSONS.filter((l) => l.itemKind === 'word').flatMap((l) => l.itemIds);
     expect(wordIds).toEqual(WORDS.map((w) => w.id));
+  });
+
+  test('the "sounds" bridge sits between the alphabet and the words', () => {
+    const ids = UNITS.map((u) => u.id);
+    expect(ids.indexOf('alphabet')).toBeLessThan(ids.indexOf('sounds'));
+    expect(ids.indexOf('sounds')).toBeLessThan(ids.indexOf('words'));
+    // and there are exactly 3 bridge lessons + 7 new vocab lessons = 10 new levels
+    expect(LESSONS.filter((l) => l.unitId === 'sounds')).toHaveLength(3);
+    const newVocab = ['faith', 'light', 'saints', 'kingdom', 'praises2', 'responses', 'feasts'];
+    expect(LESSONS.filter((l) => newVocab.includes(l.unitId))).toHaveLength(7);
   });
 
   test('every unit declares a glyph and its lessons exist', () => {
@@ -46,6 +60,7 @@ describe('exercise generation', () => {
       expect(exercises.length).toBeGreaterThan(0);
       for (const ex of exercises) {
         if (ex.kind === 'word-spell') continue; // spelling uses tiles, not options
+        if (ex.kind === 'concept') continue; // teaching card, not a question
         expect(ex.options).toHaveLength(4);
         expect(new Set(ex.options).size).toBe(4); // distinct
         expect(ex.options).toContain(ex.answer);
@@ -80,6 +95,29 @@ describe('exercise generation', () => {
     const a = lessonExercises(lessonById('words-1')!);
     const b = lessonExercises(lessonById('words-1')!);
     expect(a.map((e) => [...e.options, ...(e.tiles ?? [])])).toEqual(b.map((e) => [...e.options, ...(e.tiles ?? [])]));
+  });
+
+  test('each bridge lesson leads with a concept (teaching) card', () => {
+    for (const lesson of LESSONS.filter((l) => l.itemKind === 'combo')) {
+      expect(lessonExercises(lesson)[0]!.kind).toBe('concept');
+    }
+  });
+
+  test('concept cards are not graded; combo questions have 4 distinct options', () => {
+    const combos = LESSONS.filter((l) => l.itemKind === 'combo').flatMap(lessonExercises);
+    const concepts = combos.filter((e) => e.kind === 'concept');
+    expect(concepts.length).toBeGreaterThan(0);
+    for (const lesson of LESSONS.filter((l) => l.itemKind === 'combo')) {
+      const exs = lessonExercises(lesson);
+      // graded count excludes the concept cards
+      expect(gradedCount(exs)).toBe(exs.filter((e) => e.kind !== 'concept').length);
+      expect(gradedCount(exs)).toBeLessThan(exs.length);
+    }
+    for (const ex of combos.filter((e) => e.kind === 'combo-sound' || e.kind === 'combo-read')) {
+      expect(ex.options).toHaveLength(4);
+      expect(new Set(ex.options).size).toBe(4);
+      expect(ex.options).toContain(ex.answer);
+    }
   });
 
   test('the numeral Soou gets no sound exercise', () => {

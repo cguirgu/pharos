@@ -118,5 +118,33 @@ describe('Coptic words', () => {
     expect(byId['shere']).toBe('ⲭⲉⲣⲉ');
     expect(byId['esmou']).toBe('ⲥⲙⲟⲩ');
     expect(byId['tenouosht']).toBe('ⲧⲉⲛⲟⲩⲱϣⲧ');
+    // Extended vocabulary (TODO(verify-content): owner review) — Words of Faith
+    expect(byId['nai']).toBe('ⲛⲁⲓ');
+    expect(byId['agapi']).toBe('ⲁⲅⲁⲡⲏ');
+    expect(byId['pistis']).toBe('ⲡⲓⲥⲧⲓⲥ');
+    // Light & Life
+    expect(byId['ouoini']).toBe('ⲟⲩⲱⲓⲛⲓ');
+    expect(byId['onkh']).toBe('ⲱⲛϧ');
+    expect(byId['sotir']).toBe('ⲥⲱⲧⲏⲣ');
+    // The Holy Ones
+    expect(byId['apostolos']).toBe('ⲁⲡⲟⲥⲧⲟⲗⲟⲥ');
+    expect(byId['martyros']).toBe('ⲙⲁⲣⲧⲩⲣⲟⲥ');
+    expect(byId['ethouab']).toBe('ⲉⲑⲟⲩⲁⲃ');
+    // Heaven & Kingdom
+    expect(byId['tfe']).toBe('ⲧⲫⲉ');
+    expect(byId['metouro']).toBe('ⲙⲉⲧⲟⲩⲣⲟ');
+    expect(byId['stavros']).toBe('ⲥⲧⲁⲩⲣⲟⲥ');
+    // Songs of Praise
+    expect(byId['tenhos']).toBe('ⲧⲉⲛϩⲱⲥ');
+    expect(byId['axios']).toBe('ⲁⲝⲓⲟⲥ');
+    expect(byId['osanna']).toBe('ⲱⲥⲁⲛⲛⲁ');
+    // Words We Reply
+    expect(byId['alithos']).toBe('ⲁⲗⲏⲑⲱⲥ');
+    expect(byId['palin']).toBe('ⲡⲁⲗⲓⲛ');
+    expect(byId['doxa-si']).toBe('ⲇⲟⲝⲁ ⲥⲓ');
+    // Word of the Feast
+    expect(byId['aftonf']).toBe('ⲁϥⲧⲱⲛϥ');
+    expect(byId['emmanouil']).toBe('ⲉⲙⲙⲁⲛⲟⲩⲏⲗ');
+    expect(byId['piouro']).toBe('ⲡⲓⲟⲩⲣⲟ');
   });
 });

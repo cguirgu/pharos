@@ -15,7 +15,7 @@ import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 import { useClock } from '../../src/state/clock';
 import { useLearning } from '../../src/state/learning';
-import { lessonById, lessonExercises, isLessonPassed, isLessonPerfect, type Exercise } from '../../src/domain/learn/course';
+import { lessonById, lessonExercises, gradedCount, isLessonPassed, isLessonPerfect, type Exercise } from '../../src/domain/learn/course';
 import { milestonesEarnedBy, type LearnMilestone } from '../../src/domain/learn/milestones';
 import { correctFeedback, wrongFeedback } from '../../src/platform/haptics';
 import { playCorrectSound, playWrongSound, playCompleteSound, playCrownSound } from '../../src/platform/sound';
@@ -39,7 +39,8 @@ export default function LessonPlayer() {
   const lesson = lessonById(String(lessonId));
 
   const exercises = useMemo(() => (lesson ? lessonExercises(lesson) : []), [lesson]);
-  const total = exercises.length;
+  // Concept (teaching) cards aren't scored — the level is measured by its graded cards.
+  const total = gradedCount(exercises);
 
   // Mutable queue (wrong answers are appended) + answered bookkeeping in refs.
   const queueRef = useRef<Exercise[]>(exercises);
@@ -63,6 +64,7 @@ export default function LessonPlayer() {
   }
 
   const current = queueRef.current[pos]!;
+  const isConcept = current.kind === 'concept';
   const isSpell = current.kind === 'word-spell';
   const isGlyphOptions = current.kind === 'name-letter';
   const isTextPrompt = isGlyphOptions || isSpell;
@@ -170,18 +172,27 @@ export default function LessonPlayer() {
             <Pressable onPress={() => playCoptic(current.audioKey)} style={styles.audioBtn} hitSlop={8}>
               <Caps size={9} ls={1.8} color={t.goldHi}>♪ {copy.learn.listen}</Caps>
             </Pressable>
-          ) : isSpell ? null : (
+          ) : isSpell || isConcept ? null : (
             <Caps size={8} ls={1.6} color={t.ink3} style={{ marginTop: 12 }}>{copy.learn.audioSoon}</Caps>
           )}
         </View>
 
         <Fleuron />
 
-        <Caps size={10.5} ls={2.4} color={t.rubricHi} style={{ textAlign: 'center' }}>
-          {copy.learn.prompts[current.kind]}
-        </Caps>
+        {/* The rule (concept card) or the question prompt for this card. */}
+        {isConcept ? (
+          <Text style={styles.conceptBody}>{current.body}</Text>
+        ) : (
+          <Caps size={10.5} ls={2.4} color={t.rubricHi} style={{ textAlign: 'center' }}>
+            {copy.learn.prompts[current.kind]}
+          </Caps>
+        )}
 
-        {isSpell ? (
+        {isConcept ? (
+          <Btn kind="solid" style={{ marginTop: 22 }} onPress={advance}>
+            {copy.learn.gotIt}
+          </Btn>
+        ) : isSpell ? (
           <SpellPanel
             key={`${runKey}:${current.key}`}
             tiles={current.tiles ?? []}
@@ -215,7 +226,7 @@ export default function LessonPlayer() {
           </View>
         )}
 
-        {answered ? (
+        {!isConcept && answered ? (
           <View style={{ marginTop: 16, alignItems: 'center', gap: 10 }}>
             <Caps size={9} ls={1.8} color={outcome!.correct ? t.gold : t.rubricHi}>
               {outcome!.correct ? copy.learn.correct : copy.learn.wrong}
@@ -371,6 +382,7 @@ const makeStyles = (t: Palette) => StyleSheet.create({
   progress: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 6 },
   stage: { alignItems: 'center', marginTop: 30 },
   namePrompt: { fontFamily: font.display, fontSize: 44, color: t.parch, textAlign: 'center' },
+  conceptBody: { fontFamily: font.body, fontSize: 16, lineHeight: 24, color: t.parch, textAlign: 'center', paddingHorizontal: 6 },
   audioBtn: { marginTop: 14, borderWidth: 1, borderColor: t.rule, paddingVertical: 7, paddingHorizontal: 14 },
   option: { borderWidth: 1, paddingVertical: 16, paddingHorizontal: 18, alignItems: 'center' },
   optionText: { fontFamily: font.display, fontSize: 22 },

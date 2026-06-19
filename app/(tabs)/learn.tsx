@@ -61,7 +61,7 @@ export default function LearnScreen() {
           <Stat value={String(level)} label={copy.learn.level} />
           <Stat value={String(xp)} label={copy.learn.xp} />
           <Stat value={`☩${crowns.size}`} label={copy.learn.crownsLabel} />
-          <Stat value={String(milestonesEarned)} label={copy.learn.milestonesLabel} />
+          <Stat value={String(milestonesEarned)} label={copy.learn.milestonesLabel} onPress={() => router.push('/learn/milestones')} />
         </View>
 
         {/* the path */}
@@ -120,14 +120,19 @@ export default function LearnScreen() {
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Stat({ value, label, onPress }: { value: string; label: string; onPress?: () => void }) {
   const styles = useStyles(makeStyles);
   const t = useThemeColors();
-  return (
-    <View style={styles.stat}>
+  const body = (
+    <>
       <Numeral size={34} color={t.goldHi}>{value}</Numeral>
-      <Caps size={8} ls={1.4} color={t.ink3}>{label}</Caps>
-    </View>
+      <Caps size={8} ls={1.4} color={onPress ? t.gold : t.ink3}>{label}</Caps>
+    </>
+  );
+  return onPress ? (
+    <Pressable style={styles.stat} onPress={onPress} hitSlop={8}>{body}</Pressable>
+  ) : (
+    <View style={styles.stat}>{body}</View>
   );
 }
 

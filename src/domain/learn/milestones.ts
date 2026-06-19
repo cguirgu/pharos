@@ -9,10 +9,19 @@ export interface LearnMilestone {
   readonly name: string;
   readonly description: string;
   readonly earned: boolean;
+  /** A Coptic mark for the timeline node. */
+  readonly glyph?: string;
 }
+
+/** The four original liturgical-word units; everything else word-kind is extended vocabulary. */
+const CORE_WORD_UNITS = ['words', 'names', 'liturgy', 'praise'];
 
 function unitLessonIds(unitId: string): string[] {
   return LESSONS.filter((l) => l.unitId === unitId).map((l) => l.id);
+}
+
+function lessonIdsForUnits(unitIds: readonly string[]): string[] {
+  return LESSONS.filter((l) => unitIds.includes(l.unitId)).map((l) => l.id);
 }
 
 function countDone(ids: readonly string[], done: ReadonlySet<string>): number {
@@ -22,19 +31,35 @@ function countDone(ids: readonly string[], done: ReadonlySet<string>): number {
 /** Milestones are earned by PASSING lessons (≥90%), matching the unlock gate. */
 export function evaluateMilestones(passed: ReadonlySet<string>): LearnMilestone[] {
   const alphabet = unitLessonIds('alphabet');
-  const wordLessonIds = LESSONS.filter((l) => l.itemKind === 'word').map((l) => l.id);
-  const alphaDone = countDone(alphabet, passed);
-  const wordsDone = countDone(wordLessonIds, passed);
+  const sounds = unitLessonIds('sounds');
+  const coreWords = lessonIdsForUnits(CORE_WORD_UNITS);
+  const newVocab = LESSONS.filter(
+    (l) => l.itemKind === 'word' && !CORE_WORD_UNITS.includes(l.unitId),
+  ).map((l) => l.id);
 
+  const alphaDone = countDone(alphabet, passed);
+  const soundsDone = countDone(sounds, passed);
+  const coreDone = countDone(coreWords, passed);
+  const vocabDone = countDone(newVocab, passed);
+
+  // Ordered as a journey — the array order is the timeline.
   return [
-    { key: 'first-lesson', name: 'First steps', description: 'Pass your first lesson', earned: passed.size >= 1 },
-    { key: 'alphabet-half', name: 'Half the alphabet', description: 'Reach the middle of the alphabet', earned: alphaDone >= Math.ceil(alphabet.length / 2) },
-    { key: 'alphabet-complete', name: 'The whole alphabet', description: 'Learn all 32 letters', earned: alphabet.length > 0 && alphaDone === alphabet.length },
-    { key: 'first-word', name: 'First holy word', description: 'Read your first liturgical word', earned: wordsDone >= 1 },
-    { key: 'words-half', name: 'Words of worship', description: 'Learn half of the liturgical words', earned: wordLessonIds.length > 0 && wordsDone >= Math.ceil(wordLessonIds.length / 2) },
-    { key: 'words-complete', name: 'The holy words', description: 'Learn every liturgical word in the course', earned: wordLessonIds.length > 0 && wordsDone === wordLessonIds.length },
-    { key: 'course-complete', name: 'A reader of Coptic', description: 'Complete the whole course', earned: passed.size >= LESSONS.length },
+    { key: 'first-lesson', name: 'First steps', description: 'Pass your first lesson', earned: passed.size >= 1, glyph: 'Ⲁ' },
+    { key: 'alphabet-half', name: 'Half the alphabet', description: 'Reach the middle of the alphabet', earned: alphaDone >= Math.ceil(alphabet.length / 2), glyph: 'Ⲓ' },
+    { key: 'alphabet-complete', name: 'The whole alphabet', description: 'Learn all 32 letters', earned: alphabet.length > 0 && alphaDone === alphabet.length, glyph: 'Ϯ' },
+    { key: 'sounds-complete', name: 'Letters that blend', description: 'Master how the letters sound together', earned: sounds.length > 0 && soundsDone === sounds.length, glyph: 'Ⲩ' },
+    { key: 'first-word', name: 'First holy word', description: 'Read your first liturgical word', earned: coreDone >= 1, glyph: 'Ⲃ' },
+    { key: 'words-half', name: 'Words of worship', description: 'Learn half of the liturgical words', earned: coreWords.length > 0 && coreDone >= Math.ceil(coreWords.length / 2), glyph: 'Ⲅ' },
+    { key: 'words-complete', name: 'The holy words', description: 'Learn every word of the liturgy', earned: coreWords.length > 0 && coreDone === coreWords.length, glyph: 'Ⲇ' },
+    { key: 'vocab-grow', name: 'A wider tongue', description: 'Learn half of the extended vocabulary', earned: newVocab.length > 0 && vocabDone >= Math.ceil(newVocab.length / 2), glyph: 'Ⲏ' },
+    { key: 'vocab-complete', name: 'Words of the feast', description: 'Learn all the extended vocabulary', earned: newVocab.length > 0 && vocabDone === newVocab.length, glyph: 'Ⲙ' },
+    { key: 'course-complete', name: 'A reader of Coptic', description: 'Complete the whole course', earned: passed.size >= LESSONS.length, glyph: '☩' },
   ];
+}
+
+/** The next milestone still to earn (the "Next to unlock" node), or null if all are earned. */
+export function nextMilestone(passed: ReadonlySet<string>): LearnMilestone | null {
+  return evaluateMilestones(passed).find((m) => !m.earned) ?? null;
 }
 
 /** Milestones newly earned by passing `lessonId` (for the celebration). */

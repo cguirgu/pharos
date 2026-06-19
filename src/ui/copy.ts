@@ -257,7 +257,11 @@ export const copy = {
       'word-meaning': 'What does it mean?',
       'word-read': 'How is it read?',
       'word-spell': 'Spell it in Coptic',
+      'combo-sound': 'How do these letters sound?',
+      'combo-read': 'How is this word read?',
+      concept: '',
     } as Record<string, string>,
+    gotIt: 'Got it →',
     correct: 'Correct',
     wrong: 'Not quite',
     listen: 'Tap to hear',
@@ -281,6 +285,13 @@ export const copy = {
     milestoneEarned: 'Milestone earned',
     tryAgain: 'Try again',
     done: 'Done',
+    // milestones timeline screen
+    milestonesHead: 'Milestones on the way',
+    milestonesTitle: 'Milestones',
+    nextToUnlock: 'Next to unlock',
+    earnedLabel: 'Earned',
+    lockedLabel: 'Locked',
+    milestonesProgress: (a: number, b: number) => `${a} of ${b} reached`,
   },
 
   reminders: {

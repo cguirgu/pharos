@@ -10,6 +10,7 @@
  */
 import { ALPHABET, PHONETIC_LETTERS, type CopticLetter } from './alphabet';
 import { WORD_UNITS, WORDS, type CopticWord } from './words';
+import { COMBO_UNIT, COMBOS, type CopticCombo } from './combinations';
 
 export type ExerciseKind =
   | 'letter-name' // show glyph → choose its name
@@ -17,7 +18,10 @@ export type ExerciseKind =
   | 'name-letter' // show name → choose the glyph
   | 'word-meaning' // show Coptic word → choose its English meaning
   | 'word-read' // show Coptic word → choose its reading (transliteration)
-  | 'word-spell'; // show the meaning → BUILD the Coptic word from letter tiles
+  | 'word-spell' // show the meaning → BUILD the Coptic word from letter tiles
+  | 'combo-sound' // show a letter pair → choose how it sounds together
+  | 'combo-read' // show a word with the pair → choose its reading
+  | 'concept'; // a non-scored teaching card (the rule, with an example)
 
 export interface Exercise {
   readonly key: string;
@@ -30,6 +34,8 @@ export interface Exercise {
   readonly prompt: string;
   /** A scaffolding hint shown under the prompt (e.g. the transliteration for spelling). */
   readonly hint?: string;
+  /** Teaching text for a `concept` card (the rule explanation). */
+  readonly body?: string;
   /** Audio key (letter id / word id) for the optional pronunciation clip. */
   readonly audioKey: string;
   /** The correct answer (a name/sound/word, or — for `word-spell` — the full Coptic word). */
@@ -40,7 +46,7 @@ export interface Exercise {
   readonly tiles?: readonly string[];
 }
 
-export type ItemKind = 'letter' | 'word';
+export type ItemKind = 'letter' | 'word' | 'combo';
 
 export interface Lesson {
   readonly id: string;
@@ -134,6 +140,27 @@ function alphabetLessons(): Lesson[] {
   return lessons;
 }
 
+/**
+ * The combination "bridge" lessons, grouped by theme (vowel pairs · av/ev pairs ·
+ * shifting consonants) rather than fixed chunks, so each level holds one idea.
+ */
+const COMBO_GROUPS: readonly { readonly title: string; readonly ids: readonly string[] }[] = [
+  { title: 'Vowel pairs', ids: ['ou', 'oi'] },
+  { title: 'The av · ev pairs', ids: ['au', 'eu'] },
+  { title: 'Shifting consonants', ids: ['gg', 'shi', 'gh'] },
+];
+
+function comboLessons(): Lesson[] {
+  return COMBO_GROUPS.map((group, i) => ({
+    id: `sounds-${i + 1}`,
+    unitId: COMBO_UNIT.id,
+    title: group.title,
+    index: i + 1, // re-assigned globally below
+    itemKind: 'combo' as const,
+    itemIds: group.ids,
+  }));
+}
+
 /** Split the words into lessons of 3. */
 const WORD_LESSON_SIZE = 3;
 
@@ -157,12 +184,17 @@ function wordLessonsFor(unit: (typeof WORD_UNITS)[number], startIndex: number): 
 }
 
 const ALPHABET_LESSONS = alphabetLessons();
+const COMBO_LESSONS = comboLessons();
 const WORD_LESSONS: Lesson[] = [];
 for (const unit of WORD_UNITS) {
-  WORD_LESSONS.push(...wordLessonsFor(unit, ALPHABET_LESSONS.length + WORD_LESSONS.length));
+  WORD_LESSONS.push(...wordLessonsFor(unit, WORD_LESSONS.length));
 }
 
-export const LESSONS: readonly Lesson[] = [...ALPHABET_LESSONS, ...WORD_LESSONS];
+// The path: alphabet → the "Letters Together" bridge → words. `index` is
+// re-assigned by final position so it stays a clean 1..N across the whole course.
+export const LESSONS: readonly Lesson[] = [...ALPHABET_LESSONS, ...COMBO_LESSONS, ...WORD_LESSONS].map(
+  (l, i) => ({ ...l, index: i + 1 }),
+);
 
 export const UNITS: readonly Unit[] = [
   {
@@ -171,6 +203,13 @@ export const UNITS: readonly Unit[] = [
     subtitle: 'The 32 letters — recognise, name, and sound each one.',
     glyph: 'Ⲁ',
     lessonIds: ALPHABET_LESSONS.map((l) => l.id),
+  },
+  {
+    id: COMBO_UNIT.id,
+    title: COMBO_UNIT.title,
+    subtitle: COMBO_UNIT.subtitle,
+    glyph: COMBO_UNIT.glyph,
+    lessonIds: COMBO_LESSONS.map((l) => l.id),
   },
   ...WORD_UNITS.map((u) => ({
     id: u.id,
@@ -266,9 +305,58 @@ function wordExercises(lesson: Lesson): Exercise[] {
   return [...meanings, ...reads, ...spells];
 }
 
+function comboExercises(lesson: Lesson): Exercise[] {
+  const soundPool = COMBOS.map((c) => c.sound);
+  const readPool = [...new Set([...COMBOS.map((c) => c.exampleTranslit), ...WORDS.map((w) => w.translit)])];
+  const combos = lesson.itemIds.map((id) => COMBOS.find((x) => x.id === id) as CopticCombo);
+
+  // Teach first, then test (explain → practise). One concept card per rule, then
+  // all the "how does it sound" questions, then all the "read the real word" ones.
+  const concepts = combos.map((c) => ({
+    key: `${lesson.id}:concept:${c.id}`,
+    kind: 'concept' as const,
+    prompt: c.glyphs,
+    body: c.rule,
+    hint: `${c.example} · ${c.exampleTranslit} — ${c.exampleEnglish}`,
+    audioKey: c.id,
+    answer: '',
+    options: [] as string[],
+  }));
+  const sounds = combos.map((c) => ({
+    key: `${lesson.id}:combo-sound:${c.id}`,
+    kind: 'combo-sound' as const,
+    prompt: c.glyphs,
+    audioKey: c.id,
+    answer: c.sound,
+    options: makeOptions(c.sound, soundPool, `${lesson.id}:combo-sound:${c.id}`),
+  }));
+  const reads = combos.map((c) => ({
+    key: `${lesson.id}:combo-read:${c.id}`,
+    kind: 'combo-read' as const,
+    prompt: c.example,
+    hint: c.glyphs,
+    audioKey: c.id,
+    answer: c.exampleTranslit,
+    options: makeOptions(c.exampleTranslit, readPool, `${lesson.id}:combo-read:${c.id}`),
+  }));
+  return [...concepts, ...sounds, ...reads];
+}
+
 /** All exercises for a lesson, in order. */
 export function lessonExercises(lesson: Lesson): Exercise[] {
-  return lesson.itemKind === 'letter' ? letterExercises(lesson) : wordExercises(lesson);
+  if (lesson.itemKind === 'letter') return letterExercises(lesson);
+  if (lesson.itemKind === 'combo') return comboExercises(lesson);
+  return wordExercises(lesson);
+}
+
+/** A concept card teaches but isn't scored; everything else counts toward the level. */
+export function isGraded(exercise: Exercise): boolean {
+  return exercise.kind !== 'concept';
+}
+
+/** Number of scored cards in a lesson (the denominator for pass/perfect). */
+export function gradedCount(exercises: readonly Exercise[]): number {
+  return exercises.filter(isGraded).length;
 }
 
 // --- progress / level math (derived; mirror readingPlan) -------------------
