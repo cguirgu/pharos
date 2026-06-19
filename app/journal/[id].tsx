@@ -7,13 +7,16 @@ import { View, Text, TextInput, ScrollView, KeyboardAvoidingView, Platform, Styl
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
 import { SheetBar, Caps } from '../../src/ui/components';
-import { K, font } from '../../src/ui/theme';
+import { font, type Palette } from '../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 import { folioDate } from '../../src/ui/format';
 import { useClock } from '../../src/state/clock';
 import { useJournal } from '../../src/state/journal';
 
 export default function JournalEditor() {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const today = useClock((s) => s.today);
@@ -47,30 +50,30 @@ export default function JournalEditor() {
             value={title}
             onChangeText={setTitle}
             placeholder={copy.journal.titlePlaceholder}
-            placeholderTextColor={K.ink3}
+            placeholderTextColor={t.ink3}
             style={styles.title}
           />
           <TextInput
             value={body}
             onChangeText={setBody}
             placeholder={copy.journal.bodyPlaceholder}
-            placeholderTextColor={K.ink3}
+            placeholderTextColor={t.ink3}
             multiline
             style={styles.body}
-            selectionColor={K.gold}
+            selectionColor={t.gold}
           />
         </ScrollView>
         <View style={styles.footer}>
-          <Caps size={8.5} ls={1.4} color={K.ink3}>{copy.journal.words(wordCount)}</Caps>
+          <Caps size={8.5} ls={1.4} color={t.ink3}>{copy.journal.words(wordCount)}</Caps>
         </View>
       </KeyboardAvoidingView>
     </Page>
   );
 }
 
-const styles = StyleSheet.create({
-  title: { fontFamily: font.display, fontSize: 30, color: K.parch, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: K.ruleDim },
-  body: { fontFamily: font.body, fontSize: 18, color: K.parch, lineHeight: 28, paddingTop: 16, minHeight: 240, textAlignVertical: 'top' },
-  footer: { paddingVertical: 10, borderTopWidth: 1, borderTopColor: K.ruleDim, alignItems: 'flex-end' },
-  save: { fontFamily: font.caps, fontSize: 10, letterSpacing: 2, color: K.goldHi, textTransform: 'uppercase' },
+const makeStyles = (t: Palette) => StyleSheet.create({
+  title: { fontFamily: font.display, fontSize: 30, color: t.parch, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
+  body: { fontFamily: font.body, fontSize: 18, color: t.parch, lineHeight: 28, paddingTop: 16, minHeight: 240, textAlignVertical: 'top' },
+  footer: { paddingVertical: 10, borderTopWidth: 1, borderTopColor: t.ruleDim, alignItems: 'flex-end' },
+  save: { fontFamily: font.caps, fontSize: 10, letterSpacing: 2, color: t.goldHi, textTransform: 'uppercase' },
 });

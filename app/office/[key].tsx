@@ -8,14 +8,18 @@ import { View, Text, ScrollView, Pressable, Modal, StyleSheet } from 'react-nati
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
 import { SheetBar, Caps, Btn, Fleuron } from '../../src/ui/components';
-import { K, font } from '../../src/ui/theme';
+import { font, type Palette } from '../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 import { useClock } from '../../src/state/clock';
 import { useOffices } from '../../src/state/offices';
+import { keptFeedback } from '../../src/platform/haptics';
 import { getAgpeyaHour, officeByKey, type OfficeKey, type AgpeyaBlock } from '../../src/domain/content/agpeya';
 
 export default function OfficeReader() {
   const router = useRouter();
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const { key } = useLocalSearchParams<{ key: string }>();
   const officeKey = (key as OfficeKey) ?? 'matins';
   const today = useClock((s) => s.today);
@@ -42,6 +46,7 @@ export default function OfficeReader() {
   };
 
   const markKept = async () => {
+    keptFeedback();
     await toggle(today, officeKey, true);
     router.back();
   };
@@ -54,14 +59,14 @@ export default function OfficeReader() {
         onBack={() => router.back()}
         right={
           <Pressable onPress={() => setDrawer(true)} hitSlop={8}>
-            <Caps size={9} ls={1.8} color={K.goldHi}>
+            <Caps size={9} ls={1.8} color={t.goldHi}>
               ☰ Sections
             </Caps>
           </Pressable>
         }
       />
       <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-        <Caps size={9} ls={2.2} color={K.gold}>
+        <Caps size={9} ls={2.2} color={t.gold}>
           {office?.commemoration}
         </Caps>
         <Text style={styles.coptic}>{office?.coptic}</Text>
@@ -69,7 +74,7 @@ export default function OfficeReader() {
         {sections.map((s) => (
           <View key={s.id} onLayout={(e) => (yPos.current[s.id] = e.nativeEvent.layout.y)}>
             <Pressable style={styles.secHead} onPress={() => setExpanded((ex) => ({ ...ex, [s.id]: !ex[s.id] }))}>
-              <Caps size={10.5} ls={2.4} color={K.rubricHi}>
+              <Caps size={10.5} ls={2.4} color={t.rubricHi}>
                 {s.title}
               </Caps>
               <View style={styles.leader} />
@@ -94,11 +99,11 @@ export default function OfficeReader() {
         <Pressable style={styles.scrim} onPress={() => setDrawer(false)} />
         <View style={styles.drawer}>
           <View style={styles.drawerHead}>
-            <Caps size={10} ls={2.4} color={K.ink2}>
+            <Caps size={10} ls={2.4} color={t.ink2}>
               Jump to
             </Caps>
             <Pressable onPress={() => setAll(!allOpen)} hitSlop={8}>
-              <Caps size={9} ls={1.6} color={K.goldHi}>
+              <Caps size={9} ls={1.6} color={t.goldHi}>
                 {allOpen ? 'Collapse all' : 'Expand all'}
               </Caps>
             </Pressable>
@@ -117,6 +122,8 @@ export default function OfficeReader() {
 }
 
 function Block({ block }: { block: AgpeyaBlock }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   if (block.type === 'rubric') {
     return <Text style={styles.rubric}>{block.text}</Text>;
   }
@@ -124,7 +131,7 @@ function Block({ block }: { block: AgpeyaBlock }) {
     return (
       <View style={{ marginVertical: 6 }}>
         {block.reference ? (
-          <Caps size={8.5} ls={1.4} color={K.gold} style={{ marginBottom: 4 }}>
+          <Caps size={8.5} ls={1.4} color={t.gold} style={{ marginBottom: 4 }}>
             {block.reference}
           </Caps>
         ) : null}
@@ -140,19 +147,19 @@ function Block({ block }: { block: AgpeyaBlock }) {
   return <Text style={styles.text}>{block.text}</Text>;
 }
 
-const styles = StyleSheet.create({
-  coptic: { fontFamily: font.coptic, fontSize: 22, color: K.gold, marginTop: 6, marginBottom: 6 },
+const makeStyles = (t: Palette) => StyleSheet.create({
+  coptic: { fontFamily: font.coptic, fontSize: 22, color: t.gold, marginTop: 6, marginBottom: 6 },
   secHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 22, marginBottom: 8 },
-  leader: { flex: 1, height: 1, backgroundColor: K.rule },
-  chevron: { fontFamily: font.body, fontSize: 13, color: K.ink3 },
-  text: { fontFamily: font.body, fontSize: 16, color: K.parch, lineHeight: 26, marginVertical: 6 },
-  rubric: { fontFamily: font.bodyItalic, fontSize: 14, color: K.rubricHi, lineHeight: 22, marginVertical: 6 },
-  verse: { fontFamily: font.body, fontSize: 16, color: K.parch, lineHeight: 25, marginBottom: 3 },
-  vnum: { fontFamily: font.caps, fontSize: 10, color: K.rubricHi },
-  body: { fontFamily: font.bodyItalic, fontSize: 16, color: K.ink2, lineHeight: 24, marginTop: 10 },
+  leader: { flex: 1, height: 1, backgroundColor: t.rule },
+  chevron: { fontFamily: font.body, fontSize: 13, color: t.ink3 },
+  text: { fontFamily: font.body, fontSize: 16, color: t.parch, lineHeight: 26, marginVertical: 6 },
+  rubric: { fontFamily: font.bodyItalic, fontSize: 14, color: t.rubricHi, lineHeight: 22, marginVertical: 6 },
+  verse: { fontFamily: font.body, fontSize: 16, color: t.parch, lineHeight: 25, marginBottom: 3 },
+  vnum: { fontFamily: font.caps, fontSize: 10, color: t.rubricHi },
+  body: { fontFamily: font.bodyItalic, fontSize: 16, color: t.ink2, lineHeight: 24, marginTop: 10 },
   scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },
-  drawer: { position: 'absolute', top: 0, bottom: 0, right: 0, width: '74%', backgroundColor: K.bg2, borderLeftWidth: 1, borderLeftColor: K.rule, paddingTop: 56, paddingHorizontal: 20 },
-  drawerHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: K.rule, marginBottom: 6 },
-  jumpRow: { paddingVertical: 13, borderBottomWidth: 1, borderBottomColor: K.ruleDim },
-  jumpText: { fontFamily: font.display, fontSize: 18, color: K.parch },
+  drawer: { position: 'absolute', top: 0, bottom: 0, right: 0, width: '74%', backgroundColor: t.bg2, borderLeftWidth: 1, borderLeftColor: t.rule, paddingTop: 56, paddingHorizontal: 20 },
+  drawerHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: t.rule, marginBottom: 6 },
+  jumpRow: { paddingVertical: 13, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
+  jumpText: { fontFamily: font.display, fontSize: 18, color: t.parch },
 });

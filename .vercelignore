@@ -1,0 +1,18 @@
+# Pharos is a native Expo app; only the static legal/marketing site (web/) is
+# deployed to Vercel. Keep everything else out of the upload.
+node_modules
+.expo
+.expo-shared
+ios
+android
+.git
+dist
+build
+src
+app
+assets
+scripts
+supabase
+.env
+.env.*
+*.log

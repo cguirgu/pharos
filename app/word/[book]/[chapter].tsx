@@ -4,23 +4,33 @@
  * advances the reading plan.
  */
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Page } from '../../../src/ui/Page';
 import { SheetBar, Caps, Btn, Fleuron } from '../../../src/ui/components';
-import { K, font } from '../../../src/ui/theme';
+import { SelectableProse } from '../../../src/ui/SelectableProse';
+import { font, type Palette } from '../../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../../src/ui/useStyles';
 import { copy } from '../../../src/ui/copy';
 import { useClock } from '../../../src/state/clock';
 import { useReading } from '../../../src/state/reading';
+import { useHighlights } from '../../../src/state/highlights';
 import { BOOKS, refLabel, type BookId } from '../../../src/domain/content/bible';
+import { scriptureAnchorFromSelection, type RawSelection } from '../../../src/domain/highlights';
 import { getScriptureProvider } from '../../../src/state/content';
 
 export default function Reader() {
   const router = useRouter();
-  const { book, chapter } = useLocalSearchParams<{ book: string; chapter: string }>();
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
+  const { book, chapter, plan } = useLocalSearchParams<{ book: string; chapter: string; plan?: string }>();
   const today = useClock((s) => s.today);
   const markRead = useReading((s) => s.markRead);
-  const progress = useReading((s) => s.progress)(today);
+  // Plan context (optional): only present when arriving from a plan's Continue.
+  const planId = typeof plan === 'string' ? plan : undefined;
+  const progress = useReading((s) => s.progress)(planId ?? '', today);
+  const forVerse = useHighlights((s) => s.forVerse);
+  const saveHighlight = useHighlights((s) => s.save);
 
   const bookId = (book as BookId) in BOOKS ? (book as BookId) : 'matthew';
   const ch = Number(chapter) || 1;
@@ -29,8 +39,30 @@ export default function Reader() {
   const meta = BOOKS[bookId];
 
   const markKept = async () => {
-    if (progress) await markRead(progress.dayNumber, today);
+    if (planId && progress) await markRead(planId, progress.dayNumber, today);
     router.back();
+  };
+
+  // Drag-select within a verse → save just that span. Tapping the verse NUMBER
+  // is the whole-verse fallback (and opens an already-marked verse's editor).
+  const onSaveVerseSelection = async (n: number, text: string, sel: RawSelection) => {
+    const built = scriptureAnchorFromSelection({ book: bookId, chapter: ch, verse: n }, sel, text);
+    if (!built) return;
+    const newId = await saveHighlight({ anchor: built.anchor, textSnapshot: built.snapshot });
+    if (newId) router.push(`/highlights/${newId}`);
+  };
+
+  const onVerseNumber = async (n: number, text: string) => {
+    const marked = forVerse(bookId, ch, n)[0];
+    if (marked) {
+      router.push(`/highlights/${marked.id}`);
+      return;
+    }
+    const newId = await saveHighlight({
+      anchor: { source: 'scripture', book: bookId, chapter: ch, startVerse: n, startOffset: 0, endVerse: n, endOffset: text.length },
+      textSnapshot: text,
+    });
+    if (newId) router.push(`/highlights/${newId}`);
   };
 
   return (
@@ -42,33 +74,50 @@ export default function Reader() {
         <Fleuron />
 
         {content ? (
-          content.verses.map((v) => (
-            <Text key={v.n} style={styles.verse}>
-              <Text style={styles.vnum}>{v.n} </Text>
-              {v.text}
-            </Text>
-          ))
+          content.verses.map((v) => {
+            const marked = forVerse(bookId, ch, v.n)[0];
+            return (
+              <View key={v.n} style={styles.verseRow}>
+                <Pressable onPress={() => onVerseNumber(v.n, v.text)} hitSlop={8}>
+                  <Text style={styles.vnum}>{v.n}</Text>
+                </Pressable>
+                <View style={{ flex: 1 }}>
+                  <SelectableProse
+                    text={v.text}
+                    textStyle={styles.verse}
+                    washColor={marked ? t.highlightWash[marked.color ?? 'gold'] : undefined}
+                    onSaveSelection={(sel) => onSaveVerseSelection(v.n, v.text, sel)}
+                  />
+                </View>
+              </View>
+            );
+          })
         ) : (
           <View style={styles.tbd}>
-            <Caps size={9} ls={1.6} color={K.ink3} style={{ textAlign: 'center', lineHeight: 18 }}>
+            <Caps size={9} ls={1.6} color={t.ink3} style={{ textAlign: 'center', lineHeight: 18 }}>
               {copy.word.tbd}
             </Caps>
           </View>
         )}
 
-        <View style={{ height: 24 }} />
-        <Btn kind="solid" onPress={markKept}>
-          {copy.word.markKept}
-        </Btn>
+        {planId ? (
+          <>
+            <View style={{ height: 24 }} />
+            <Btn kind="solid" onPress={markKept}>
+              {copy.word.markKept}
+            </Btn>
+          </>
+        ) : null}
       </ScrollView>
     </Page>
   );
 }
 
-const styles = StyleSheet.create({
-  coptic: { fontFamily: font.coptic, fontSize: 16, color: K.gold, marginTop: 6 },
-  heading: { fontFamily: font.display, fontSize: 32, color: K.parch, marginTop: 4 },
-  verse: { fontFamily: font.body, fontSize: 18, color: K.parch, lineHeight: 28, marginBottom: 4 },
-  vnum: { fontFamily: font.caps, fontSize: 11, color: K.rubricHi },
-  tbd: { borderWidth: 1, borderColor: K.ruleDim, padding: 26, alignItems: 'center' },
+const makeStyles = (t: Palette) => StyleSheet.create({
+  coptic: { fontFamily: font.coptic, fontSize: 16, color: t.gold, marginTop: 6 },
+  heading: { fontFamily: font.display, fontSize: 32, color: t.parch, marginTop: 4 },
+  verseRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 6, paddingHorizontal: 4 },
+  verse: { fontFamily: font.body, fontSize: 18, color: t.parch, lineHeight: 28, padding: 0 },
+  vnum: { fontFamily: font.caps, fontSize: 11, color: t.rubricHi, paddingTop: 6, width: 22 },
+  tbd: { borderWidth: 1, borderColor: t.ruleDim, padding: 26, alignItems: 'center' },
 });

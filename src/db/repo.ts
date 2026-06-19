@@ -17,6 +17,8 @@
 import { Platform } from 'react-native';
 import type { Practice, PracticeLog, DayStatus } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
+import { isScripture, type Highlight, type HighlightSource } from '../domain/highlights';
+import type { BookId } from '../domain/content/bible';
 
 /** Where the user is on the journey (onboarding §1). */
 export type JourneyStage = 'grew-up' | 'returning' | 'exploring';
@@ -49,6 +51,22 @@ export interface ReadingEnrollment {
   createdAt: number;
 }
 
+export interface LearnLessonRecord {
+  lessonId: string;
+  completedOn: string; // YYYY-MM-DD
+  correct: number;
+  total: number;
+}
+
+/** Optional narrowing for highlight queries (used by the reader overlay). */
+export interface HighlightFilter {
+  source?: HighlightSource;
+  book?: BookId; // scripture
+  chapter?: number; // scripture
+  copticMonth?: number; // synaxarium
+  copticDay?: number; // synaxarium
+}
+
 export interface Repo {
   init(): Promise<void>;
 
@@ -75,6 +93,11 @@ export interface Repo {
   upsertJournal(accountId: string, entry: JournalEntry): Promise<void>;
   deleteJournal(accountId: string, id: string): Promise<void>;
 
+  // --- per-account: highlights ---
+  listHighlights(accountId: string, filter?: HighlightFilter): Promise<Highlight[]>;
+  upsertHighlight(accountId: string, h: Highlight): Promise<void>;
+  deleteHighlight(accountId: string, id: string): Promise<void>;
+
   // --- per-account: reading plan ---
   getEnrollment(accountId: string, planId: string): Promise<ReadingEnrollment | null>;
   enroll(accountId: string, enrollment: ReadingEnrollment): Promise<void>;
@@ -86,6 +109,10 @@ export interface Repo {
   setOfficeLog(accountId: string, dateKey: string, officeKey: string, on: boolean): Promise<void>;
   countOfficeLogs(accountId: string): Promise<number>;
 
+  // --- per-account: learn ---
+  listLearn(accountId: string): Promise<LearnLessonRecord[]>;
+  completeLesson(accountId: string, lessonId: string, correct: number, total: number, completedOn: string): Promise<void>;
+
   // --- global key/value ---
   getSetting(key: string): Promise<string | null>;
   setSetting(key: string, value: string): Promise<void>;
@@ -96,6 +123,24 @@ const normalizeEmail = (email: string) => email.trim().toLowerCase();
 const logKey = (l: { practiceId: string; date: CivilDate }) =>
   `${l.practiceId}|${l.date.year}-${l.date.month}-${l.date.day}`;
 
+/** Whether a highlight matches an optional filter (shared by both repos). */
+export function matchesHighlightFilter(h: Highlight, filter?: HighlightFilter): boolean {
+  if (!filter) return true;
+  if (filter.source && h.anchor.source !== filter.source) return false;
+  // A scripture-location filter implies scripture-only; a coptic-date filter implies synaxarium-only.
+  if (filter.book != null || filter.chapter != null) {
+    if (!isScripture(h.anchor)) return false;
+    if (filter.book != null && h.anchor.book !== filter.book) return false;
+    if (filter.chapter != null && h.anchor.chapter !== filter.chapter) return false;
+  }
+  if (filter.copticMonth != null || filter.copticDay != null) {
+    if (isScripture(h.anchor)) return false;
+    if (filter.copticMonth != null && h.anchor.copticMonth !== filter.copticMonth) return false;
+    if (filter.copticDay != null && h.anchor.copticDay !== filter.copticDay) return false;
+  }
+  return true;
+}
+
 /** In-memory repository (tests, web, fallback). Data isolated per account. */
 export class MemoryRepo implements Repo {
   private accounts = new Map<string, Account>();
@@ -103,9 +148,11 @@ export class MemoryRepo implements Repo {
   private logs = new Map<string, Map<string, PracticeLog>>();
   private rest = new Map<string, Set<string>>();
   private journal = new Map<string, Map<string, JournalEntry>>();
+  private highlights = new Map<string, Map<string, Highlight>>();
   private enrollments = new Map<string, Map<string, ReadingEnrollment>>();
   private readDays = new Map<string, Map<string, Set<number>>>(); // account → plan → days
   private offices = new Map<string, Set<string>>(); // account → "dateKey|officeKey"
+  private learn = new Map<string, Map<string, LearnLessonRecord>>(); // account → lesson → record
   private settingsMap = new Map<string, string>();
 
   async init(): Promise<void> {}
@@ -185,6 +232,19 @@ export class MemoryRepo implements Repo {
     this.bucket(this.journal, accountId).delete(id);
   }
 
+  // highlights
+  async listHighlights(accountId: string, filter?: HighlightFilter): Promise<Highlight[]> {
+    return [...this.bucket(this.highlights, accountId).values()]
+      .filter((h) => matchesHighlightFilter(h, filter))
+      .sort((a, b) => b.createdAt - a.createdAt);
+  }
+  async upsertHighlight(accountId: string, h: Highlight): Promise<void> {
+    this.bucket(this.highlights, accountId).set(h.id, h);
+  }
+  async deleteHighlight(accountId: string, id: string): Promise<void> {
+    this.bucket(this.highlights, accountId).delete(id);
+  }
+
   // reading plan
   async getEnrollment(accountId: string, planId: string): Promise<ReadingEnrollment | null> {
     return this.bucket(this.enrollments, accountId).get(planId) ?? null;
@@ -217,6 +277,17 @@ export class MemoryRepo implements Repo {
     return this.setBucket(this.offices, accountId).size;
   }
 
+  // learn
+  async listLearn(accountId: string): Promise<LearnLessonRecord[]> {
+    return [...this.bucket(this.learn, accountId).values()];
+  }
+  async completeLesson(accountId: string, lessonId: string, correct: number, total: number, completedOn: string): Promise<void> {
+    const b = this.bucket(this.learn, accountId);
+    const prev = b.get(lessonId);
+    // Keep the best score so re-doing a lesson never regresses progress.
+    b.set(lessonId, { lessonId, completedOn, total, correct: Math.max(correct, prev?.correct ?? 0) });
+  }
+
   // global key/value
   async getSetting(key: string): Promise<string | null> {
     return this.settingsMap.get(key) ?? null;
@@ -228,9 +299,26 @@ export class MemoryRepo implements Repo {
 
 let repo: Repo | null = null;
 
-/** The active repository for this platform (SQLite on device, memory elsewhere). */
+/**
+ * The active repository. Supabase when configured (online-first, RLS-scoped),
+ * otherwise the local store (SQLite on device, memory on web/tests) — so the app
+ * still runs in Expo Go / dev without backend keys.
+ */
 export function getRepo(): Repo {
   if (repo) return repo;
+  // Lazy require so the Supabase client (and its native deps) load only when needed.
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { isBackendConfigured } = require('../lib/config') as typeof import('../lib/config');
+    if (isBackendConfigured()) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { SupabaseRepo } = require('./supabaseRepo') as typeof import('./supabaseRepo');
+      repo = new SupabaseRepo();
+      return repo;
+    }
+  } catch {
+    // fall through to the local repo
+  }
   if (Platform.OS === 'web' || Platform.OS === 'windows' || Platform.OS === 'macos') {
     repo = new MemoryRepo();
   } else {

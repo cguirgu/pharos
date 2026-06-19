@@ -12,15 +12,16 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { eq, and } from 'drizzle-orm';
 import * as s from './schema';
 import { CREATE_SQL } from './schema';
-import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment } from './repo';
-import { normalizeEmail } from './repo';
+import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter } from './repo';
+import { normalizeEmail, matchesHighlightFilter } from './repo';
 import type { Practice, PracticeLog, Cadence, Measure, Category, Kind, PracticeState, DayStatus, Reminder } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
+import type { Highlight, HighlightAnchor, HighlightColor, HighlightSource } from '../domain/highlights';
 
 const SESSION_KEY = 'session_account_id';
 const SCHEMA_KEY = 'schema_version';
 /** Bump whenever the table shapes change (forces a local rebuild). */
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 5;
 
 function parseDateKey(key: string): CivilDate {
   const [y, m, d] = key.split('-').map(Number);
@@ -108,6 +109,38 @@ function accountToRow(a: Account): AccountRow {
   };
 }
 
+type HighlightRow = typeof s.highlights.$inferSelect;
+
+function rowToHighlight(r: HighlightRow): Highlight {
+  return {
+    id: r.id,
+    anchor: JSON.parse(r.anchor) as HighlightAnchor,
+    textSnapshot: r.textSnapshot,
+    referenceLabel: r.referenceLabel,
+    note: r.note ?? undefined,
+    color: (r.color as HighlightColor | null) ?? undefined,
+    label: r.label ?? undefined,
+    createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+  };
+}
+
+function highlightToRow(accountId: string, h: Highlight): HighlightRow {
+  return {
+    accountId,
+    id: h.id,
+    source: h.anchor.source as HighlightSource,
+    anchor: JSON.stringify(h.anchor),
+    textSnapshot: h.textSnapshot,
+    referenceLabel: h.referenceLabel,
+    note: h.note ?? null,
+    color: h.color ?? null,
+    label: h.label ?? null,
+    createdAt: h.createdAt,
+    updatedAt: h.updatedAt,
+  };
+}
+
 export class SqliteRepo implements Repo {
   private readonly native: SQLiteDatabase;
   private readonly db: ReturnType<typeof drizzle>;
@@ -131,6 +164,7 @@ export class SqliteRepo implements Repo {
         DROP TABLE IF EXISTS rest_days;
         DROP TABLE IF EXISTS accounts;
         DROP TABLE IF EXISTS journal_entries;
+        DROP TABLE IF EXISTS highlights;
         DROP TABLE IF EXISTS reading_plans;
         DROP TABLE IF EXISTS reading_progress;
         DROP TABLE IF EXISTS office_logs;
@@ -265,6 +299,37 @@ export class SqliteRepo implements Repo {
       .run();
   }
 
+  // --- highlights ---
+  async listHighlights(accountId: string, filter?: HighlightFilter): Promise<Highlight[]> {
+    // `source` narrows in SQL; the location fields (overlay-only, deferred UI) are
+    // applied in JS against the parsed anchor via the shared matcher.
+    const where = filter?.source
+      ? and(eq(s.highlights.accountId, accountId), eq(s.highlights.source, filter.source))
+      : eq(s.highlights.accountId, accountId);
+    return this.db
+      .select()
+      .from(s.highlights)
+      .where(where)
+      .all()
+      .map(rowToHighlight)
+      .filter((h) => matchesHighlightFilter(h, filter))
+      .sort((a, b) => b.createdAt - a.createdAt);
+  }
+  async upsertHighlight(accountId: string, h: Highlight): Promise<void> {
+    const row = highlightToRow(accountId, h);
+    this.db
+      .insert(s.highlights)
+      .values(row)
+      .onConflictDoUpdate({ target: [s.highlights.accountId, s.highlights.id], set: row })
+      .run();
+  }
+  async deleteHighlight(accountId: string, id: string): Promise<void> {
+    this.db
+      .delete(s.highlights)
+      .where(and(eq(s.highlights.accountId, accountId), eq(s.highlights.id, id)))
+      .run();
+  }
+
   // --- reading plan ---
   async getEnrollment(accountId: string, planId: string): Promise<ReadingEnrollment | null> {
     const row = this.db
@@ -325,6 +390,33 @@ export class SqliteRepo implements Repo {
   }
   async countOfficeLogs(accountId: string): Promise<number> {
     return this.db.select().from(s.officeLogs).where(eq(s.officeLogs.accountId, accountId)).all().length;
+  }
+
+  // --- learn ---
+  async listLearn(accountId: string): Promise<LearnLessonRecord[]> {
+    return this.db
+      .select()
+      .from(s.learnLessons)
+      .where(eq(s.learnLessons.accountId, accountId))
+      .all()
+      .map((r) => ({ lessonId: r.lessonId, completedOn: r.completedOn, correct: r.correct, total: r.total }));
+  }
+  async completeLesson(accountId: string, lessonId: string, correct: number, total: number, completedOn: string): Promise<void> {
+    const prev = this.db
+      .select()
+      .from(s.learnLessons)
+      .where(and(eq(s.learnLessons.accountId, accountId), eq(s.learnLessons.lessonId, lessonId)))
+      .get();
+    // Keep the best score so re-doing a lesson never regresses progress.
+    const best = Math.max(correct, prev?.correct ?? 0);
+    this.db
+      .insert(s.learnLessons)
+      .values({ accountId, lessonId, completedOn, correct: best, total })
+      .onConflictDoUpdate({
+        target: [s.learnLessons.accountId, s.learnLessons.lessonId],
+        set: { completedOn, correct: best, total },
+      })
+      .run();
   }
 
   // --- global key/value ---

@@ -7,10 +7,13 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
 import { SheetBar, Rubric, Caps, Fleuron, PharosSeal } from '../../src/ui/components';
-import { K, font } from '../../src/ui/theme';
+import { font, type Palette } from '../../src/ui/theme';
+import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 
 export default function About() {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const router = useRouter();
   return (
     <Page>
@@ -25,7 +28,7 @@ export default function About() {
         <Rubric>{copy.you.attributionsTitle}</Rubric>
         {copy.you.attributions.map((a) => (
           <View key={a.title} style={styles.attr}>
-            <Caps size={9} ls={1.6} color={K.gold}>
+            <Caps size={9} ls={1.6} color={t.gold}>
               {a.title}
             </Caps>
             <Text style={styles.attrBody}>{a.body}</Text>
@@ -44,10 +47,10 @@ export default function About() {
   );
 }
 
-const styles = StyleSheet.create({
-  body: { fontFamily: font.bodyItalic, fontSize: 16, color: K.ink2, lineHeight: 24 },
+const makeStyles = (t: Palette) => StyleSheet.create({
+  body: { fontFamily: font.bodyItalic, fontSize: 16, color: t.ink2, lineHeight: 24 },
   attr: { marginTop: 16, gap: 4 },
-  attrBody: { fontFamily: font.body, fontSize: 14, color: K.ink2, lineHeight: 21 },
+  attrBody: { fontFamily: font.body, fontSize: 14, color: t.ink2, lineHeight: 21 },
   awaitRow: { flexDirection: 'row', gap: 10, marginTop: 12 },
-  dash: { fontFamily: font.body, fontSize: 14, color: K.ink3 },
+  dash: { fontFamily: font.body, fontSize: 14, color: t.ink3 },
 });

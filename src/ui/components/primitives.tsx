@@ -1,15 +1,20 @@
 /**
  * Codex primitives — type, folios, rubricated headers, ruled registers.
  * Faithful to handoff/design refs/ds2.jsx. Sharp corners, hairlines, no emoji.
+ *
+ * Colours come from the active theme: default colour props resolve via
+ * `useThemeColors()` (so `color ?? t.x` reacts to light/dark), and style blocks
+ * are built per-palette through `useStyles(makeStyles)`.
  */
 import React from 'react';
 import { View, Text, StyleSheet, type ViewStyle, type TextStyle, type StyleProp } from 'react-native';
-import { K, font } from '../theme';
+import { font, type Palette } from '../theme';
+import { useStyles, useThemeColors } from '../useStyles';
 
 /** ALL-CAPS letterspaced label — the workhorse (DESIGN-SPEC §3). */
 export function Caps({
   children,
-  color = K.ink3,
+  color,
   size = 10.5,
   ls = 2.6,
   style,
@@ -20,10 +25,11 @@ export function Caps({
   ls?: number;
   style?: StyleProp<TextStyle>;
 }) {
+  const t = useThemeColors();
   return (
     <Text
       style={[
-        { color, fontSize: size, letterSpacing: ls, fontFamily: font.caps, textTransform: 'uppercase' },
+        { color: color ?? t.ink3, fontSize: size, letterSpacing: ls, fontFamily: font.caps, textTransform: 'uppercase' },
         style,
       ]}
     >
@@ -32,20 +38,30 @@ export function Caps({
   );
 }
 
-/** Coptic ornament glyph. */
+/** Coptic ornament glyph. Pass `fit` to shrink long words onto one line. */
 export function Copt({
   children,
   size = 14,
-  color = K.gold,
+  color,
   style,
+  fit = false,
 }: {
   children: React.ReactNode;
   size?: number;
   color?: string;
   style?: StyleProp<TextStyle>;
+  /** Auto-shrink to fit one line (for long Coptic words). */
+  fit?: boolean;
 }) {
+  const t = useThemeColors();
   return (
-    <Text style={[{ fontFamily: font.coptic, fontSize: size, color, lineHeight: size * 1.05 }, style]}>
+    <Text
+      numberOfLines={fit ? 1 : undefined}
+      adjustsFontSizeToFit={fit || undefined}
+      minimumFontScale={fit ? 0.4 : undefined}
+      // A fixed lineHeight fights adjustsFontSizeToFit, so omit it when fitting.
+      style={[{ fontFamily: font.coptic, fontSize: size, color: color ?? t.gold }, !fit && { lineHeight: size * 1.05 }, style]}
+    >
       {children}
     </Text>
   );
@@ -55,7 +71,7 @@ export function Copt({
 export function Numeral({
   children,
   size = 64,
-  color = K.parch,
+  color,
   style,
 }: {
   children: React.ReactNode;
@@ -63,10 +79,11 @@ export function Numeral({
   color?: string;
   style?: StyleProp<TextStyle>;
 }) {
+  const t = useThemeColors();
   return (
     <Text
       style={[
-        { fontFamily: font.display, fontSize: size, color, lineHeight: size * 0.9, fontVariant: ['oldstyle-nums'] },
+        { fontFamily: font.display, fontSize: size, color: color ?? t.parch, lineHeight: size * 0.9, fontVariant: ['oldstyle-nums'] },
         style,
       ]}
     >
@@ -76,10 +93,12 @@ export function Numeral({
 }
 
 /** Small caps label inside a hairline box. */
-export function Tag({ children, color = K.gold }: { children: React.ReactNode; color?: string }) {
+export function Tag({ children, color }: { children: React.ReactNode; color?: string }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View style={styles.tag}>
-      <Caps size={8.5} ls={1.6} color={color}>
+      <Caps size={8.5} ls={1.6} color={color ?? t.gold}>
         {children}
       </Caps>
     </View>
@@ -96,14 +115,20 @@ export function Folio({
   right?: string;
   glyph?: string;
 }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View style={styles.folio}>
       <View style={styles.folioRow}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 }}>
-          {glyph ? <Copt size={13} color={K.gold}>{glyph}</Copt> : null}
-          <Caps color={K.ink2}>{left}</Caps>
+        <View style={styles.folioLeft}>
+          {glyph ? <Copt size={12} color={t.gold} style={{ marginTop: 1 }}>{glyph}</Copt> : null}
+          <Caps color={t.ink2} size={9.5} ls={1.5} style={{ flexShrink: 1 }}>{left}</Caps>
         </View>
-        {right ? <Caps color={K.ink3}>{right}</Caps> : null}
+        {right ? (
+          <Caps color={t.ink3} size={9.5} ls={1.5} style={styles.folioRight}>
+            {right}
+          </Caps>
+        ) : null}
       </View>
       <View style={styles.folioRule} />
     </View>
@@ -114,7 +139,7 @@ export function Folio({
 export function Rubric({
   children,
   num,
-  color = K.rubricHi,
+  color,
   style,
 }: {
   children: React.ReactNode;
@@ -122,10 +147,12 @@ export function Rubric({
   color?: string;
   style?: StyleProp<ViewStyle>;
 }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View style={[styles.rubric, style]}>
-      {num ? <Copt size={14} color={K.gold}>{num}</Copt> : null}
-      <Caps color={color} size={10.5} ls={2.6}>
+      {num ? <Copt size={14} color={t.gold}>{num}</Copt> : null}
+      <Caps color={color ?? t.rubricHi} size={10.5} ls={2.6}>
         {children}
       </Caps>
       <View style={styles.leader} />
@@ -143,6 +170,7 @@ export function Register({
   onTop?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
+  const styles = useStyles(makeStyles);
   return (
     <View style={[styles.register, onTop && styles.registerTop, style]}>{children}</View>
   );
@@ -150,10 +178,12 @@ export function Register({
 
 /** Ornamental divider: hairline · cross · hairline. */
 export function Fleuron() {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View style={styles.fleuron}>
       <View style={styles.fleuronRule} />
-      <Copt size={15} color={K.gold} style={{ marginHorizontal: 12 }}>
+      <Copt size={15} color={t.gold} style={{ marginHorizontal: 12 }}>
         ☩
       </Copt>
       <View style={styles.fleuronRule} />
@@ -163,19 +193,21 @@ export function Fleuron() {
 
 /** Image placeholder: gold-tinted box, hairline border, centered caps. */
 export function Plate({ h = 120, label = 'plate' }: { h?: number; label?: string }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View style={[styles.plate, { height: h }]}>
-      <Caps color={K.ink3} size={9} ls={2}>
+      <Caps color={t.ink3} size={9} ls={2}>
         {label}
       </Caps>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: Palette) => StyleSheet.create({
   tag: {
     borderWidth: 1,
-    borderColor: K.ruleDim,
+    borderColor: t.ruleDim,
     paddingVertical: 3,
     paddingHorizontal: 7,
     alignSelf: 'flex-start',
@@ -183,29 +215,31 @@ const styles = StyleSheet.create({
   folio: { paddingTop: 4 },
   folioRow: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingBottom: 8,
-    gap: 12,
+    gap: 16,
   },
-  folioRule: { height: 1, backgroundColor: K.rule },
+  folioLeft: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, flexShrink: 1 },
+  folioRight: { flexShrink: 1, textAlign: 'right', maxWidth: '46%' },
+  folioRule: { height: 1, backgroundColor: t.rule },
   rubric: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 22, marginBottom: 10 },
-  leader: { flex: 1, height: 1, backgroundColor: K.rule, marginLeft: 4 },
+  leader: { flex: 1, height: 1, backgroundColor: t.rule, marginLeft: 4 },
   register: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
     paddingVertical: 13,
     borderBottomWidth: 1,
-    borderBottomColor: K.ruleDim,
+    borderBottomColor: t.ruleDim,
   },
-  registerTop: { borderTopWidth: 1, borderTopColor: K.ruleDim },
+  registerTop: { borderTopWidth: 1, borderTopColor: t.ruleDim },
   fleuron: { flexDirection: 'row', alignItems: 'center', marginVertical: 18 },
-  fleuronRule: { flex: 1, height: 1, backgroundColor: K.rule },
+  fleuronRule: { flex: 1, height: 1, backgroundColor: t.rule },
   plate: {
     borderWidth: 1,
-    borderColor: K.rule,
-    backgroundColor: K.panel,
+    borderColor: t.rule,
+    backgroundColor: t.panel,
     alignItems: 'center',
     justifyContent: 'center',
   },

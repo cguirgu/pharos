@@ -70,6 +70,20 @@ export const journalEntries = sqliteTable('journal_entries', {
   updatedAt: integer('updated_at').notNull(),
 }, (t) => ({ pk: primaryKey({ columns: [t.accountId, t.id] }) }));
 
+export const highlights = sqliteTable('highlights', {
+  accountId: text('account_id').notNull(),
+  id: text('id').notNull(),
+  source: text('source').notNull(), // 'scripture' | 'synaxarium' (filterable)
+  anchor: text('anchor').notNull(), // JSON HighlightAnchor
+  textSnapshot: text('text_snapshot').notNull(),
+  referenceLabel: text('reference_label').notNull(),
+  note: text('note'),
+  color: text('color'),
+  label: text('label'),
+  createdAt: integer('created_at').notNull(),
+  updatedAt: integer('updated_at').notNull(),
+}, (t) => ({ pk: primaryKey({ columns: [t.accountId, t.id] }) }));
+
 export const readingPlans = sqliteTable('reading_plans', {
   accountId: text('account_id').notNull(),
   planId: text('plan_id').notNull(),
@@ -89,6 +103,14 @@ export const officeLogs = sqliteTable('office_logs', {
   date: text('date').notNull(), // YYYY-MM-DD
   officeKey: text('office_key').notNull(),
 }, (t) => ({ pk: primaryKey({ columns: [t.accountId, t.date, t.officeKey] }) }));
+
+export const learnLessons = sqliteTable('learn_lessons', {
+  accountId: text('account_id').notNull(),
+  lessonId: text('lesson_id').notNull(),
+  completedOn: text('completed_on').notNull(), // YYYY-MM-DD
+  correct: integer('correct').notNull(),
+  total: integer('total').notNull(),
+}, (t) => ({ pk: primaryKey({ columns: [t.accountId, t.lessonId] }) }));
 
 export const settings = sqliteTable('settings', {
   key: text('key').primaryKey(),
@@ -122,6 +144,12 @@ CREATE TABLE IF NOT EXISTS journal_entries (
   body TEXT NOT NULL, passage_ref TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
   PRIMARY KEY (account_id, id)
 );
+CREATE TABLE IF NOT EXISTS highlights (
+  account_id TEXT NOT NULL, id TEXT NOT NULL, source TEXT NOT NULL, anchor TEXT NOT NULL,
+  text_snapshot TEXT NOT NULL, reference_label TEXT NOT NULL, note TEXT, color TEXT, label TEXT,
+  created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
+  PRIMARY KEY (account_id, id)
+);
 CREATE TABLE IF NOT EXISTS reading_plans (
   account_id TEXT NOT NULL, plan_id TEXT NOT NULL, start_date TEXT NOT NULL, created_at INTEGER NOT NULL,
   PRIMARY KEY (account_id, plan_id)
@@ -133,6 +161,11 @@ CREATE TABLE IF NOT EXISTS reading_progress (
 CREATE TABLE IF NOT EXISTS office_logs (
   account_id TEXT NOT NULL, date TEXT NOT NULL, office_key TEXT NOT NULL,
   PRIMARY KEY (account_id, date, office_key)
+);
+CREATE TABLE IF NOT EXISTS learn_lessons (
+  account_id TEXT NOT NULL, lesson_id TEXT NOT NULL, completed_on TEXT NOT NULL,
+  correct INTEGER NOT NULL, total INTEGER NOT NULL,
+  PRIMARY KEY (account_id, lesson_id)
 );
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL);
 `;

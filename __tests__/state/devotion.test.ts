@@ -45,30 +45,47 @@ describe('journal store', () => {
   });
 });
 
+const PLAN = 'four-gospels-90';
+
 describe('reading store', () => {
-  test('enrolls on first load and tracks completed days', async () => {
-    const r = useReading.getState();
-    await r.load('a', TODAY);
-    expect(useReading.getState().startDate).toEqual(TODAY);
-    const prog0 = useReading.getState().progress(TODAY)!;
+  test('plans are opt-in: load enrolls nothing until started', async () => {
+    await useReading.getState().load('a', TODAY);
+    expect(useReading.getState().plans).toEqual({});
+    expect(useReading.getState().progress(PLAN, TODAY)).toBeNull();
+  });
+
+  test('start enrolls a plan and tracks completed days', async () => {
+    await useReading.getState().load('a', TODAY);
+    await useReading.getState().start(PLAN, TODAY);
+    const prog0 = useReading.getState().progress(PLAN, TODAY)!;
     expect(prog0.dayNumber).toBe(1);
     expect(prog0.total).toBe(89);
     expect(prog0.percent).toBe(0);
     expect(prog0.todayLabel).toBe('Matthew 1');
 
-    await useReading.getState().markRead(1, TODAY);
-    await useReading.getState().markRead(1, TODAY); // idempotent
-    expect(useReading.getState().completedDays).toEqual([1]);
-    expect(useReading.getState().progress(TODAY)!.percent).toBe(1);
+    await useReading.getState().markRead(PLAN, 1, TODAY);
+    await useReading.getState().markRead(PLAN, 1, TODAY); // idempotent
+    expect(useReading.getState().plans[PLAN]!.completedDays).toEqual([1]);
+    expect(useReading.getState().progress(PLAN, TODAY)!.percent).toBe(1);
+    expect(useReading.getState().totalDaysKept()).toBe(1);
+  });
+
+  test('a prior enrollment is restored on load (back-compat)', async () => {
+    const repo = new MemoryRepo();
+    setRepo(repo);
+    await repo.enroll('a', { planId: PLAN, startDate: TODAY, createdAt: 0 });
+    await useReading.getState().load('a', TODAY);
+    expect(useReading.getState().plans[PLAN]?.startDate).toEqual(TODAY);
   });
 
   test('progress is isolated per account', async () => {
     const repo = new MemoryRepo();
     setRepo(repo);
     await useReading.getState().load('a', TODAY);
-    await useReading.getState().markRead(1, TODAY);
+    await useReading.getState().start(PLAN, TODAY);
+    await useReading.getState().markRead(PLAN, 1, TODAY);
     await useReading.getState().load('b', TODAY);
-    expect(useReading.getState().completedDays).toEqual([]);
+    expect(useReading.getState().plans).toEqual({});
   });
 });
 

@@ -5,7 +5,8 @@
  */
 import React from 'react';
 import { View, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { K } from './theme';
+import { type Palette } from './theme';
+import { useStyles, useThemeColors } from './useStyles';
 import { Caps } from './components';
 import { useClock } from '../state/clock';
 import { addDays, type CivilDate } from '../domain/coptic';
@@ -19,29 +20,31 @@ const GOLDEN: { label: string; date: CivilDate }[] = [
 ];
 
 export function DevDate() {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const { today, override, setOverride, clearOverride } = useClock();
   if (!__DEV__) return null;
 
   return (
     <View style={styles.bar}>
-      <Caps size={8.5} ls={1.4} color={override ? K.rubricHi : K.ink3}>
+      <Caps size={8.5} ls={1.4} color={override ? t.rubricHi : t.ink3}>
         {override ? 'DEV DATE' : 'DEV'}
       </Caps>
       <Pressable hitSlop={8} onPress={() => setOverride(addDays(today, -1))}>
-        <Caps size={11} ls={1} color={K.ink2}>−1d</Caps>
+        <Caps size={11} ls={1} color={t.ink2}>−1d</Caps>
       </Pressable>
       <Pressable hitSlop={8} onPress={() => setOverride(addDays(today, 1))}>
-        <Caps size={11} ls={1} color={K.ink2}>+1d</Caps>
+        <Caps size={11} ls={1} color={t.ink2}>+1d</Caps>
       </Pressable>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, alignItems: 'center' }}>
         {GOLDEN.map((g) => (
           <Pressable key={g.label} hitSlop={6} onPress={() => setOverride(g.date)}>
-            <Caps size={9} ls={1} color={K.goldHi}>{g.label}</Caps>
+            <Caps size={9} ls={1} color={t.goldHi}>{g.label}</Caps>
           </Pressable>
         ))}
         {override ? (
           <Pressable hitSlop={6} onPress={clearOverride}>
-            <Caps size={9} ls={1} color={K.rubricHi}>RESET</Caps>
+            <Caps size={9} ls={1} color={t.rubricHi}>RESET</Caps>
           </Pressable>
         ) : null}
       </ScrollView>
@@ -49,7 +52,7 @@ export function DevDate() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: Palette) => StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -57,6 +60,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 26,
     paddingVertical: 6,
     borderTopWidth: 1,
-    borderTopColor: K.ruleDim,
+    borderTopColor: t.ruleDim,
   },
 });

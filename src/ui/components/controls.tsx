@@ -4,7 +4,8 @@
  */
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
-import { K, font } from '../theme';
+import { font, type Palette } from '../theme';
+import { useStyles, useThemeColors } from '../useStyles';
 import { Caps, Numeral } from './primitives';
 
 type BtnKind = 'solid' | 'line' | 'rubric';
@@ -23,10 +24,12 @@ export function Btn({
   style?: StyleProp<ViewStyle>;
   disabled?: boolean;
 }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const palette = {
-    solid: { bg: K.gold, border: K.gold, text: K.onGold },
-    line: { bg: 'transparent', border: K.rule, text: K.goldHi },
-    rubric: { bg: 'transparent', border: 'rgba(184,69,58,0.5)', text: K.rubricHi },
+    solid: { bg: t.gold, border: t.gold, text: t.onGold },
+    line: { bg: 'transparent', border: t.rule, text: t.goldHi },
+    rubric: { bg: 'transparent', border: 'rgba(184,69,58,0.5)', text: t.rubricHi },
   }[kind];
   return (
     <Pressable
@@ -55,16 +58,18 @@ export function Chip({
   wide?: boolean;
   onPress?: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <Pressable
       onPress={onPress}
       style={[
         styles.chip,
         wide && { paddingHorizontal: 16 },
-        on ? { borderColor: K.gold, backgroundColor: K.selWashHi } : { borderColor: K.ruleDim },
+        on ? { borderColor: t.gold, backgroundColor: t.selWashHi } : { borderColor: t.ruleDim },
       ]}
     >
-      <Caps size={10} ls={1.4} color={on ? K.goldHi : K.ink3}>
+      <Caps size={10} ls={1.4} color={on ? t.goldHi : t.ink3}>
         {children}
       </Caps>
     </Pressable>
@@ -81,6 +86,8 @@ export function Segmented({
   active: string;
   onChange?: (key: string) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <View style={styles.segmented}>
       {options.map((o, i) => {
@@ -91,11 +98,11 @@ export function Segmented({
             onPress={() => onChange?.(o.key)}
             style={[
               styles.segment,
-              i > 0 && { borderLeftWidth: 1, borderLeftColor: K.rule },
-              isActive && { backgroundColor: K.gold },
+              i > 0 && { borderLeftWidth: 1, borderLeftColor: t.rule },
+              isActive && { backgroundColor: t.gold },
             ]}
           >
-            <Caps size={10} ls={1.8} color={isActive ? K.onGold : K.ink2}>
+            <Caps size={10} ls={1.8} color={isActive ? t.onGold : t.ink2}>
               {o.label}
             </Caps>
           </Pressable>
@@ -119,6 +126,8 @@ export function Stepper({
   onInc?: () => void;
   big?: boolean;
 }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   const btn = big ? 54 : 46;
   const numSize = big ? 84 : 30;
   return (
@@ -127,11 +136,11 @@ export function Stepper({
         <Text style={styles.stepSign}>−</Text>
       </Pressable>
       <View style={styles.stepValue}>
-        <Numeral size={numSize} color={K.goldHi}>
+        <Numeral size={numSize} color={t.goldHi}>
           {String(value)}
         </Numeral>
         {unit ? (
-          <Caps size={9} ls={1.6} color={K.ink2} style={{ marginTop: 4 }}>
+          <Caps size={9} ls={1.6} color={t.ink2} style={{ marginTop: 4 }}>
             {unit}
           </Caps>
         ) : null}
@@ -145,25 +154,27 @@ export function Stepper({
 
 /** 46×22 rectangular rail with a square 18px thumb. */
 export function Toggle({ value, onChange }: { value: boolean; onChange?: (v: boolean) => void }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
   return (
     <Pressable
       onPress={() => onChange?.(!value)}
       style={[
         styles.toggle,
-        value ? { borderColor: K.gold, backgroundColor: K.selWashHi } : { borderColor: K.ruleDim },
+        value ? { borderColor: t.gold, backgroundColor: t.selWashHi } : { borderColor: t.ruleDim },
       ]}
     >
       <View
         style={[
           styles.thumb,
-          { alignSelf: value ? 'flex-end' : 'flex-start', backgroundColor: value ? K.gold : K.ink3 },
+          { alignSelf: value ? 'flex-end' : 'flex-start', backgroundColor: value ? t.gold : t.ink3 },
         ]}
       />
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: Palette) => StyleSheet.create({
   btn: {
     width: '100%',
     paddingVertical: 14,
@@ -187,18 +198,18 @@ const styles = StyleSheet.create({
   segmented: {
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: K.rule,
+    borderColor: t.rule,
   },
   segment: { flex: 1, paddingVertical: 13, alignItems: 'center', justifyContent: 'center' },
   stepper: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: K.rule,
+    borderColor: t.rule,
   },
   stepBtn: { alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' },
-  stepSign: { color: K.goldHi, fontSize: 26, fontFamily: font.display },
-  stepValue: { flex: 1, alignItems: 'center', justifyContent: 'center', borderLeftWidth: 1, borderRightWidth: 1, borderColor: K.rule, alignSelf: 'stretch' },
+  stepSign: { color: t.goldHi, fontSize: 26, fontFamily: font.display },
+  stepValue: { flex: 1, alignItems: 'center', justifyContent: 'center', borderLeftWidth: 1, borderRightWidth: 1, borderColor: t.rule, alignSelf: 'stretch' },
   toggle: {
     width: 46,
     height: 22,

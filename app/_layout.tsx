@@ -21,11 +21,11 @@ import {
   Spectral_600SemiBold,
   Spectral_400Regular_Italic,
 } from '@expo-google-fonts/spectral';
-import { K } from '../src/ui/theme';
+import { NotoSansCoptic_400Regular } from '@expo-google-fonts/noto-sans-coptic';
 import { useClock } from '../src/state/clock';
 import { useAuth } from '../src/state/auth';
-import { useRule } from '../src/state/rule';
-import { rescheduleReminders } from '../src/platform/notifications';
+import { useTheme } from '../src/state/theme';
+import { useNotifications } from '../src/state/notifications';
 import { initContent } from '../src/state/content';
 
 void SplashScreen.preventAutoHideAsync();
@@ -39,14 +39,21 @@ export default function RootLayout() {
     initContent();
   }, []);
 
+  // Restore the persisted theme before first paint (gates the splash below).
+  const palette = useTheme((s) => s.palette);
+  const themeReady = useTheme((s) => s.ready);
+  const loadTheme = useTheme((s) => s.load);
+  useEffect(() => {
+    void loadTheme();
+  }, [loadTheme]);
+
   // Restore the session on first mount (auth.load also loads the active
-  // account's rule + devotion data), then reschedule due-day reminders.
+  // account's rule + devotion data), then load notification config + reschedule.
   const loadAuth = useAuth((s) => s.load);
   useEffect(() => {
-    void loadAuth().then(() => {
-      const rule = useRule.getState();
-      const today = useClock.getState().today;
-      void rescheduleReminders(rule.practices, rule.logsByPractice(), today);
+    void loadAuth().then(async () => {
+      await useNotifications.getState().load();
+      await useNotifications.getState().reschedule();
     });
   }, [loadAuth]);
 
@@ -59,19 +66,20 @@ export default function RootLayout() {
     Spectral_500Medium,
     Spectral_600SemiBold,
     Spectral_400Regular_Italic,
+    NotoSansCoptic_400Regular,
   });
 
   useEffect(() => {
-    if (fontsLoaded) void SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    if (fontsLoaded && themeReady) void SplashScreen.hideAsync();
+  }, [fontsLoaded, themeReady]);
 
-  if (!fontsLoaded) return null;
+  if (!fontsLoaded || !themeReady) return null;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: K.bg }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: palette.bg }}>
       <SafeAreaProvider>
-        <StatusBar style="light" />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: K.bg } }}>
+        <StatusBar style={palette.barStyle} />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: palette.bg } }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="auth" />
           <Stack.Screen name="onboarding" />
