@@ -30,7 +30,7 @@ const config: ExpoConfig = {
   backgroundColor: '#0C1020',
   icon: './assets/icon.png',
   ios: {
-    bundleIdentifier: 'com.pharos.app',
+    bundleIdentifier: 'com.pharosapp.app',
     supportsTablet: false,
     infoPlist: {
       // Optional Supabase account sync + Google sign-in use only standard HTTPS/
@@ -40,7 +40,7 @@ const config: ExpoConfig = {
     },
   },
   android: {
-    package: 'com.pharos.app',
+    package: 'com.pharosapp.app',
     // Falls back to the shared `icon` until a transparent adaptive-icon
     // foreground is supplied; that's enough to build (not yet Play-submit ready).
     adaptiveIcon: {
