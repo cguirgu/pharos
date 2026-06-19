@@ -71,10 +71,10 @@ const config: ExpoConfig = {
     // When supabaseUrl + supabaseAnonKey are present the app runs against
     // Supabase with Google sign-in; otherwise it falls back to the local dev
     // store + a local dev sign-in (so it still runs in Expo Go without keys).
-    supabaseUrl: process.env.SUPABASE_URL ?? null,
-    supabaseAnonKey: process.env.SUPABASE_ANON_KEY ?? null,
-    googleIosClientId: process.env.GOOGLE_IOS_CLIENT_ID ?? null,
-    googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID ?? null,
+    supabaseUrl: process.env.SUPABASE_URL || null,
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY || null,
+    googleIosClientId: process.env.GOOGLE_IOS_CLIENT_ID || null,
+    googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID || null,
   },
 };
 

@@ -6,12 +6,15 @@
  */
 import Constants from 'expo-constants';
 
-const extra = (Constants.expoConfig?.extra ?? {}) as Record<string, string | null | undefined>;
+const extra = (Constants.expoConfig?.extra ?? {}) as Record<string, unknown>;
 
-export const SUPABASE_URL = extra.supabaseUrl ?? null;
-export const SUPABASE_ANON_KEY = extra.supabaseAnonKey ?? null;
-export const GOOGLE_IOS_CLIENT_ID = extra.googleIosClientId ?? null;
-export const GOOGLE_WEB_CLIENT_ID = extra.googleWebClientId ?? null;
+/** A non-empty string, or null (treats '', objects, undefined as "not set"). */
+const str = (v: unknown): string | null => (typeof v === 'string' && v.length > 0 ? v : null);
+
+export const SUPABASE_URL = str(extra.supabaseUrl);
+export const SUPABASE_ANON_KEY = str(extra.supabaseAnonKey);
+export const GOOGLE_IOS_CLIENT_ID = str(extra.googleIosClientId);
+export const GOOGLE_WEB_CLIENT_ID = str(extra.googleWebClientId);
 
 /** True when the app should talk to Supabase (keys present). */
 export function isBackendConfigured(): boolean {
