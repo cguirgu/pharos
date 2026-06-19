@@ -16,9 +16,15 @@ import type { ExpoConfig } from 'expo/config';
  */
 const config: ExpoConfig = {
   name: 'Pharos',
-  slug: 'pharos',
+  // Must match the slug of the EAS project referenced by extra.eas.projectId.
+  slug: 'pharos-coptic-orthodox-friend',
   scheme: 'pharos',
   version: '0.1.0',
+  // EAS Update: OTA channel + runtime version (tied to `version` above).
+  runtimeVersion: { policy: 'appVersion' },
+  updates: {
+    url: 'https://u.expo.dev/eab8c3fa-f2dc-498b-a065-91f799b0930d',
+  },
   orientation: 'portrait',
   userInterfaceStyle: 'dark',
   backgroundColor: '#0C1020',
@@ -31,6 +37,15 @@ const config: ExpoConfig = {
       // TLS, which is exempt from US export-encryption filing — so this stays
       // false. (The app still runs fully local when no backend keys are set.)
       ITSAppUsesNonExemptEncryption: false,
+    },
+  },
+  android: {
+    package: 'com.pharos.app',
+    // Falls back to the shared `icon` until a transparent adaptive-icon
+    // foreground is supplied; that's enough to build (not yet Play-submit ready).
+    adaptiveIcon: {
+      foregroundImage: './assets/icon.png',
+      backgroundColor: '#0C1020',
     },
   },
   plugins: [
