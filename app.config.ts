@@ -44,6 +44,7 @@ const config: ExpoConfig = {
       'expo-notifications',
       {
         // Reminders are local only; copy is warm, never shaming.
+        color: '#C9A84A', // gold accent on Android
       },
     ],
   ],

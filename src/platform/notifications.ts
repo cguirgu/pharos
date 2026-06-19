@@ -1,19 +1,34 @@
 /**
  * Local notification scheduling (app layer). The *which/when* is decided by the
- * tested pure `nextTriggers` (due days only); this module just talks to the OS.
- * Runs on app open (PRD §5.7). Silently no-ops if permission isn't granted.
+ * tested pure `buildSchedule` (all configurable channels); this module just
+ * talks to the OS. Runs on app open + whenever the config changes. Silently
+ * no-ops if permission isn't granted.
  */
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import type { Practice, PracticeLog } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
-import { nextTriggers } from '../domain/notifications/schedule';
+import { buildSchedule, type ScheduleContext } from '../domain/notifications/schedule';
+import type { NotificationConfig } from '../domain/notifications/types';
 
-const WINDOW_DAYS = 7;
+const WINDOW_DAYS = 14;
+const MAX_PENDING = 60; // stay under the iOS ~64 pending limit
 
-/** Reschedule the next week of due-day reminders for enabled practices. */
-export async function rescheduleReminders(
-  practices: readonly Practice[],
-  logsByPractice: Readonly<Record<string, readonly PracticeLog[]>>,
+/** Ask for notification permission (returns whether granted). */
+export async function ensurePermission(): Promise<boolean> {
+  try {
+    const cur = await Notifications.getPermissionsAsync();
+    if (cur.granted) return true;
+    const req = await Notifications.requestPermissionsAsync();
+    return req.granted;
+  } catch {
+    return false;
+  }
+}
+
+/** Cancel everything and reschedule the coming window from the config. Best-effort. */
+export async function rescheduleAll(
+  config: NotificationConfig,
+  ctx: ScheduleContext,
   today: CivilDate,
 ): Promise<void> {
   let granted = false;
@@ -25,14 +40,20 @@ export async function rescheduleReminders(
   if (!granted) return;
 
   try {
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'Reminders',
+        importance: Notifications.AndroidImportance.DEFAULT,
+      });
+    }
     await Notifications.cancelAllScheduledNotificationsAsync();
-    const triggers = nextTriggers(practices, logsByPractice, today, WINDOW_DAYS);
-    for (const t of triggers) {
-      const [h, m] = t.time.split(':').map(Number);
-      const when = new Date(t.date.year, t.date.month - 1, t.date.day, h ?? 9, m ?? 0, 0);
-      if (when.getTime() <= Date.now()) continue; // don't schedule in the past
+    const items = buildSchedule(config, ctx, today, WINDOW_DAYS, MAX_PENDING);
+    for (const n of items) {
+      const [h, m] = n.time.split(':').map(Number);
+      const when = new Date(n.date.year, n.date.month - 1, n.date.day, h ?? 9, m ?? 0, 0);
+      if (when.getTime() <= Date.now()) continue; // never schedule in the past
       await Notifications.scheduleNotificationAsync({
-        content: { title: t.practiceName, body: 'The lamp is tended, not stormed.' },
+        content: { title: n.title || 'Pharos', body: n.body },
         trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: when },
       });
     }

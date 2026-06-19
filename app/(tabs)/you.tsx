@@ -101,7 +101,7 @@ export default function YouScreen() {
             onChange={(key) => void setThemeMode(key as ThemeMode)}
           />
         </View>
-        <SettingRow label={copy.you.reminders} />
+        <SettingRow label={copy.you.reminders} onPress={() => router.push('/you/reminders')} />
         <SettingRow label={copy.you.fastingNuance} />
         <SettingRow label={copy.you.about} onPress={() => router.push('/you/about')} />
 

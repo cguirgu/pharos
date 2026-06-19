@@ -265,6 +265,14 @@ export const copy = {
     done: 'Done',
   },
 
+  reminders: {
+    head: 'Reminders',
+    title: 'A gentle word',
+    subtitle: 'Choose what to be reminded of, and when. Never to shame — only to tend.',
+    permission: 'Allow notifications in Settings to receive these.',
+    at: 'at',
+  },
+
   journal: {
     head: 'The commonplace book',
     title: 'The journal',

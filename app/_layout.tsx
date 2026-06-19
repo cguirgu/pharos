@@ -24,9 +24,8 @@ import {
 import { NotoSansCoptic_400Regular } from '@expo-google-fonts/noto-sans-coptic';
 import { useClock } from '../src/state/clock';
 import { useAuth } from '../src/state/auth';
-import { useRule } from '../src/state/rule';
 import { useTheme } from '../src/state/theme';
-import { rescheduleReminders } from '../src/platform/notifications';
+import { useNotifications } from '../src/state/notifications';
 import { initContent } from '../src/state/content';
 
 void SplashScreen.preventAutoHideAsync();
@@ -49,13 +48,12 @@ export default function RootLayout() {
   }, [loadTheme]);
 
   // Restore the session on first mount (auth.load also loads the active
-  // account's rule + devotion data), then reschedule due-day reminders.
+  // account's rule + devotion data), then load notification config + reschedule.
   const loadAuth = useAuth((s) => s.load);
   useEffect(() => {
-    void loadAuth().then(() => {
-      const rule = useRule.getState();
-      const today = useClock.getState().today;
-      void rescheduleReminders(rule.practices, rule.logsByPractice(), today);
+    void loadAuth().then(async () => {
+      await useNotifications.getState().load();
+      await useNotifications.getState().reschedule();
     });
   }, [loadAuth]);
 
