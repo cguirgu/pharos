@@ -116,8 +116,9 @@ export default function LessonPlayer() {
       playWrongSound();
       queueRef.current = [...queueRef.current, cur]; // see it again later
     }
-    // Hold a wrong answer on screen noticeably longer so the correct one can be read.
-    timerRef.current = setTimeout(advance, correct ? 700 : 2300);
+    // Correct answers auto-advance; a WRONG answer waits for the learner to tap
+    // Continue, so they can study the correct answer for as long as they like.
+    if (correct) timerRef.current = setTimeout(advance, 700);
   };
 
   const restart = () => {
@@ -224,9 +225,9 @@ export default function LessonPlayer() {
               <Copt size={30} color={t.gold}>{current.answer}</Copt>
             ) : null}
             {!outcome!.correct ? (
-              <Pressable onPress={advance} hitSlop={10}>
-                <Caps size={9} ls={1.8} color={t.ink3}>{copy.learn.continueLesson} →</Caps>
-              </Pressable>
+              <Btn kind="solid" style={{ alignSelf: 'stretch', marginTop: 4 }} onPress={advance}>
+                {copy.learn.continueLesson}
+              </Btn>
             ) : null}
           </View>
         ) : null}
