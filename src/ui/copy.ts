@@ -3,7 +3,7 @@
  * (CLAUDE.md "Voice": warm, literary, liturgical; never gamified or guilt-driven).
  */
 export const copy = {
-  tabs: { today: 'Today', hours: 'Hours', word: 'Word', rule: 'Rule', you: 'You', saved: 'Saved' },
+  tabs: { today: 'Today', hours: 'Hours', word: 'Word', learn: 'Learn', rule: 'Rule', you: 'You', saved: 'Saved' },
 
   today: {
     account: "The day's account",
@@ -215,6 +215,54 @@ export const copy = {
     remove: 'Remove highlight',
     sources: { all: 'All', scripture: 'Scripture', synaxarium: 'Synaxarium' },
     count: (n: number) => `${n} ${n === 1 ? 'mark' : 'marks'}`,
+  },
+
+  learn: {
+    head: 'Learn the Coptic tongue',
+    title: 'The Coptic tongue',
+    subtitle: 'Read, translate, and pronounce the language of the hymns.',
+    level: 'level',
+    xp: 'XP',
+    milestonesLabel: 'milestones',
+    path: 'Your path',
+    begin: 'Begin →',
+    review: 'Review →',
+    locked: 'Locked',
+    continueLesson: 'Continue',
+    of: (a: number, b: number) => `${a} of ${b}`,
+    daysProgress: (done: number, total: number) => `${done} / ${total} lessons`,
+    // exercise prompts
+    prompts: {
+      'letter-name': 'Name this letter',
+      'letter-sound': 'How is it sounded?',
+      'name-letter': 'Which letter is this?',
+      'word-meaning': 'What does it mean?',
+      'word-read': 'How is it read?',
+      'word-spell': 'Spell it in Coptic',
+    } as Record<string, string>,
+    correct: 'Correct',
+    wrong: 'Not quite',
+    listen: 'Tap to hear',
+    audioSoon: 'Audio coming soon',
+    check: 'Check',
+    clear: 'Clear',
+    // ranks
+    rankLabel: 'Your rank',
+    toNextRank: (n: number, rank: string) => `${n} more to ${rank}`,
+    crownsLabel: 'crowns',
+    // lesson states
+    crownHint: 'Score 100% for the crown',
+    needNinety: 'Score 90% to unlock the next level',
+    // completion
+    complete: 'Lesson complete',
+    perfect: 'Perfect!',
+    crownEarned: '☩ Crown earned',
+    unlocked: 'Next level unlocked!',
+    score: (correct: number, total: number) => `${correct} / ${total} correct`,
+    earned: (n: number) => `+${n} XP`,
+    milestoneEarned: 'Milestone earned',
+    tryAgain: 'Try again',
+    done: 'Done',
   },
 
   journal: {

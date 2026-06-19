@@ -12,7 +12,7 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { eq, and } from 'drizzle-orm';
 import * as s from './schema';
 import { CREATE_SQL } from './schema';
-import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, HighlightFilter } from './repo';
+import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter } from './repo';
 import { normalizeEmail, matchesHighlightFilter } from './repo';
 import type { Practice, PracticeLog, Cadence, Measure, Category, Kind, PracticeState, DayStatus, Reminder } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
@@ -21,7 +21,7 @@ import type { Highlight, HighlightAnchor, HighlightColor, HighlightSource } from
 const SESSION_KEY = 'session_account_id';
 const SCHEMA_KEY = 'schema_version';
 /** Bump whenever the table shapes change (forces a local rebuild). */
-const SCHEMA_VERSION = 4;
+const SCHEMA_VERSION = 5;
 
 function parseDateKey(key: string): CivilDate {
   const [y, m, d] = key.split('-').map(Number);
@@ -390,6 +390,33 @@ export class SqliteRepo implements Repo {
   }
   async countOfficeLogs(accountId: string): Promise<number> {
     return this.db.select().from(s.officeLogs).where(eq(s.officeLogs.accountId, accountId)).all().length;
+  }
+
+  // --- learn ---
+  async listLearn(accountId: string): Promise<LearnLessonRecord[]> {
+    return this.db
+      .select()
+      .from(s.learnLessons)
+      .where(eq(s.learnLessons.accountId, accountId))
+      .all()
+      .map((r) => ({ lessonId: r.lessonId, completedOn: r.completedOn, correct: r.correct, total: r.total }));
+  }
+  async completeLesson(accountId: string, lessonId: string, correct: number, total: number, completedOn: string): Promise<void> {
+    const prev = this.db
+      .select()
+      .from(s.learnLessons)
+      .where(and(eq(s.learnLessons.accountId, accountId), eq(s.learnLessons.lessonId, lessonId)))
+      .get();
+    // Keep the best score so re-doing a lesson never regresses progress.
+    const best = Math.max(correct, prev?.correct ?? 0);
+    this.db
+      .insert(s.learnLessons)
+      .values({ accountId, lessonId, completedOn, correct: best, total })
+      .onConflictDoUpdate({
+        target: [s.learnLessons.accountId, s.learnLessons.lessonId],
+        set: { completedOn, correct: best, total },
+      })
+      .run();
   }
 
   // --- global key/value ---

@@ -169,3 +169,37 @@ not copyrightable. To ingest: call the coptic.io readings endpoint per Coptic da
 - KJV JSON (public domain, MIT code): https://github.com/aruljohn/Bible-kjv · https://github.com/churchstudio-org/openbible
 - Brenton Septuagint (public domain): https://ebible.org/eng-Brenton/
 - Katameros lectionary (open source): https://github.com/pierresaid/katameros-api · https://github.com/abanobmikaeel/coptic.io · https://katameros.app/
+
+## Learn — Coptic alphabet + words (Greco-Bohairic)
+The Learn course encodes the 32-letter Bohairic alphabet (`src/domain/learn/alphabet.ts`)
+and core liturgical words (`words.ts`) with the **Greco-Bohairic** pronunciation (the modern
+Church standard). Letter forms, names, and phonetic values are structural linguistic facts
+(safe to encode, like book names), but were cross-checked against authoritative references and
+are pending final **owner (Coptic Orthodox) review**.
+
+Cross-checked against: Wikipedia *Coptic alphabet* / *Bohairic Coptic* (Greco-Bohairic phoneme
+tables), the Younan *So You Want to Learn Coptic* grammar, ekladious.com "Coptic Pronunciation
+Rules", deaconclass.weebly alphabet packet, St. Mark Festival L101, suscopts servants-prep,
+copticchurch.net. Corrections applied from that pass: Ϫ Janja = "j" (judge), not hard "g";
+Ⲅ Gamma "gh" before ⲁ ⲟ ⲱ; Ⲭ Khi "sh"/"kh" split in Greek words; Ⲃ Vida "b" after consonants;
+ⲁⲅⲓⲟⲥ marked as a sung "gh" exception.
+
+**Open items for owner to adjudicate:** Ⲅ before front vowels (hard "g" per Sunday-school rule
+vs the ⲁⲅⲓⲟⲥ "gh" reality); house spelling of names (Vida/Bita, Lavla/Lola, Cheema/Shima);
+the position-6 glyph (Coptic Sou Ⲋ U+2C8A — used here — vs Greek stigma Ϛ U+03DA).
+
+**Audio (pronunciation):** clips are owner-supplied VERIFIED recordings (never synthesized).
+Drop files in `assets/audio/coptic/<key>.m4a` and register them in
+`src/content/coptic-audio.gen.ts`; until then the player teaches pronunciation via the
+transliteration + phonetic key and shows an "audio coming soon" state.
+
+### Learn — expanded word units (5 new lessons)
+Added units **Holy Names** (ⲫⲓⲱⲧ, ⲡϣⲏⲣⲓ, ⲡⲓⲡⲛⲉⲩⲙⲁ, ⲫⲛⲟⲩϯ, ⲡϭⲟⲓⲥ, ⲓⲏⲥⲟⲩⲥ),
+**Words of the Liturgy** (ⲙⲁⲣⲓⲁ, ⲡⲓⲱⲟⲩ, ϯⲉⲕⲕⲗⲏⲥⲓⲁ, ⲡⲓⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ, ⲡⲓⲁⲅⲅⲉⲗⲟⲥ, ϯϩⲓⲣⲏⲛⲏ),
+and **Words of Praise** (ⲭⲉⲣⲉ, ⲥⲙⲟⲩ, ⲧⲉⲛⲟⲩⲱϣⲧ). All 15 web-verified (Wiktionary Coptic,
+tasbeha.org, st-takla, liturgy texts, coptic.academy). Corrections applied: the ⲅⲅ cluster in
+ⲡⲓⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ/ⲡⲓⲁⲅⲅⲉⲗⲟⲥ is "ang-ge" (n + hard g, as in "angel"), not "an-ghe".
+**Note:** divine titles use the WEAK article on purpose (ⲫⲓⲱⲧ / ⲡϣⲏⲣⲓ / ⲫⲛⲟⲩϯ) — do not change
+to the strong ⲡⲓ- forms. Exact spellings are locked in `__tests__/learn/alphabet.test.ts`.
+UI feedback sounds (`assets/audio/ui/correct.wav`, `wrong.wav`) are generic synthesized tones
+(scripts/gen-sfx.mjs), NOT liturgical audio.

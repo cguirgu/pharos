@@ -15,6 +15,9 @@ import { useRule } from '../../src/state/rule';
 import { useJournal } from '../../src/state/journal';
 import { useReading } from '../../src/state/reading';
 import { useOffices } from '../../src/state/offices';
+import { useLearning } from '../../src/state/learning';
+import { isLessonPassed } from '../../src/domain/learn/course';
+import { proficiencyFor } from '../../src/domain/learn/proficiency';
 import { useClock } from '../../src/state/clock';
 import { youStats } from '../../src/domain/stats';
 import { evaluateMarks } from '../../src/domain/marks';
@@ -48,6 +51,9 @@ export default function YouScreen() {
 
   const stats = youStats({ practices, logsByPractice, restDays, officeCompletions: officeTotal, today });
   const marks = evaluateMarks({ practices, logsByPractice, restDays, journalCount, planDaysCompleted, today });
+  // Subscribe to the stable `lessons` record (not a Set-returning selector — that loops).
+  const learnLessons = useLearning((s) => s.lessons);
+  const copticRank = proficiencyFor(Object.values(learnLessons).filter(isLessonPassed).length);
 
   return (
     <Page>
@@ -57,6 +63,9 @@ export default function YouScreen() {
           <Text style={styles.name}>{account?.displayName ?? 'Friend'}</Text>
           <Caps size={9} ls={1.4} color={t.ink2} style={{ marginTop: 6 }}>
             {copy.you.journeyLabel} · {journeyLabel(account?.journeyStage ?? null)}
+          </Caps>
+          <Caps size={9} ls={1.4} color={t.gold} style={{ marginTop: 4 }}>
+            ☩ {copticRank.rank.title}
           </Caps>
         </View>
 

@@ -16,9 +16,10 @@ import { useJournal } from './journal';
 import { useReading } from './reading';
 import { useOffices } from './offices';
 import { useHighlights } from './highlights';
+import { useLearning } from './learning';
 import { useClock } from './clock';
 
-/** Load all per-account data (rule + journal + reading + offices + highlights). */
+/** Load all per-account data (rule + journal + reading + offices + highlights + learn). */
 async function loadAccountData(accountId: string): Promise<void> {
   const today = useClock.getState().today;
   await useRule.getState().load(accountId);
@@ -26,6 +27,7 @@ async function loadAccountData(accountId: string): Promise<void> {
   await useReading.getState().load(accountId, today);
   await useOffices.getState().load(accountId);
   await useHighlights.getState().load(accountId);
+  await useLearning.getState().load(accountId);
 }
 
 /** Clear all per-account data (sign-out). */
@@ -35,6 +37,7 @@ function clearAccountData(): void {
   useReading.getState().clear();
   useOffices.getState().clear();
   useHighlights.getState().clear();
+  useLearning.getState().clear();
 }
 
 export type AuthError = 'email-taken' | 'invalid-credentials' | 'invalid-email' | 'weak-password';

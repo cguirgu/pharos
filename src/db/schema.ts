@@ -104,6 +104,14 @@ export const officeLogs = sqliteTable('office_logs', {
   officeKey: text('office_key').notNull(),
 }, (t) => ({ pk: primaryKey({ columns: [t.accountId, t.date, t.officeKey] }) }));
 
+export const learnLessons = sqliteTable('learn_lessons', {
+  accountId: text('account_id').notNull(),
+  lessonId: text('lesson_id').notNull(),
+  completedOn: text('completed_on').notNull(), // YYYY-MM-DD
+  correct: integer('correct').notNull(),
+  total: integer('total').notNull(),
+}, (t) => ({ pk: primaryKey({ columns: [t.accountId, t.lessonId] }) }));
+
 export const settings = sqliteTable('settings', {
   key: text('key').primaryKey(),
   value: text('value').notNull(),
@@ -153,6 +161,11 @@ CREATE TABLE IF NOT EXISTS reading_progress (
 CREATE TABLE IF NOT EXISTS office_logs (
   account_id TEXT NOT NULL, date TEXT NOT NULL, office_key TEXT NOT NULL,
   PRIMARY KEY (account_id, date, office_key)
+);
+CREATE TABLE IF NOT EXISTS learn_lessons (
+  account_id TEXT NOT NULL, lesson_id TEXT NOT NULL, completed_on TEXT NOT NULL,
+  correct INTEGER NOT NULL, total INTEGER NOT NULL,
+  PRIMARY KEY (account_id, lesson_id)
 );
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL);
 `;

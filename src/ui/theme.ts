@@ -142,8 +142,8 @@ export const font = {
   bodyMed: 'Spectral_500Medium',
   caps: 'Spectral_600SemiBold',
   bodyItalic: 'Spectral_400Regular_Italic',
-  /** Noto Sans Coptic ornament glyphs — falls back to display until bundled. */
-  coptic: 'CormorantGaramond_600SemiBold',
+  /** Noto Sans Coptic — accurate Coptic letterforms (bundled in app/_layout). */
+  coptic: 'NotoSansCoptic_400Regular',
 } as const;
 
 /** Sharp corners everywhere. */

@@ -21,6 +21,7 @@ import {
   Spectral_600SemiBold,
   Spectral_400Regular_Italic,
 } from '@expo-google-fonts/spectral';
+import { NotoSansCoptic_400Regular } from '@expo-google-fonts/noto-sans-coptic';
 import { useClock } from '../src/state/clock';
 import { useAuth } from '../src/state/auth';
 import { useRule } from '../src/state/rule';
@@ -67,6 +68,7 @@ export default function RootLayout() {
     Spectral_500Medium,
     Spectral_600SemiBold,
     Spectral_400Regular_Italic,
+    NotoSansCoptic_400Regular,
   });
 
   useEffect(() => {

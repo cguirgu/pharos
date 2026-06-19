@@ -38,21 +38,30 @@ export function Caps({
   );
 }
 
-/** Coptic ornament glyph. */
+/** Coptic ornament glyph. Pass `fit` to shrink long words onto one line. */
 export function Copt({
   children,
   size = 14,
   color,
   style,
+  fit = false,
 }: {
   children: React.ReactNode;
   size?: number;
   color?: string;
   style?: StyleProp<TextStyle>;
+  /** Auto-shrink to fit one line (for long Coptic words). */
+  fit?: boolean;
 }) {
   const t = useThemeColors();
   return (
-    <Text style={[{ fontFamily: font.coptic, fontSize: size, color: color ?? t.gold, lineHeight: size * 1.05 }, style]}>
+    <Text
+      numberOfLines={fit ? 1 : undefined}
+      adjustsFontSizeToFit={fit || undefined}
+      minimumFontScale={fit ? 0.4 : undefined}
+      // A fixed lineHeight fights adjustsFontSizeToFit, so omit it when fitting.
+      style={[{ fontFamily: font.coptic, fontSize: size, color: color ?? t.gold }, !fit && { lineHeight: size * 1.05 }, style]}
+    >
       {children}
     </Text>
   );

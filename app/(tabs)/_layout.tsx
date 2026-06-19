@@ -1,6 +1,7 @@
 /**
  * Tabs layout. The native tab bar is hidden; we render our own typographic
- * NavLedger (DESIGN-SPEC §4). Five tabs: Today · Hours · Word · Rule · You.
+ * NavLedger (DESIGN-SPEC §4). Tabs: Today · Hours · Learn · Rule · Saved · You.
+ * (Word is hidden for now — its route stays registered for easy re-enable.)
  */
 import React from 'react';
 import { View } from 'react-native';
@@ -13,7 +14,7 @@ import { useThemeColors } from '../../src/ui/useStyles';
 const TABS: readonly NavTab[] = [
   { key: 'today', label: copy.tabs.today },
   { key: 'hours', label: copy.tabs.hours },
-  { key: 'word', label: copy.tabs.word },
+  { key: 'learn', label: copy.tabs.learn },
   { key: 'rule', label: copy.tabs.rule },
   { key: 'saved', label: copy.tabs.saved },
   { key: 'you', label: copy.tabs.you },
@@ -33,6 +34,7 @@ export default function TabsLayout() {
       >
         <Tabs.Screen name="today" />
         <Tabs.Screen name="hours" />
+        <Tabs.Screen name="learn" />
         <Tabs.Screen name="word" />
         <Tabs.Screen name="rule" />
         <Tabs.Screen name="saved" />

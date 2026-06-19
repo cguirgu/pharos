@@ -51,6 +51,13 @@ export interface ReadingEnrollment {
   createdAt: number;
 }
 
+export interface LearnLessonRecord {
+  lessonId: string;
+  completedOn: string; // YYYY-MM-DD
+  correct: number;
+  total: number;
+}
+
 /** Optional narrowing for highlight queries (used by the reader overlay). */
 export interface HighlightFilter {
   source?: HighlightSource;
@@ -102,6 +109,10 @@ export interface Repo {
   setOfficeLog(accountId: string, dateKey: string, officeKey: string, on: boolean): Promise<void>;
   countOfficeLogs(accountId: string): Promise<number>;
 
+  // --- per-account: learn ---
+  listLearn(accountId: string): Promise<LearnLessonRecord[]>;
+  completeLesson(accountId: string, lessonId: string, correct: number, total: number, completedOn: string): Promise<void>;
+
   // --- global key/value ---
   getSetting(key: string): Promise<string | null>;
   setSetting(key: string, value: string): Promise<void>;
@@ -141,6 +152,7 @@ export class MemoryRepo implements Repo {
   private enrollments = new Map<string, Map<string, ReadingEnrollment>>();
   private readDays = new Map<string, Map<string, Set<number>>>(); // account → plan → days
   private offices = new Map<string, Set<string>>(); // account → "dateKey|officeKey"
+  private learn = new Map<string, Map<string, LearnLessonRecord>>(); // account → lesson → record
   private settingsMap = new Map<string, string>();
 
   async init(): Promise<void> {}
@@ -263,6 +275,17 @@ export class MemoryRepo implements Repo {
   }
   async countOfficeLogs(accountId: string): Promise<number> {
     return this.setBucket(this.offices, accountId).size;
+  }
+
+  // learn
+  async listLearn(accountId: string): Promise<LearnLessonRecord[]> {
+    return [...this.bucket(this.learn, accountId).values()];
+  }
+  async completeLesson(accountId: string, lessonId: string, correct: number, total: number, completedOn: string): Promise<void> {
+    const b = this.bucket(this.learn, accountId);
+    const prev = b.get(lessonId);
+    // Keep the best score so re-doing a lesson never regresses progress.
+    b.set(lessonId, { lessonId, completedOn, total, correct: Math.max(correct, prev?.correct ?? 0) });
   }
 
   // global key/value

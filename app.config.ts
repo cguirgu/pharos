@@ -32,6 +32,7 @@ const config: ExpoConfig = {
   plugins: [
     'expo-router',
     'expo-sqlite',
+    'expo-audio',
     [
       'expo-splash-screen',
       {
