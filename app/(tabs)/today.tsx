@@ -127,7 +127,7 @@ export default function TodayScreen() {
               <Caps size={13} color={t.ink3}>{commemOpen ? '▾' : '▸'}</Caps>
             </Pressable>
             {commemOpen ? (
-              <Pressable onPress={() => router.navigate('/(tabs)/hours' as never)}>
+              <Pressable onPress={() => router.navigate('/(tabs)/word?focus=commemoration' as never)}>
                 <Text style={styles.commemName}>{saint.name}</Text>
                 {saint.title ? (
                   <Caps size={8.5} ls={1.4} color={t.ink3} style={{ marginTop: 4 }}>

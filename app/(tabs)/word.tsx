@@ -3,9 +3,9 @@
  * (the Synaxarium life, moved here from Hours), and the journal (PRD §5.4).
  * Scripture text is supplied later from a verified, approved source.
  */
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, ScrollView, Pressable, StyleSheet, type LayoutChangeEvent } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Page } from '../../src/ui/Page';
 import { Folio, Rubric, Caps, Numeral, Btn, Fleuron } from '../../src/ui/components';
 import { SelectableProse } from '../../src/ui/SelectableProse';
@@ -41,6 +41,33 @@ export default function WordScreen() {
   const scale = useTextScale((s) => s.scale);
   const info = getDayInfo(today);
   const saint = primarySaint(info.coptic);
+
+  // Deep-link from Today's commemoration card → scroll to that section. The
+  // section's y is captured on layout; we scroll once it's known and the
+  // `focus` param is set, then clear the param so it won't re-fire.
+  const { focus } = useLocalSearchParams<{ focus?: string }>();
+  const scrollRef = useRef<ScrollView>(null);
+  const commemY = useRef(0);
+  const pendingFocus = useRef(false);
+
+  const maybeScrollToCommem = () => {
+    if (!pendingFocus.current || commemY.current <= 0) return;
+    pendingFocus.current = false;
+    scrollRef.current?.scrollTo({ y: Math.max(commemY.current - 12, 0), animated: true });
+    router.setParams({ focus: undefined });
+  };
+
+  useEffect(() => {
+    if (focus === 'commemoration') {
+      pendingFocus.current = true;
+      maybeScrollToCommem();
+    }
+  }, [focus]);
+
+  const onCommemLayout = (e: LayoutChangeEvent) => {
+    commemY.current = e.nativeEvent.layout.y;
+    maybeScrollToCommem();
+  };
 
   // Best-effort: fetch today's Katameros readings (references) when online.
   const [, setTick] = useState(0);
@@ -88,7 +115,7 @@ export default function WordScreen() {
   return (
     <Page>
       <Folio left={copy.word.head} right={liturgicalLabel(info)} glyph="Ⲅ" />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
+      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
         {/* Whole-Bible browse */}
         <Rubric>{copy.word.bible}</Rubric>
         <Btn kind="line" onPress={() => router.push('/word')}>
@@ -198,27 +225,29 @@ export default function WordScreen() {
         ) : null}
 
         {/* Commemoration of the day — the Synaxarium life, drag-select to mark. */}
-        <Rubric num="Ⲙ">{copy.word.commemoration}</Rubric>
-        <View style={styles.saint}>
-          <Text style={styles.saintName}>{saint?.name ?? '—'}</Text>
-          {saint?.title ? (
-            <Caps size={8.5} ls={1.4} color={t.ink3} style={{ marginTop: 4 }}>
-              {saint.title}
-            </Caps>
-          ) : null}
-          <Fleuron />
-          {saint ? (
-            <SelectableProse
-              text={saint.life}
-              textStyle={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}
-              onSaveSelection={onSaveLifeSelection}
-              onPressWhole={markWholeSaint}
-            />
-          ) : (
-            <Text style={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}>
-              {copy.word.noCommemoration}
-            </Text>
-          )}
+        <View onLayout={onCommemLayout}>
+          <Rubric num="Ⲙ">{copy.word.commemoration}</Rubric>
+          <View style={styles.saint}>
+            <Text style={styles.saintName}>{saint?.name ?? '—'}</Text>
+            {saint?.title ? (
+              <Caps size={8.5} ls={1.4} color={t.ink3} style={{ marginTop: 4 }}>
+                {saint.title}
+              </Caps>
+            ) : null}
+            <Fleuron />
+            {saint ? (
+              <SelectableProse
+                text={saint.life}
+                textStyle={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}
+                onSaveSelection={onSaveLifeSelection}
+                onPressWhole={markWholeSaint}
+              />
+            ) : (
+              <Text style={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}>
+                {copy.word.noCommemoration}
+              </Text>
+            )}
+          </View>
         </View>
       </ScrollView>
     </Page>
