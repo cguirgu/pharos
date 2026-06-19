@@ -7,9 +7,10 @@ import type { ExpoConfig } from 'expo/config';
  * `extra.eas.projectId` (linked with `eas init --id …`). Visual identity uses
  * the codex palette — splash is the gold beacon on oxford ink (#0C1020).
  *
- * TODO(assets): generate final icon + splash artwork from `PharosSeal`
- * (src/ui/components/PharosSeal). Until then we ship the background colour only
- * (Expo provides a default icon for development / Expo Go).
+ * The app icon (assets/icon.png, 1024×1024, the gold beacon on oxford ink) is
+ * the App Store marketing icon; Expo derives every smaller size from it. The
+ * splash (assets/splash.png) recomposites that same beacon onto oxford ink so
+ * the launch screen fades seamlessly into the app background.
  * TODO(fonts): bundle Noto Sans Coptic .ttf for the ornament glyphs; the two
  * Latin families load at runtime via @expo-google-fonts.
  */
@@ -21,11 +22,14 @@ const config: ExpoConfig = {
   orientation: 'portrait',
   userInterfaceStyle: 'dark',
   backgroundColor: '#0C1020',
+  icon: './assets/icon.png',
   ios: {
     bundleIdentifier: 'com.pharos.app',
     supportsTablet: false,
     infoPlist: {
-      // Local-only app: no tracking, no accounts, no network data collection.
+      // Optional Supabase account sync + Google sign-in use only standard HTTPS/
+      // TLS, which is exempt from US export-encryption filing — so this stays
+      // false. (The app still runs fully local when no backend keys are set.)
       ITSAppUsesNonExemptEncryption: false,
     },
   },
@@ -36,6 +40,8 @@ const config: ExpoConfig = {
     [
       'expo-splash-screen',
       {
+        image: './assets/splash.png',
+        imageWidth: 240,
         backgroundColor: '#0C1020',
         resizeMode: 'contain',
       },

@@ -115,6 +115,8 @@ export const copy = {
     ] as const,
     marks: 'The marks',
     about: 'About & attributions',
+    privacy: 'Privacy policy',
+    terms: 'Terms of service',
     journeyLabel: 'On the journey',
     stats: { streak: 'streak', prayers: 'prayers', wedfri: '% wed/fri' },
     streakTitle: 'The lamp, tended',

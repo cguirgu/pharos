@@ -103,6 +103,8 @@ export default function YouScreen() {
         <SettingRow label={copy.you.reminders} onPress={() => router.push('/you/reminders')} />
         <SettingRow label={copy.you.fastingNuance} />
         <SettingRow label={copy.you.about} onPress={() => router.push('/you/about')} />
+        <SettingRow label={copy.you.privacy} onPress={() => router.push('/you/privacy')} />
+        <SettingRow label={copy.you.terms} onPress={() => router.push('/you/terms')} />
 
         <View style={{ height: 24 }} />
         <Btn
