@@ -1,8 +1,8 @@
 /**
  * Welcome (from OnbWelcome2): the seal, the promise, and the way in.
  */
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Page } from '../../src/ui/Page';
@@ -23,6 +23,10 @@ export default function Welcome() {
   const signInWithGoogle = useAuth((s) => s.signInWithGoogle);
   const signingIn = useAuth((s) => s.signingIn);
   const authError = useAuth((s) => s.authError);
+  const clearError = useAuth((s) => s.clearError);
+
+  // Clear any error left over from a password screen when landing here.
+  useEffect(() => clearError(), [clearError]);
 
   const onGoogle = async () => {
     const ok = await signInWithGoogle();
@@ -46,11 +50,17 @@ export default function Welcome() {
         <Btn kind="solid" onPress={onGoogle} disabled={signingIn}>
           {signingIn ? copy.auth.signingIn : copy.auth.continueGoogle}
         </Btn>
+        <Btn kind="line" onPress={() => router.push('/auth/signup')} disabled={signingIn}>
+          {copy.auth.withEmail}
+        </Btn>
         {authError ? (
-          <View style={styles.link}>
+          <View style={styles.error}>
             <Caps size={9} ls={1.4} color={t.rubricHi}>{copy.auth.signInError}</Caps>
           </View>
         ) : null}
+        <Pressable style={styles.link} onPress={() => router.push('/auth/signin')} hitSlop={10}>
+          <Caps size={9.5} ls={1.4} color={t.ink2}>{copy.auth.haveAccount}</Caps>
+        </Pressable>
       </View>
     </Page>
   );
@@ -67,6 +77,7 @@ const makeStyles = (t: Palette) => StyleSheet.create({
     textAlign: 'center',
     lineHeight: 32,
   },
-  bottom: { gap: 6 },
-  link: { alignItems: 'center', paddingVertical: 16 },
+  bottom: { gap: 10 },
+  error: { alignItems: 'center', paddingTop: 6 },
+  link: { alignItems: 'center', paddingVertical: 12 },
 });

@@ -1,13 +1,17 @@
 /**
- * Auth store — Google sign-in via Supabase. When the backend is configured
- * (keys present) it signs in with Google and a single signed-in user maps to a
- * Supabase session + `profiles` row. When NOT configured it falls back to a
- * local dev sign-in against the device store, so the app still runs in Expo Go
- * without keys. Either way, account changes drive every per-account store.
+ * Auth store — Google sign-in and email/password via Supabase. When the backend
+ * is configured (keys present) Google uses an ID token and email/password uses
+ * Supabase Auth; a single signed-in user maps to a Supabase session + `profiles`
+ * row. When NOT configured it falls back to the local device store (local dev
+ * sign-in, and locally-hashed email/password accounts), so the app still runs in
+ * Expo Go without keys. Either way, account changes drive every per-account store.
  */
 import { create } from 'zustand';
 import { getRepo, type Account, type JourneyStage } from '../db/repo';
 import { isBackendConfigured } from '../lib/config';
+import { validateCredentials, isValidEmail, type AuthErrorCode } from '../domain/auth/credentials';
+import { hashPassword, verifyPassword, randomSalt } from '../platform/hash';
+import { id } from '../platform/id';
 import { starterPractices, type StarterKey } from '../db/seed';
 import { useRule } from './rule';
 import { useJournal } from './journal';
@@ -53,7 +57,10 @@ interface AuthState {
   authError: string | null;
 
   load: () => Promise<void>;
+  clearError: () => void;
   signInWithGoogle: () => Promise<boolean>;
+  signUpWithPassword: (email: string, password: string) => Promise<boolean>;
+  signInWithPassword: (email: string, password: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   completeOnboarding: (input: OnboardingInput) => Promise<void>;
 }
@@ -72,6 +79,15 @@ async function accountFromSupabase(userId: string, email: string | null, name: s
     journeyStage: null,
     onboardingComplete: false,
   };
+}
+
+/** Map a Supabase Auth error message to one of our copy error codes (or pass it through). */
+function mapSupabaseAuthError(message: string): AuthErrorCode | string {
+  const m = message.toLowerCase();
+  if (m.includes('already registered') || m.includes('already been registered') || m.includes('already exists')) return 'email-taken';
+  if (m.includes('password')) return 'weak-password';
+  if (m.includes('valid email') || m.includes('invalid email')) return 'invalid-email';
+  return message;
 }
 
 /** Ensure (and return) the single local dev account for the unconfigured fallback. */
@@ -121,6 +137,8 @@ export const useAuth = create<AuthState>((set, get) => ({
     set({ loaded: true, account });
   },
 
+  clearError: () => set({ authError: null }),
+
   signInWithGoogle: async () => {
     set({ signingIn: true, authError: null });
     try {
@@ -143,6 +161,106 @@ export const useAuth = create<AuthState>((set, get) => ({
       // dev fallback (no keys) — one local account, no real auth
       const account = await ensureDevAccount();
       await getRepo().setSession(account.id);
+      clearAccountData();
+      await loadAccountData(account.id);
+      set({ account });
+      return true;
+    } catch (e) {
+      set({ authError: e instanceof Error ? e.message : 'Sign-in failed' });
+      return false;
+    } finally {
+      set({ signingIn: false });
+    }
+  },
+
+  signUpWithPassword: async (email, password) => {
+    const code = validateCredentials(email, password);
+    if (code) {
+      set({ authError: code });
+      return false;
+    }
+    set({ signingIn: true, authError: null });
+    try {
+      if (isBackendConfigured()) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
+        const { data, error } = await getSupabase().auth.signUp({ email: email.trim(), password });
+        if (error) {
+          set({ authError: mapSupabaseAuthError(error.message) });
+          return false;
+        }
+        if (!data.session || !data.user) {
+          // Email confirmation is enabled on the project; no session yet.
+          set({ authError: 'confirm-email' });
+          return false;
+        }
+        const account = await accountFromSupabase(data.user.id, data.user.email ?? null, null);
+        clearAccountData();
+        await loadAccountData(data.user.id);
+        set({ account });
+        return true;
+      }
+      // local fallback (no keys) — store a locally-hashed account on device
+      const repo = getRepo();
+      const existing = await repo.findAccountByEmail(email);
+      if (existing) {
+        set({ authError: 'email-taken' });
+        return false;
+      }
+      const salt = randomSalt();
+      const account: Account = {
+        id: id(),
+        email: email.trim(),
+        passwordHash: hashPassword(password, salt),
+        salt,
+        createdAt: Date.now(),
+        displayName: null,
+        journeyStage: null,
+        onboardingComplete: false,
+      };
+      await repo.createAccount(account);
+      await repo.setSession(account.id);
+      clearAccountData();
+      await loadAccountData(account.id);
+      set({ account });
+      return true;
+    } catch (e) {
+      set({ authError: e instanceof Error ? e.message : 'Sign-up failed' });
+      return false;
+    } finally {
+      set({ signingIn: false });
+    }
+  },
+
+  signInWithPassword: async (email, password) => {
+    if (!isValidEmail(email) || password.length === 0) {
+      set({ authError: 'invalid-credentials' });
+      return false;
+    }
+    set({ signingIn: true, authError: null });
+    try {
+      if (isBackendConfigured()) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
+        const { data, error } = await getSupabase().auth.signInWithPassword({ email: email.trim(), password });
+        if (error || !data.user) {
+          set({ authError: 'invalid-credentials' });
+          return false;
+        }
+        const account = await accountFromSupabase(data.user.id, data.user.email ?? null, (data.user.user_metadata?.full_name as string) ?? null);
+        clearAccountData();
+        await loadAccountData(data.user.id);
+        set({ account });
+        return true;
+      }
+      // local fallback — verify against the device-stored hash
+      const repo = getRepo();
+      const account = await repo.findAccountByEmail(email);
+      if (!account || !verifyPassword(password, account.salt, account.passwordHash)) {
+        set({ authError: 'invalid-credentials' });
+        return false;
+      }
+      await repo.setSession(account.id);
       clearAccountData();
       await loadAccountData(account.id);
       set({ account });

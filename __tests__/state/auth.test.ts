@@ -55,3 +55,53 @@ test('sign-out clears data; signing back in restores it', async () => {
   await auth().signInWithGoogle();
   expect(useRule.getState().practices).toHaveLength(1); // same account, data persisted
 });
+
+test('email/password sign-up opens a session for a new account', async () => {
+  const ok = await auth().signUpWithPassword('mina@example.com', 'pa55word');
+  expect(ok).toBe(true);
+  expect(auth().account?.email).toBe('mina@example.com');
+  expect(auth().account?.onboardingComplete).toBe(false);
+  expect(auth().authError).toBeNull();
+});
+
+test('sign-up rejects invalid credentials with the matching error code', async () => {
+  expect(await auth().signUpWithPassword('not-an-email', 'pa55word')).toBe(false);
+  expect(auth().authError).toBe('invalid-email');
+  expect(await auth().signUpWithPassword('mina@example.com', '12')).toBe(false);
+  expect(auth().authError).toBe('weak-password');
+  expect(auth().account).toBeNull();
+});
+
+test('sign-up refuses a duplicate email (case-insensitive)', async () => {
+  await auth().signUpWithPassword('mina@example.com', 'pa55word');
+  await auth().signOut();
+  const ok = await auth().signUpWithPassword('MINA@example.com', 'different');
+  expect(ok).toBe(false);
+  expect(auth().authError).toBe('email-taken');
+});
+
+test('sign-in verifies the password and restores the account', async () => {
+  await auth().signUpWithPassword('mina@example.com', 'pa55word');
+  await auth().signOut();
+  expect(auth().account).toBeNull();
+
+  expect(await auth().signInWithPassword('mina@example.com', 'wrong')).toBe(false);
+  expect(auth().authError).toBe('invalid-credentials');
+
+  const ok = await auth().signInWithPassword('mina@example.com', 'pa55word');
+  expect(ok).toBe(true);
+  expect(auth().account?.email).toBe('mina@example.com');
+});
+
+test('password account persists its rule across sign-out and back in', async () => {
+  await auth().signUpWithPassword('mina@example.com', 'pa55word');
+  await auth().completeOnboarding({ displayName: 'Mina', journeyStage: 'exploring', selection: ['agpeya'] });
+  expect(useRule.getState().practices).toHaveLength(1);
+
+  await auth().signOut();
+  expect(useRule.getState().practices).toHaveLength(0);
+
+  await auth().signInWithPassword('mina@example.com', 'pa55word');
+  expect(useRule.getState().practices).toHaveLength(1);
+  expect(auth().account?.displayName).toBe('Mina');
+});
