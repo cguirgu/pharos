@@ -1,23 +1,33 @@
 /**
- * Word — the reading plan, the scripture reader, and the journal (PRD §5.4).
+ * Word — the reading plan, the scripture reader, the day's commemoration
+ * (the Synaxarium life, moved here from Hours), and the journal (PRD §5.4).
  * Scripture text is supplied later from a verified, approved source.
  */
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
-import { Folio, Rubric, Caps, Numeral, Btn } from '../../src/ui/components';
+import { Folio, Rubric, Caps, Numeral, Btn, Fleuron } from '../../src/ui/components';
+import { SelectableProse } from '../../src/ui/SelectableProse';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 import { liturgicalLabel } from '../../src/ui/format';
 import { useClock } from '../../src/state/clock';
 import { useReading } from '../../src/state/reading';
+import { useHighlights } from '../../src/state/highlights';
+import { useTextScale } from '../../src/state/textScale';
 import { getDayInfo } from '../../src/domain/coptic';
 import { PLANS, isPlanComplete } from '../../src/domain/content/readingPlan';
 import { readingsOn, readingLabel } from '../../src/domain/content';
 import { BOOKS, type BookId } from '../../src/domain/content/bible';
+import { primarySaint } from '../../src/domain/content/synaxarium';
+import { synaxariumAnchorFromSelection, type RawSelection } from '../../src/domain/highlights';
 import { fetchTodaysReadings } from '../../src/platform/katameros';
+
+// Base reading-prose metrics; the user's text-size setting scales these.
+const LIFE_FONT = 15;
+const LIFE_LINE = 22;
 
 export default function WordScreen() {
   const styles = useStyles(makeStyles);
@@ -27,7 +37,10 @@ export default function WordScreen() {
   const plans = useReading((s) => s.plans);
   const progressOf = useReading((s) => s.progress);
   const startPlan = useReading((s) => s.start);
+  const saveHighlight = useHighlights((s) => s.save);
+  const scale = useTextScale((s) => s.scale);
   const info = getDayInfo(today);
+  const saint = primarySaint(info.coptic);
 
   // Best-effort: fetch today's Katameros readings (references) when online.
   const [, setTick] = useState(0);
@@ -38,6 +51,32 @@ export default function WordScreen() {
   const bookId = (name: string): BookId | null => {
     const id = name.toLowerCase().replace(/[^a-z0-9]/g, '');
     return (id in BOOKS ? (id as BookId) : null);
+  };
+
+  const refLabelFor = (name: string) => `${info.coptic.monthName} ${info.coptic.day} · ${name}`;
+
+  // Drag-select within the life → save just that span. The whole-life save is
+  // kept as a secondary fallback (onPressWhole) when nothing is selected.
+  const onSaveLifeSelection = async (sel: RawSelection) => {
+    if (!saint) return;
+    const built = synaxariumAnchorFromSelection(
+      { copticMonth: info.coptic.month, copticDay: info.coptic.day },
+      sel,
+      saint.life,
+    );
+    if (!built) return;
+    const id = await saveHighlight({ anchor: built.anchor, textSnapshot: built.snapshot, referenceLabel: refLabelFor(saint.name) });
+    if (id) router.push(`/highlights/${id}`);
+  };
+
+  const markWholeSaint = async () => {
+    if (!saint) return;
+    const id = await saveHighlight({
+      anchor: { source: 'synaxarium', copticMonth: info.coptic.month, copticDay: info.coptic.day, startOffset: 0, endOffset: saint.life.length },
+      textSnapshot: saint.life,
+      referenceLabel: refLabelFor(saint.name),
+    });
+    if (id) router.push(`/highlights/${id}`);
   };
 
   // Split the catalogue into active / completed / available (opt-in).
@@ -157,6 +196,30 @@ export default function WordScreen() {
             })}
           </>
         ) : null}
+
+        {/* Commemoration of the day — the Synaxarium life, drag-select to mark. */}
+        <Rubric num="Ⲙ">{copy.word.commemoration}</Rubric>
+        <View style={styles.saint}>
+          <Text style={styles.saintName}>{saint?.name ?? '—'}</Text>
+          {saint?.title ? (
+            <Caps size={8.5} ls={1.4} color={t.ink3} style={{ marginTop: 4 }}>
+              {saint.title}
+            </Caps>
+          ) : null}
+          <Fleuron />
+          {saint ? (
+            <SelectableProse
+              text={saint.life}
+              textStyle={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}
+              onSaveSelection={onSaveLifeSelection}
+              onPressWhole={markWholeSaint}
+            />
+          ) : (
+            <Text style={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}>
+              {copy.word.noCommemoration}
+            </Text>
+          )}
+        </View>
       </ScrollView>
     </Page>
   );
@@ -173,4 +236,7 @@ const makeStyles = (t: Palette) => StyleSheet.create({
   completedTag: { borderWidth: 1, borderColor: t.rule, paddingVertical: 4, paddingHorizontal: 8 },
   readingRow: { paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: t.ruleDim, gap: 3 },
   readingLabel: { fontFamily: font.display, fontSize: 19, color: t.parch },
+  saint: { marginTop: 6 },
+  saintName: { fontFamily: font.display, fontSize: 24, color: t.parch },
+  saintLife: { fontFamily: font.bodyItalic, fontSize: LIFE_FONT, color: t.ink2, lineHeight: LIFE_LINE },
 });

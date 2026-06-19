@@ -15,6 +15,7 @@ import { copy } from '../../../src/ui/copy';
 import { useClock } from '../../../src/state/clock';
 import { useReading } from '../../../src/state/reading';
 import { useHighlights } from '../../../src/state/highlights';
+import { useTextScale } from '../../../src/state/textScale';
 import { BOOKS, refLabel, type BookId } from '../../../src/domain/content/bible';
 import { scriptureAnchorFromSelection, type RawSelection } from '../../../src/domain/highlights';
 import { getScriptureProvider } from '../../../src/state/content';
@@ -31,6 +32,7 @@ export default function Reader() {
   const progress = useReading((s) => s.progress)(planId ?? '', today);
   const forVerse = useHighlights((s) => s.forVerse);
   const saveHighlight = useHighlights((s) => s.save);
+  const scale = useTextScale((s) => s.scale);
 
   const bookId = (book as BookId) in BOOKS ? (book as BookId) : 'matthew';
   const ch = Number(chapter) || 1;
@@ -84,7 +86,7 @@ export default function Reader() {
                 <View style={{ flex: 1 }}>
                   <SelectableProse
                     text={v.text}
-                    textStyle={styles.verse}
+                    textStyle={[styles.verse, { fontSize: VERSE_FONT * scale, lineHeight: VERSE_LINE * scale }]}
                     washColor={marked ? t.highlightWash[marked.color ?? 'gold'] : undefined}
                     onSaveSelection={(sel) => onSaveVerseSelection(v.n, v.text, sel)}
                   />
@@ -113,11 +115,15 @@ export default function Reader() {
   );
 }
 
+// Base verse metrics; the user's text-size setting scales these.
+const VERSE_FONT = 18;
+const VERSE_LINE = 28;
+
 const makeStyles = (t: Palette) => StyleSheet.create({
   coptic: { fontFamily: font.coptic, fontSize: 16, color: t.gold, marginTop: 6 },
   heading: { fontFamily: font.display, fontSize: 32, color: t.parch, marginTop: 4 },
   verseRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 6, paddingHorizontal: 4 },
-  verse: { fontFamily: font.body, fontSize: 18, color: t.parch, lineHeight: 28, padding: 0 },
+  verse: { fontFamily: font.body, fontSize: VERSE_FONT, color: t.parch, lineHeight: VERSE_LINE, padding: 0 },
   vnum: { fontFamily: font.caps, fontSize: 11, color: t.rubricHi, paddingTop: 6, width: 22 },
   tbd: { borderWidth: 1, borderColor: t.ruleDim, padding: 26, alignItems: 'center' },
 });

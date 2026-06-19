@@ -25,6 +25,7 @@ import { NotoSansCoptic_400Regular } from '@expo-google-fonts/noto-sans-coptic';
 import { useClock } from '../src/state/clock';
 import { useAuth } from '../src/state/auth';
 import { useTheme } from '../src/state/theme';
+import { useTextScale } from '../src/state/textScale';
 import { useNotifications } from '../src/state/notifications';
 import { initContent } from '../src/state/content';
 
@@ -43,9 +44,11 @@ export default function RootLayout() {
   const palette = useTheme((s) => s.palette);
   const themeReady = useTheme((s) => s.ready);
   const loadTheme = useTheme((s) => s.load);
+  const loadTextScale = useTextScale((s) => s.load);
   useEffect(() => {
     void loadTheme();
-  }, [loadTheme]);
+    void loadTextScale();
+  }, [loadTheme, loadTextScale]);
 
   // Restore the session on first mount (auth.load also loads the active
   // account's rule + devotion data), then load notification config + reschedule.

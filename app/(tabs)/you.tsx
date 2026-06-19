@@ -10,6 +10,7 @@ import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 import { useTheme, type ThemeMode } from '../../src/state/theme';
+import { useTextScale, type TextSize } from '../../src/state/textScale';
 import { useAuth } from '../../src/state/auth';
 import { useRule } from '../../src/state/rule';
 import { useJournal } from '../../src/state/journal';
@@ -33,6 +34,8 @@ export default function YouScreen() {
   const router = useRouter();
   const themeMode = useTheme((s) => s.mode);
   const setThemeMode = useTheme((s) => s.setMode);
+  const textSize = useTextScale((s) => s.size);
+  const setTextSize = useTextScale((s) => s.setSize);
   const { account, signOut } = useAuth();
   const today = useClock((s) => s.today);
   const practices = useRule((s) => s.practices);
@@ -98,6 +101,16 @@ export default function YouScreen() {
             options={copy.you.themeModes}
             active={themeMode}
             onChange={(key) => void setThemeMode(key as ThemeMode)}
+          />
+        </View>
+        <Register>
+          <Text style={styles.rowLabel}>{copy.you.textSize}</Text>
+        </Register>
+        <View style={{ marginTop: 12, marginBottom: 4 }}>
+          <Segmented
+            options={copy.you.textSizes}
+            active={textSize}
+            onChange={(key) => void setTextSize(key as TextSize)}
           />
         </View>
         <SettingRow label={copy.you.reminders} onPress={() => router.push('/you/reminders')} />

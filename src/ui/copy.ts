@@ -126,6 +126,13 @@ export const copy = {
     streakBody: 'Keep one practice each day to tend the flame.',
     streakUnit: 'days kept in a row',
     settings: 'Settings',
+    textSize: 'Reading text size',
+    textSizes: [
+      { key: 'sm', label: 'S' },
+      { key: 'md', label: 'M' },
+      { key: 'lg', label: 'L' },
+      { key: 'xl', label: 'XL' },
+    ] as const,
     fastingNuance: 'Show fish-allowed nuance',
     aboutBody:
       'Pharos keeps your rule on this device alone. Liturgical and scriptural texts are drawn from the verified sources credited below; anything not yet supplied is clearly marked as a placeholder.',
@@ -206,6 +213,9 @@ export const copy = {
     completed: 'Completed',
     planDayProgress: (done: number, total: number) => `${done} of ${total} days kept`,
     noPlans: 'You are not following a plan yet.',
+    // Commemoration of the day (the Synaxarium life), shown beneath the readings.
+    commemoration: 'Commemoration of the day',
+    noCommemoration: '⟨ commemoration to be supplied from a verified Synaxarium ⟩',
   },
 
   highlights: {
