@@ -5,6 +5,12 @@
 export const copy = {
   tabs: { today: 'Today', hours: 'Hours', word: 'Word', learn: 'Learn', rule: 'Rule', you: 'You', saved: 'Saved' },
 
+  errorBoundary: {
+    title: 'A moment of stillness',
+    body: 'Something interrupted the page. Your saved rule and data are safe. Take a breath and try again.',
+    retry: 'Try again',
+  },
+
   today: {
     account: "The day's account",
     greeting: (name: string) => `Peace to you,\n${name}`,
@@ -78,13 +84,15 @@ export const copy = {
     confirmCta: 'Confirm and continue',
     resend: 'Send a new code',
     resent: 'Sent. Check your inbox.',
+    lockedFor: (seconds: number) => `Too many attempts. Try again in ${seconds}s.`,
     changeEmail: 'Use a different email',
     errors: {
       'invalid-email': 'That email does not look right.',
-      'weak-password': 'Use at least four characters.',
+      'weak-password': 'Use at least eight characters.',
       'email-taken': 'An account already keeps that email.',
       'invalid-credentials': 'Those credentials do not match.',
       'invalid-code': 'That code is not right. Check it and try again.',
+      'too-many-attempts': 'Too many attempts. Wait a minute, then try again.',
       'confirm-email': 'Check your inbox to confirm your email, then sign in.',
     } as Record<string, string>,
   },

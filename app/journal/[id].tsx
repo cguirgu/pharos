@@ -10,6 +10,7 @@ import { SheetBar, Caps } from '../../src/ui/components';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
+import { LIMITS } from '../../src/domain/limits';
 import { folioDate } from '../../src/ui/format';
 import { useClock } from '../../src/state/clock';
 import { useJournal } from '../../src/state/journal';
@@ -51,6 +52,7 @@ export default function JournalEditor() {
             onChangeText={setTitle}
             placeholder={copy.journal.titlePlaceholder}
             placeholderTextColor={t.ink3}
+            maxLength={LIMITS.journalTitle}
             style={styles.title}
           />
           <TextInput
@@ -59,6 +61,7 @@ export default function JournalEditor() {
             placeholder={copy.journal.bodyPlaceholder}
             placeholderTextColor={t.ink3}
             multiline
+            maxLength={LIMITS.journalBody}
             style={styles.body}
             selectionColor={t.gold}
           />

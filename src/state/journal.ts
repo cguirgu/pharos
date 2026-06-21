@@ -5,6 +5,7 @@
 import { create } from 'zustand';
 import { getRepo, type JournalEntry } from '../db/repo';
 import { id } from '../platform/id';
+import { LIMITS, clampText } from '../domain/limits';
 import type { CivilDate } from '../domain/coptic';
 
 interface JournalState {
@@ -38,8 +39,8 @@ export const useJournal = create<JournalState>((set, get) => ({
     const entry: JournalEntry = {
       id: existing?.id ?? entryId ?? id(),
       date,
-      title,
-      body,
+      title: clampText(title, LIMITS.journalTitle),
+      body: clampText(body, LIMITS.journalBody),
       passageRef,
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,

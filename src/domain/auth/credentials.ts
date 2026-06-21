@@ -7,11 +7,12 @@
 /** Known credential failure codes (keys of copy.auth.errors). */
 export type AuthErrorCode = 'invalid-email' | 'weak-password' | 'email-taken' | 'invalid-credentials';
 
-/** Minimum password length (matches copy: "Use at least four characters."). */
-export const MIN_PASSWORD_LENGTH = 4;
+/** Minimum password length (matches copy: "Use at least eight characters."). */
+export const MIN_PASSWORD_LENGTH = 8;
 
-// Deliberately permissive: one @, a non-empty local part, and a dotted domain.
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// One @, a non-empty local part, a domain label, and a TLD of 2+ chars
+// (rejects "a@b.c"). Kept simple; the server (Supabase Auth) is the final word.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export function isValidEmail(email: string): boolean {
   return EMAIL_RE.test(email.trim());

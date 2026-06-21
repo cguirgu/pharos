@@ -28,6 +28,7 @@ import { useTheme } from '../src/state/theme';
 import { useTextScale } from '../src/state/textScale';
 import { useNotifications } from '../src/state/notifications';
 import { initContent } from '../src/state/content';
+import { ErrorBoundary } from '../src/ui/ErrorBoundary';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -82,12 +83,14 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: palette.bg }}>
       <SafeAreaProvider>
         <StatusBar style={palette.barStyle} />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: palette.bg } }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="auth" />
-          <Stack.Screen name="onboarding" />
-          <Stack.Screen name="practice" options={{ presentation: 'card' }} />
-        </Stack>
+        <ErrorBoundary>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: palette.bg } }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="auth" />
+            <Stack.Screen name="onboarding" />
+            <Stack.Screen name="practice" options={{ presentation: 'card' }} />
+          </Stack>
+        </ErrorBoundary>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

@@ -11,6 +11,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getSupabase } from '../lib/supabase';
 import { matchesHighlightFilter } from './repo';
+import { safeJsonParse } from './json';
 import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter, AccountExport } from './repo';
 import type { Practice, PracticeLog } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
@@ -311,17 +312,19 @@ export class SupabaseRepo implements Repo {
       await this.sb.from('onboarding_answers').select('answers').eq('account_id', accountId).maybeSingle(),
     );
     if (!row?.answers) return null;
-    try {
-      return (typeof row.answers === 'string' ? JSON.parse(row.answers) : row.answers) as OnboardingAnswers;
-    } catch {
-      return null;
-    }
+    // Column is JSONB (migration 0003) → already an object; tolerate the legacy
+    // TEXT form (a JSON string) for any rows written before the migration.
+    return typeof row.answers === 'string'
+      ? safeJsonParse<OnboardingAnswers | null>(row.answers, null, 'onboarding.answers')
+      : (row.answers as OnboardingAnswers);
   }
   async saveOnboarding(accountId: string, answers: OnboardingAnswers, completedAt: number): Promise<void> {
+    // `answers` is a JSONB column — send the object directly (no JSON.stringify,
+    // which would double-encode it as a JSON string scalar).
     unwrap(
       await this.sb
         .from('onboarding_answers')
-        .upsert({ account_id: accountId, answers: JSON.stringify(answers), completed_at: completedAt }),
+        .upsert({ account_id: accountId, answers, completed_at: completedAt }),
     );
   }
 

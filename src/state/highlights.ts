@@ -7,6 +7,7 @@
 import { create } from 'zustand';
 import { getRepo } from '../db/repo';
 import { id } from '../platform/id';
+import { LIMITS, clampText } from '../domain/limits';
 import {
   anchorCoversVerse,
   highlightRefLabel,
@@ -69,9 +70,9 @@ export const useHighlights = create<HighlightsState>((set, get) => ({
       anchor: normalized,
       textSnapshot,
       referenceLabel: referenceLabel ?? highlightRefLabel(normalized),
-      note,
+      note: note ? clampText(note, LIMITS.highlightNote) : undefined,
       color,
-      label,
+      label: label ? clampText(label, LIMITS.highlightLabel) : undefined,
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
     };

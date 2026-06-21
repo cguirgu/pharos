@@ -14,6 +14,7 @@ import * as s from './schema';
 import { CREATE_SQL } from './schema';
 import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter, AccountExport } from './repo';
 import { normalizeEmail, matchesHighlightFilter } from './repo';
+import { safeJsonParse } from './json';
 import type { OnboardingAnswers } from '../domain/onboarding';
 import type { Practice, PracticeLog, Cadence, Measure, Category, Kind, PracticeState, DayStatus, Reminder } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
@@ -42,11 +43,11 @@ function rowToPractice(r: PracticeRow): Practice {
     name: r.name,
     category: r.category as Category,
     kind: r.kind as Kind,
-    cadence: JSON.parse(r.cadence) as Cadence,
+    cadence: safeJsonParse<Cadence>(r.cadence, { type: 'daily' }, 'cadence'),
     measure: r.measure as Measure,
     target: r.target ?? undefined,
-    parts: r.parts ? (JSON.parse(r.parts) as string[]) : undefined,
-    reminder: r.reminder ? (JSON.parse(r.reminder) as Reminder) : undefined,
+    parts: r.parts ? safeJsonParse<string[] | undefined>(r.parts, undefined, 'practice.parts') : undefined,
+    reminder: r.reminder ? safeJsonParse<Reminder | undefined>(r.reminder, undefined, 'reminder') : undefined,
     intention: r.intention ?? undefined,
     state: r.state as PracticeState,
     resumeOn: r.resumeOn ? parseDateKey(r.resumeOn) : undefined,
@@ -80,7 +81,7 @@ function rowToLog(r: LogRow): PracticeLog {
     date: parseDateKey(r.date),
     status: r.status as DayStatus,
     value: r.value ?? undefined,
-    parts: r.parts ? (JSON.parse(r.parts) as string[]) : undefined,
+    parts: r.parts ? safeJsonParse<string[] | undefined>(r.parts, undefined, 'log.parts') : undefined,
   };
 }
 
@@ -112,10 +113,17 @@ function accountToRow(a: Account): AccountRow {
 
 type HighlightRow = typeof s.highlights.$inferSelect;
 
+/** A harmless, in-range anchor used when a stored anchor JSON is unparseable. */
+function fallbackAnchor(source: string): HighlightAnchor {
+  return source === 'scripture'
+    ? { source: 'scripture', book: 'matthew', chapter: 1, startVerse: 1, startOffset: 0, endVerse: 1, endOffset: 0 }
+    : { source: 'synaxarium', copticMonth: 1, copticDay: 1, startOffset: 0, endOffset: 0 };
+}
+
 function rowToHighlight(r: HighlightRow): Highlight {
   return {
     id: r.id,
-    anchor: JSON.parse(r.anchor) as HighlightAnchor,
+    anchor: safeJsonParse<HighlightAnchor>(r.anchor, fallbackAnchor(r.source), 'highlight.anchor'),
     textSnapshot: r.textSnapshot,
     referenceLabel: r.referenceLabel,
     note: r.note ?? undefined,
@@ -430,11 +438,7 @@ export class SqliteRepo implements Repo {
       .where(eq(s.onboardingAnswers.accountId, accountId))
       .get();
     if (!row) return null;
-    try {
-      return JSON.parse(row.answers) as OnboardingAnswers;
-    } catch {
-      return null;
-    }
+    return safeJsonParse<OnboardingAnswers | null>(row.answers, null, 'onboarding.answers');
   }
   async saveOnboarding(accountId: string, answers: OnboardingAnswers, completedAt: number): Promise<void> {
     this.db

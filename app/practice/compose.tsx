@@ -11,6 +11,7 @@ import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { useRule } from '../../src/state/rule';
 import { id as newId } from '../../src/platform/id';
+import { LIMITS, clampText } from '../../src/domain/limits';
 import type { Cadence, Category, Measure, Practice } from '../../src/domain/rule';
 
 const CATEGORIES: { key: Category; label: string }[] = [
@@ -81,14 +82,14 @@ export default function ComposeScreen() {
     const practice: Practice = {
       id: existing?.id ?? newId(),
       createdAt: existing?.createdAt ?? Date.now(),
-      name: name.trim() || 'A practice',
+      name: clampText(name.trim(), LIMITS.practiceName) || 'A practice',
       category,
       kind: existing?.kind ?? 'custom',
       cadence: buildCadence(),
       measure,
       target: measure === 'count' || measure === 'duration' ? target : undefined,
       parts: measure === 'parts' ? parts : undefined,
-      intention: intention.trim() || undefined,
+      intention: clampText(intention.trim(), LIMITS.intention) || undefined,
       state: existing?.state ?? 'active',
       sortOrder: existing?.sortOrder ?? practices.length,
     };
@@ -109,6 +110,7 @@ export default function ComposeScreen() {
           onChangeText={setName}
           placeholder="Name this practice"
           placeholderTextColor={t.ink3}
+          maxLength={LIMITS.practiceName}
           style={styles.nameInput}
         />
         <Segmented options={CATEGORIES} active={category} onChange={(k) => setCategory(k as Category)} />
@@ -184,6 +186,7 @@ export default function ComposeScreen() {
           placeholder="An intention, in a line"
           placeholderTextColor={t.ink3}
           multiline
+          maxLength={LIMITS.intention}
           style={[styles.input, { minHeight: 60 }]}
         />
 

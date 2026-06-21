@@ -31,14 +31,26 @@ export function AuthForm({ mode }: { mode: 'signup' | 'signin' }) {
   const signingIn = useAuth((s) => s.signingIn);
   const authError = useAuth((s) => s.authError);
   const clearError = useAuth((s) => s.clearError);
+  const otpLockedUntil = useAuth((s) => s.otpLockedUntil);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [resent, setResent] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
 
   // Drop any error carried over from another auth screen on mount.
   useEffect(() => clearError(), [clearError, mode]);
+
+  // While the OTP step is locked out, tick once a second to drive the countdown.
+  useEffect(() => {
+    if (!otpLockedUntil) return;
+    setNow(Date.now());
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [otpLockedUntil]);
+  const lockRemaining = otpLockedUntil ? Math.max(0, Math.ceil((otpLockedUntil - now) / 1000)) : 0;
+  const locked = lockRemaining > 0;
 
   const isSignup = mode === 'signup';
   const title = isSignup ? copy.auth.signUpTitle : copy.auth.signInTitle;
@@ -99,7 +111,11 @@ export function AuthForm({ mode }: { mode: 'signup' | 'signin' }) {
               onSubmitEditing={onConfirm}
             />
 
-            {errorText ? (
+            {locked ? (
+              <View style={styles.error}>
+                <Caps size={9} ls={1.2} color={t.rubricHi}>{copy.auth.lockedFor(lockRemaining)}</Caps>
+              </View>
+            ) : errorText ? (
               <View style={styles.error}>
                 <Caps size={9} ls={1.2} color={t.rubricHi}>{errorText}</Caps>
               </View>
@@ -110,7 +126,7 @@ export function AuthForm({ mode }: { mode: 'signup' | 'signin' }) {
             ) : null}
 
             <View style={styles.submit}>
-              <Btn kind="solid" onPress={onConfirm} disabled={signingIn || code.length < 6}>
+              <Btn kind="solid" onPress={onConfirm} disabled={signingIn || code.length < 6 || locked}>
                 {signingIn ? copy.auth.signingIn : copy.auth.confirmCta}
               </Btn>
             </View>

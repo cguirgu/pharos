@@ -8,14 +8,15 @@ test('isValidEmail accepts ordinary addresses and trims surrounding space', () =
 });
 
 test('isValidEmail rejects malformed addresses', () => {
-  for (const bad of ['', 'mina', 'mina@', '@example.com', 'mina@example', 'a b@example.com']) {
+  for (const bad of ['', 'mina', 'mina@', '@example.com', 'mina@example', 'a b@example.com', 'a@b.c', 'a@@b.com']) {
     expect(isValidEmail(bad)).toBe(false);
   }
 });
 
-test('isValidPassword enforces the minimum length', () => {
-  expect(isValidPassword('123')).toBe(false);
-  expect(isValidPassword('1234')).toBe(true);
+test('isValidPassword enforces the eight-character minimum', () => {
+  expect(isValidPassword('1234')).toBe(false);
+  expect(isValidPassword('1234567')).toBe(false);
+  expect(isValidPassword('12345678')).toBe(true);
 });
 
 test('validateCredentials returns the first failing code, email first', () => {

@@ -25,6 +25,11 @@ import type { OnboardingAnswers } from '../domain/onboarding';
 
 const DEV_ACCOUNT_ID = 'dev-local';
 
+/** Client-side OTP brute-force guard: after this many wrong codes, lock briefly.
+ *  (Supabase also rate-limits server-side; this is defence in depth + clear UX.) */
+const MAX_OTP_ATTEMPTS = 5;
+const OTP_LOCK_MS = 60_000;
+
 /** Load all per-account data (rule + journal + reading + offices + highlights + learn). */
 async function loadAccountData(accountId: string): Promise<void> {
   const today = useClock.getState().today;
@@ -73,6 +78,10 @@ interface AuthState {
   authError: string | null;
   /** Email awaiting a 6-digit confirmation code after sign-up (backend mode only). */
   pendingConfirmEmail: string | null;
+  /** Consecutive wrong OTP codes since the last success/reset. */
+  otpAttempts: number;
+  /** Epoch ms until which OTP verification is locked out, or null. */
+  otpLockedUntil: number | null;
 
   load: () => Promise<void>;
   clearError: () => void;
@@ -142,6 +151,8 @@ export const useAuth = create<AuthState>((set, get) => ({
   signingIn: false,
   authError: null,
   pendingConfirmEmail: null,
+  otpAttempts: 0,
+  otpLockedUntil: null,
 
   load: async () => {
     // CRITICAL: `loaded` must become true no matter what. app/index.tsx holds the
@@ -228,7 +239,7 @@ export const useAuth = create<AuthState>((set, get) => ({
         if (!data.session || !data.user) {
           // Email confirmation is enabled: no session yet. Move to the in-app
           // code step rather than dead-ending on an error message.
-          set({ pendingConfirmEmail: email.trim() });
+          set({ pendingConfirmEmail: email.trim(), otpAttempts: 0, otpLockedUntil: null });
           return false;
         }
         const account = await accountFromSupabase(data.user.id, data.user.email ?? null, null);
@@ -270,6 +281,11 @@ export const useAuth = create<AuthState>((set, get) => ({
   },
 
   verifyEmailOtp: async (email, token) => {
+    const lockedUntil = get().otpLockedUntil;
+    if (lockedUntil && Date.now() < lockedUntil) {
+      set({ authError: 'too-many-attempts' });
+      return false;
+    }
     const code = token.trim();
     if (code.length < 6) {
       set({ authError: 'invalid-code' });
@@ -281,13 +297,18 @@ export const useAuth = create<AuthState>((set, get) => ({
       const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
       const { data, error } = await getSupabase().auth.verifyOtp({ email: email.trim(), token: code, type: 'email' });
       if (error || !data.user) {
-        set({ authError: 'invalid-code' });
+        const attempts = get().otpAttempts + 1;
+        if (attempts >= MAX_OTP_ATTEMPTS) {
+          set({ authError: 'too-many-attempts', otpAttempts: 0, otpLockedUntil: Date.now() + OTP_LOCK_MS });
+        } else {
+          set({ authError: 'invalid-code', otpAttempts: attempts });
+        }
         return false;
       }
       const account = await accountFromSupabase(data.user.id, data.user.email ?? null, null);
       clearAccountData();
       await loadAccountData(data.user.id);
-      set({ account, pendingConfirmEmail: null });
+      set({ account, pendingConfirmEmail: null, otpAttempts: 0, otpLockedUntil: null });
       return true;
     } catch (e) {
       set({ authError: e instanceof Error ? e.message : 'Sign-up failed' });
@@ -313,7 +334,7 @@ export const useAuth = create<AuthState>((set, get) => ({
     }
   },
 
-  clearPendingConfirm: () => set({ pendingConfirmEmail: null, authError: null }),
+  clearPendingConfirm: () => set({ pendingConfirmEmail: null, authError: null, otpAttempts: 0, otpLockedUntil: null }),
 
   signInWithPassword: async (email, password) => {
     if (!isValidEmail(email) || password.length === 0) {
@@ -376,25 +397,38 @@ export const useAuth = create<AuthState>((set, get) => ({
   deleteAccount: async () => {
     const acc = get().account;
     if (!acc) return;
-    try {
-      if (isBackendConfigured()) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
-        const { googleSignOut } = require('../platform/googleAuth') as typeof import('../platform/googleAuth');
-        // Service-role Edge Function deletes the auth user → ON DELETE CASCADE
-        // removes every synced row; then end the local session.
-        const { error } = await getSupabase().functions.invoke('delete-account');
-        if (error) throw new Error(error.message);
-        await getSupabase().auth.signOut();
-        await googleSignOut();
-      } else {
-        await getRepo().deleteAccount(acc.id);
-        await getRepo().setSession(null);
+    // NOTE: local session/state is cleared ONLY after deletion actually succeeds.
+    // If any step throws it propagates to the caller (the delete screen) and the
+    // user is left signed in to their still-live account — never stranded as
+    // "signed out" of an account that wasn't deleted.
+    if (isBackendConfigured()) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
+      const { googleSignOut } = require('../platform/googleAuth') as typeof import('../platform/googleAuth');
+      // Service-role Edge Function deletes the auth user → ON DELETE CASCADE
+      // removes every synced row.
+      const { error } = await getSupabase().functions.invoke('delete-account');
+      if (error) throw new Error(error.message);
+      // The server account is gone; clear the LOCAL session without a network
+      // round-trip. scope:'local' won't fail on a revoke/network hiccup, so a
+      // deleted user can't be silently restored from a persisted token at next
+      // launch. Google sign-out is best-effort.
+      try {
+        await getSupabase().auth.signOut({ scope: 'local' });
+      } catch (e) {
+        console.warn('[auth] local signOut after delete failed; clearing anyway', e);
       }
-    } finally {
-      clearAccountData();
-      set({ account: null });
+      try {
+        await googleSignOut();
+      } catch (e) {
+        console.warn('[auth] googleSignOut after delete failed; ignoring', e);
+      }
+    } else {
+      await getRepo().deleteAccount(acc.id);
+      await getRepo().setSession(null);
     }
+    clearAccountData();
+    set({ account: null, pendingConfirmEmail: null });
   },
 
   completeOnboarding: async ({ displayName, journeyStage, selection, answers }) => {
