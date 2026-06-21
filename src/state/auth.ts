@@ -71,11 +71,19 @@ interface AuthState {
   account: Account | null;
   signingIn: boolean;
   authError: string | null;
+  /** Email awaiting a 6-digit confirmation code after sign-up (backend mode only). */
+  pendingConfirmEmail: string | null;
 
   load: () => Promise<void>;
   clearError: () => void;
   signInWithGoogle: () => Promise<boolean>;
   signUpWithPassword: (email: string, password: string) => Promise<boolean>;
+  /** Verify the emailed 6-digit code; on success a session is established. */
+  verifyEmailOtp: (email: string, token: string) => Promise<boolean>;
+  /** Re-send the confirmation code to a pending email. */
+  resendConfirmation: (email: string) => Promise<boolean>;
+  /** Abandon the pending confirmation (e.g. to use a different email). */
+  clearPendingConfirm: () => void;
   signInWithPassword: (email: string, password: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   /** Permanently delete the account and all its data, then sign out. */
@@ -133,6 +141,7 @@ export const useAuth = create<AuthState>((set, get) => ({
   account: null,
   signingIn: false,
   authError: null,
+  pendingConfirmEmail: null,
 
   load: async () => {
     // CRITICAL: `loaded` must become true no matter what. app/index.tsx holds the
@@ -217,8 +226,9 @@ export const useAuth = create<AuthState>((set, get) => ({
           return false;
         }
         if (!data.session || !data.user) {
-          // Email confirmation is enabled on the project; no session yet.
-          set({ authError: 'confirm-email' });
+          // Email confirmation is enabled: no session yet. Move to the in-app
+          // code step rather than dead-ending on an error message.
+          set({ pendingConfirmEmail: email.trim() });
           return false;
         }
         const account = await accountFromSupabase(data.user.id, data.user.email ?? null, null);
@@ -259,6 +269,52 @@ export const useAuth = create<AuthState>((set, get) => ({
     }
   },
 
+  verifyEmailOtp: async (email, token) => {
+    const code = token.trim();
+    if (code.length < 6) {
+      set({ authError: 'invalid-code' });
+      return false;
+    }
+    set({ signingIn: true, authError: null });
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
+      const { data, error } = await getSupabase().auth.verifyOtp({ email: email.trim(), token: code, type: 'email' });
+      if (error || !data.user) {
+        set({ authError: 'invalid-code' });
+        return false;
+      }
+      const account = await accountFromSupabase(data.user.id, data.user.email ?? null, null);
+      clearAccountData();
+      await loadAccountData(data.user.id);
+      set({ account, pendingConfirmEmail: null });
+      return true;
+    } catch (e) {
+      set({ authError: e instanceof Error ? e.message : 'Sign-up failed' });
+      return false;
+    } finally {
+      set({ signingIn: false });
+    }
+  },
+
+  resendConfirmation: async (email) => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
+      const { error } = await getSupabase().auth.resend({ type: 'signup', email: email.trim() });
+      if (error) {
+        set({ authError: mapSupabaseAuthError(error.message) });
+        return false;
+      }
+      return true;
+    } catch (e) {
+      set({ authError: e instanceof Error ? e.message : 'Sign-up failed' });
+      return false;
+    }
+  },
+
+  clearPendingConfirm: () => set({ pendingConfirmEmail: null, authError: null }),
+
   signInWithPassword: async (email, password) => {
     if (!isValidEmail(email) || password.length === 0) {
       set({ authError: 'invalid-credentials' });
@@ -277,7 +333,7 @@ export const useAuth = create<AuthState>((set, get) => ({
         const account = await accountFromSupabase(data.user.id, data.user.email ?? null, (data.user.user_metadata?.full_name as string) ?? null);
         clearAccountData();
         await loadAccountData(data.user.id);
-        set({ account });
+        set({ account, pendingConfirmEmail: null });
         return true;
       }
       // local fallback — verify against the device-stored hash
@@ -313,7 +369,7 @@ export const useAuth = create<AuthState>((set, get) => ({
       }
     } finally {
       clearAccountData();
-      set({ account: null });
+      set({ account: null, pendingConfirmEmail: null });
     }
   },
 

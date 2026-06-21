@@ -71,11 +71,20 @@ export const copy = {
     signIn: 'Sign in',
     toSignIn: 'Already have an account? Sign in',
     toSignUp: 'New here? Create an account',
+    // Email confirmation — the 6-digit code step right after sign-up.
+    confirmTitle: 'Check your email',
+    confirmSub: (email: string) => `We sent a 6-digit code to ${email}. Enter it to confirm.`,
+    code: 'Confirmation code',
+    confirmCta: 'Confirm and continue',
+    resend: 'Send a new code',
+    resent: 'Sent. Check your inbox.',
+    changeEmail: 'Use a different email',
     errors: {
       'invalid-email': 'That email does not look right.',
       'weak-password': 'Use at least four characters.',
       'email-taken': 'An account already keeps that email.',
       'invalid-credentials': 'Those credentials do not match.',
+      'invalid-code': 'That code is not right. Check it and try again.',
       'confirm-email': 'Check your inbox to confirm your email, then sign in.',
     } as Record<string, string>,
   },
@@ -83,12 +92,12 @@ export const copy = {
   onboarding: {
     journeyKicker: 'The first question',
     journeyTitle: 'Where are you\non the journey?',
-    journeySub: 'Your rule is shaped around the answer. It may be changed at any hour.',
+    journeySub: 'We shape your rule around your answer. Change it anytime.',
     nameLabel: 'Your first name',
     namePlaceholder: 'What shall we call you?',
     journey: {
-      'grew-up': { title: 'I grew up in the Church', sub: 'Deepen a faith I already know' },
-      returning: { title: 'I am returning', sub: 'Finding my way back to the rhythm' },
+      'grew-up': { title: 'I grew up in the Church', sub: 'Deepen a faith I know' },
+      returning: { title: 'I am returning', sub: 'Finding my way back' },
       exploring: { title: 'I am exploring', sub: 'Curious about Coptic Orthodoxy' },
     },
     rhythmKicker: 'Your rule of life',
@@ -99,16 +108,16 @@ export const copy = {
     notifKicker: 'One last thing',
     notifTitle: 'A gentle word\nat the hour',
     notifSub:
-      'Reminders arrive only when a practice is due, in a quiet voice — never to shame, only to tend.',
+      'Only when a practice is due, in a quiet voice. Never to shame, only to tend.',
     notifAllow: 'Allow reminders',
     notifSkip: 'Not now',
 
     // What brings you here (goals) — each maps to a part of the app.
     goalsKicker: 'What brings you here',
     goalsTitle: 'What brought you\nhere today?',
-    goalsSub: 'Choose all that speak to you. We’ll set things up around them.',
+    goalsSub: 'Choose all that speak to you. We build around them.',
     goals: {
-      fasts: { title: 'Keep the fasts & feasts', sub: 'Never miss a fast or feast day' },
+      fasts: { title: 'Keep the fasts & feasts', sub: 'Never miss a holy day' },
       prayer: { title: 'Pray the hours', sub: 'The Agpeya, morning to night' },
       word: { title: 'Read the Word daily', sub: 'The Gospels, a little each day' },
       coptic: { title: 'Learn the Coptic tongue', sub: 'Read and chant the hymns' },
@@ -119,9 +128,9 @@ export const copy = {
     // Experience level.
     experienceKicker: 'Where you stand',
     experienceTitle: 'How settled is\nthe rhythm?',
-    experienceSub: 'So we begin where you are — there’s no wrong answer.',
+    experienceSub: 'We begin where you are. There is no wrong answer.',
     experience: {
-      new: { title: 'New to it', sub: 'Just beginning the journey' },
+      new: { title: 'New to it', sub: 'Just beginning' },
       some: { title: 'Some experience', sub: 'I keep a little, here and there' },
       rooted: { title: 'It is part of my life', sub: 'A rhythm I already hold' },
     } as Record<string, { title: string; sub: string }>,
@@ -129,12 +138,12 @@ export const copy = {
     // Goal previews — the "yep, we support that" reveals, keyed by goal.
     previewKicker: 'Here for you',
     previews: {
-      fasts: { title: 'The fasts & feasts, kept', lines: ['The day’s fast or feast, always on your Today screen.', 'Gentle notes so a fast day never slips by.'] },
-      prayer: { title: 'Pray the hours', lines: ['The Agpeya hours, ready whenever you are.', 'Keep each office with a quiet mark.'] },
+      fasts: { title: 'The fasts & feasts, kept', lines: ['The day’s fast or feast, always on Today.', 'Gentle notes so a fast never slips by.'] },
+      prayer: { title: 'Pray the hours', lines: ['The Agpeya hours, ready when you are.', 'Keep each office with a quiet mark.'] },
       word: { title: 'Read the Word', lines: ['A reading plan and the day’s lectionary.', 'Highlight and keep what speaks to you.'] },
-      coptic: { title: 'Learn the Coptic tongue', lines: ['A leveled path — letters, sounds, and holy words.', 'Learn by playing, with milestones to mark the way.'] },
-      saints: { title: 'Walk with the saints', lines: ['The life of the saint commemorated each day.', 'A cloud of witnesses to keep you company.'] },
-      journal: { title: 'Examine your days', lines: ['A simple journal — one ruled line is enough.', 'Tie a reflection to the day’s reading.'] },
+      coptic: { title: 'Learn the Coptic tongue', lines: ['A leveled path: letters, sounds, holy words.', 'Learn by playing, with milestones along the way.'] },
+      saints: { title: 'Walk with the saints', lines: ['The saint commemorated each day.', 'A cloud of witnesses to keep you company.'] },
+      journal: { title: 'Examine your days', lines: ['A simple journal. One ruled line is enough.', 'Tie a reflection to the day’s reading.'] },
     } as Record<string, { title: string; lines: string[] }>,
 
     // Reminder time.
