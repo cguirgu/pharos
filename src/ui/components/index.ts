@@ -5,4 +5,4 @@ export { Btn, Chip, Segmented, Stepper, Toggle } from './controls';
 export { NavLedger, type NavTab } from './NavLedger';
 export { SheetBar } from './SheetBar';
 export { PharosSeal } from './PharosSeal';
-export { StepDots, Field } from './forms';
+export { StepDots, Field, ProgressBar } from './forms';

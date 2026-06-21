@@ -14,6 +14,7 @@ import * as s from './schema';
 import { CREATE_SQL } from './schema';
 import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter } from './repo';
 import { normalizeEmail, matchesHighlightFilter } from './repo';
+import type { OnboardingAnswers } from '../domain/onboarding';
 import type { Practice, PracticeLog, Cadence, Measure, Category, Kind, PracticeState, DayStatus, Reminder } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
 import type { Highlight, HighlightAnchor, HighlightColor, HighlightSource } from '../domain/highlights';
@@ -21,7 +22,7 @@ import type { Highlight, HighlightAnchor, HighlightColor, HighlightSource } from
 const SESSION_KEY = 'session_account_id';
 const SCHEMA_KEY = 'schema_version';
 /** Bump whenever the table shapes change (forces a local rebuild). */
-const SCHEMA_VERSION = 5;
+const SCHEMA_VERSION = 6;
 
 function parseDateKey(key: string): CivilDate {
   const [y, m, d] = key.split('-').map(Number);
@@ -168,6 +169,8 @@ export class SqliteRepo implements Repo {
         DROP TABLE IF EXISTS reading_plans;
         DROP TABLE IF EXISTS reading_progress;
         DROP TABLE IF EXISTS office_logs;
+        DROP TABLE IF EXISTS learn_lessons;
+        DROP TABLE IF EXISTS onboarding_answers;
       `);
       this.native.execSync(CREATE_SQL);
       await this.setSetting(SCHEMA_KEY, String(SCHEMA_VERSION));
@@ -415,6 +418,31 @@ export class SqliteRepo implements Repo {
       .onConflictDoUpdate({
         target: [s.learnLessons.accountId, s.learnLessons.lessonId],
         set: { completedOn, correct: best, total },
+      })
+      .run();
+  }
+
+  // --- onboarding answers ---
+  async getOnboarding(accountId: string): Promise<OnboardingAnswers | null> {
+    const row = this.db
+      .select()
+      .from(s.onboardingAnswers)
+      .where(eq(s.onboardingAnswers.accountId, accountId))
+      .get();
+    if (!row) return null;
+    try {
+      return JSON.parse(row.answers) as OnboardingAnswers;
+    } catch {
+      return null;
+    }
+  }
+  async saveOnboarding(accountId: string, answers: OnboardingAnswers, completedAt: number): Promise<void> {
+    this.db
+      .insert(s.onboardingAnswers)
+      .values({ accountId, answers: JSON.stringify(answers), completedAt })
+      .onConflictDoUpdate({
+        target: s.onboardingAnswers.accountId,
+        set: { answers: JSON.stringify(answers), completedAt },
       })
       .run();
   }

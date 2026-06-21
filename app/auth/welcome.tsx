@@ -40,7 +40,7 @@ export default function Welcome() {
         </Caps>
       </View>
       <View style={styles.center}>
-        <PharosSeal size={r.scale(96)} />
+        <PharosSeal size={r.scale(96)} animated delay={120} />
         <Text style={[styles.wordmark, { fontSize: wordmarkSize, lineHeight: wordmarkSize + 4 }]}>{copy.auth.wordmark}</Text>
         <Text style={styles.coptic}>{copy.auth.coptic}</Text>
         <Fleuron />

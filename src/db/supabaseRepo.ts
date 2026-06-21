@@ -15,6 +15,7 @@ import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, Lear
 import type { Practice, PracticeLog } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
 import type { Highlight } from '../domain/highlights';
+import type { OnboardingAnswers } from '../domain/onboarding';
 
 type Row = Record<string, any>;
 
@@ -301,6 +302,26 @@ export class SupabaseRepo implements Repo {
     const best = Math.max(correct, prev?.correct ?? 0); // never regress a lesson's best
     unwrap(
       await this.sb.from('learn_lessons').upsert({ account_id: accountId, lesson_id: lessonId, completed_on: completedOn, correct: best, total }),
+    );
+  }
+
+  // --- onboarding answers ---
+  async getOnboarding(accountId: string): Promise<OnboardingAnswers | null> {
+    const row = unwrap(
+      await this.sb.from('onboarding_answers').select('answers').eq('account_id', accountId).maybeSingle(),
+    );
+    if (!row?.answers) return null;
+    try {
+      return (typeof row.answers === 'string' ? JSON.parse(row.answers) : row.answers) as OnboardingAnswers;
+    } catch {
+      return null;
+    }
+  }
+  async saveOnboarding(accountId: string, answers: OnboardingAnswers, completedAt: number): Promise<void> {
+    unwrap(
+      await this.sb
+        .from('onboarding_answers')
+        .upsert({ account_id: accountId, answers: JSON.stringify(answers), completed_at: completedAt }),
     );
   }
 

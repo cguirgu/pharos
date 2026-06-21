@@ -102,6 +102,52 @@ export const copy = {
       'Reminders arrive only when a practice is due, in a quiet voice — never to shame, only to tend.',
     notifAllow: 'Allow reminders',
     notifSkip: 'Not now',
+
+    // What brings you here (goals) — each maps to a part of the app.
+    goalsKicker: 'What brings you here',
+    goalsTitle: 'What brought you\nhere today?',
+    goalsSub: 'Choose all that speak to you. We’ll set things up around them.',
+    goals: {
+      fasts: { title: 'Keep the fasts & feasts', sub: 'Never miss a fast or feast day' },
+      prayer: { title: 'Pray the hours', sub: 'The Agpeya, morning to night' },
+      word: { title: 'Read the Word daily', sub: 'The Gospels, a little each day' },
+      coptic: { title: 'Learn the Coptic tongue', sub: 'Read and chant the hymns' },
+      saints: { title: 'Walk with the saints', sub: 'A life from the Synaxarium' },
+      journal: { title: 'Examine my days', sub: 'A line of reflection, kept' },
+    } as Record<string, { title: string; sub: string }>,
+
+    // Experience level.
+    experienceKicker: 'Where you stand',
+    experienceTitle: 'How settled is\nthe rhythm?',
+    experienceSub: 'So we begin where you are — there’s no wrong answer.',
+    experience: {
+      new: { title: 'New to it', sub: 'Just beginning the journey' },
+      some: { title: 'Some experience', sub: 'I keep a little, here and there' },
+      rooted: { title: 'It is part of my life', sub: 'A rhythm I already hold' },
+    } as Record<string, { title: string; sub: string }>,
+
+    // Goal previews — the "yep, we support that" reveals, keyed by goal.
+    previewKicker: 'Here for you',
+    previews: {
+      fasts: { title: 'The fasts & feasts, kept', lines: ['The day’s fast or feast, always on your Today screen.', 'Gentle notes so a fast day never slips by.'] },
+      prayer: { title: 'Pray the hours', lines: ['The Agpeya hours, ready whenever you are.', 'Keep each office with a quiet mark.'] },
+      word: { title: 'Read the Word', lines: ['A reading plan and the day’s lectionary.', 'Highlight and keep what speaks to you.'] },
+      coptic: { title: 'Learn the Coptic tongue', lines: ['A leveled path — letters, sounds, and holy words.', 'Learn by playing, with milestones to mark the way.'] },
+      saints: { title: 'Walk with the saints', lines: ['The life of the saint commemorated each day.', 'A cloud of witnesses to keep you company.'] },
+      journal: { title: 'Examine your days', lines: ['A simple journal — one ruled line is enough.', 'Tie a reflection to the day’s reading.'] },
+    } as Record<string, { title: string; lines: string[] }>,
+
+    // Reminder time.
+    reminderKicker: 'A gentle word',
+    reminderTitle: 'When shall we\ncall you to prayer?',
+    reminderSub: 'One quiet cue a day, at a time that fits.',
+    reminderParts: { morning: 'Morning', noon: 'Noon', evening: 'Evening' } as Record<string, string>,
+
+    // Finish — the lamp-lit moment.
+    finishTitle: 'The lamp is lit',
+    finishSub: 'Your rule is set. Begin in peace.',
+    finishCta: 'Enter →',
+    back: 'Back',
   },
 
   you: {

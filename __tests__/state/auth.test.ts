@@ -5,7 +5,15 @@
  */
 import { useAuth } from '../../src/state/auth';
 import { useRule } from '../../src/state/rule';
+import { useOnboarding } from '../../src/state/onboarding';
 import { MemoryRepo, setRepo } from '../../src/db/repo';
+import type { OnboardingAnswers } from '../../src/domain/onboarding';
+
+const ANSWERS: OnboardingAnswers = {
+  goals: ['prayer', 'word'],
+  experience: 'some',
+  reminder: { partOfDay: 'morning', time: '07:00' },
+};
 
 beforeEach(async () => {
   setRepo(new MemoryRepo());
@@ -35,17 +43,19 @@ test('the session is restored on a fresh load', async () => {
 
 test('completeOnboarding writes the profile and creates the chosen rule', async () => {
   await auth().signInWithGoogle();
-  await auth().completeOnboarding({ displayName: 'Mina', journeyStage: 'returning', selection: ['agpeya', 'word'] });
+  await auth().completeOnboarding({ displayName: 'Mina', journeyStage: 'returning', selection: ['agpeya', 'word'], answers: ANSWERS });
   const acc = auth().account!;
   expect(acc.displayName).toBe('Mina');
   expect(acc.journeyStage).toBe('returning');
   expect(acc.onboardingComplete).toBe(true);
   expect(useRule.getState().practices.map((p) => p.name)).toEqual(['Pray the Agpeya', 'Read the Word']);
+  // the questionnaire is persisted and loaded into its store
+  expect(useOnboarding.getState().answers).toEqual(ANSWERS);
 });
 
 test('sign-out clears data; signing back in restores it', async () => {
   await auth().signInWithGoogle();
-  await auth().completeOnboarding({ displayName: 'A', journeyStage: 'returning', selection: ['agpeya'] });
+  await auth().completeOnboarding({ displayName: 'A', journeyStage: 'returning', selection: ['agpeya'], answers: ANSWERS });
   expect(useRule.getState().practices).toHaveLength(1);
 
   await auth().signOut();
@@ -95,7 +105,7 @@ test('sign-in verifies the password and restores the account', async () => {
 
 test('password account persists its rule across sign-out and back in', async () => {
   await auth().signUpWithPassword('mina@example.com', 'pa55word');
-  await auth().completeOnboarding({ displayName: 'Mina', journeyStage: 'exploring', selection: ['agpeya'] });
+  await auth().completeOnboarding({ displayName: 'Mina', journeyStage: 'exploring', selection: ['agpeya'], answers: ANSWERS });
   expect(useRule.getState().practices).toHaveLength(1);
 
   await auth().signOut();

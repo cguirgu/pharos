@@ -19,7 +19,9 @@ import { useReading } from './reading';
 import { useOffices } from './offices';
 import { useHighlights } from './highlights';
 import { useLearning } from './learning';
+import { useOnboarding } from './onboarding';
 import { useClock } from './clock';
+import type { OnboardingAnswers } from '../domain/onboarding';
 
 const DEV_ACCOUNT_ID = 'dev-local';
 
@@ -32,6 +34,7 @@ async function loadAccountData(accountId: string): Promise<void> {
   await useOffices.getState().load(accountId);
   await useHighlights.getState().load(accountId);
   await useLearning.getState().load(accountId);
+  await useOnboarding.getState().load(accountId);
 }
 
 /** Clear all per-account data (sign-out). */
@@ -42,12 +45,15 @@ function clearAccountData(): void {
   useOffices.getState().clear();
   useHighlights.getState().clear();
   useLearning.getState().clear();
+  useOnboarding.getState().clear();
 }
 
 export interface OnboardingInput {
   displayName: string;
   journeyStage: JourneyStage;
   selection: StarterKey[];
+  /** The full questionnaire (goals, experience, reminder) — persisted per account. */
+  answers: OnboardingAnswers;
 }
 
 interface AuthState {
@@ -290,13 +296,14 @@ export const useAuth = create<AuthState>((set, get) => ({
     }
   },
 
-  completeOnboarding: async ({ displayName, journeyStage, selection }) => {
+  completeOnboarding: async ({ displayName, journeyStage, selection, answers }) => {
     const current = get().account;
     if (!current) return;
     const repo = getRepo();
 
     const practices = starterPractices(Date.now(), selection);
     for (const p of practices) await repo.upsertPractice(current.id, p);
+    await repo.saveOnboarding(current.id, answers, Date.now());
 
     const updated: Account = {
       ...current,

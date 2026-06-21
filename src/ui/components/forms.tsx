@@ -2,11 +2,27 @@
  * Form helpers for auth & onboarding: a diamond step indicator and a labelled
  * text field, both in the codex language.
  */
-import React from 'react';
-import { View, Text, TextInput, StyleSheet, type TextInputProps } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, TextInput, Animated, StyleSheet, type TextInputProps } from 'react-native';
 import { font, type Palette } from '../theme';
 import { useStyles, useThemeColors } from '../useStyles';
 import { Caps } from './primitives';
+
+/** A thin gold rule that fills to `fraction` (0..1), animating on change. */
+export function ProgressBar({ fraction }: { fraction: number }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
+  const p = useRef(new Animated.Value(fraction)).current;
+  useEffect(() => {
+    Animated.timing(p, { toValue: fraction, duration: 320, useNativeDriver: false }).start();
+  }, [p, fraction]);
+  const width = p.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'], extrapolate: 'clamp' });
+  return (
+    <View style={styles.progressTrack}>
+      <Animated.View style={[styles.progressFill, { width, backgroundColor: t.gold }]} />
+    </View>
+  );
+}
 
 /** Diamond step indicator: ◇ ─ ◇ ─ ◇ (active steps filled). */
 export function StepDots({ total, active }: { total: number; active: number }) {
@@ -52,6 +68,8 @@ export function Field({
 }
 
 const makeStyles = (t: Palette) => StyleSheet.create({
+  progressTrack: { height: 2, backgroundColor: t.ruleDim, marginBottom: 22, overflow: 'hidden' },
+  progressFill: { height: 2 },
   steps: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 26 },
   diamond: { width: 8, height: 8, transform: [{ rotate: '45deg' }] },
   stepRule: { width: 22, height: 1, backgroundColor: t.ruleDim },

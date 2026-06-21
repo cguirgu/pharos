@@ -112,6 +112,12 @@ export const learnLessons = sqliteTable('learn_lessons', {
   total: integer('total').notNull(),
 }, (t) => ({ pk: primaryKey({ columns: [t.accountId, t.lessonId] }) }));
 
+export const onboardingAnswers = sqliteTable('onboarding_answers', {
+  accountId: text('account_id').primaryKey(),
+  answers: text('answers').notNull(), // JSON OnboardingAnswers
+  completedAt: integer('completed_at').notNull(),
+});
+
 export const settings = sqliteTable('settings', {
   key: text('key').primaryKey(),
   value: text('value').notNull(),
@@ -166,6 +172,9 @@ CREATE TABLE IF NOT EXISTS learn_lessons (
   account_id TEXT NOT NULL, lesson_id TEXT NOT NULL, completed_on TEXT NOT NULL,
   correct INTEGER NOT NULL, total INTEGER NOT NULL,
   PRIMARY KEY (account_id, lesson_id)
+);
+CREATE TABLE IF NOT EXISTS onboarding_answers (
+  account_id TEXT PRIMARY KEY NOT NULL, answers TEXT NOT NULL, completed_at INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL);
 `;
