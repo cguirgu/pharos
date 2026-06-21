@@ -28,13 +28,23 @@ const DEV_ACCOUNT_ID = 'dev-local';
 /** Load all per-account data (rule + journal + reading + offices + highlights + learn). */
 async function loadAccountData(accountId: string): Promise<void> {
   const today = useClock.getState().today;
-  await useRule.getState().load(accountId);
-  await useJournal.getState().load(accountId);
-  await useReading.getState().load(accountId, today);
-  await useOffices.getState().load(accountId);
-  await useHighlights.getState().load(accountId);
-  await useLearning.getState().load(accountId);
-  await useOnboarding.getState().load(accountId);
+  // Each load is isolated: one failing data source (e.g. a backend table that
+  // isn't provisioned yet) must never reject the whole startup and hang the
+  // splash. A failure degrades that one store to empty and is logged.
+  const safe = async (label: string, fn: () => Promise<void>) => {
+    try {
+      await fn();
+    } catch (e) {
+      console.warn(`[auth] loading ${label} failed; continuing`, e);
+    }
+  };
+  await safe('rule', () => useRule.getState().load(accountId));
+  await safe('journal', () => useJournal.getState().load(accountId));
+  await safe('reading', () => useReading.getState().load(accountId, today));
+  await safe('offices', () => useOffices.getState().load(accountId));
+  await safe('highlights', () => useHighlights.getState().load(accountId));
+  await safe('learn', () => useLearning.getState().load(accountId));
+  await safe('onboarding', () => useOnboarding.getState().load(accountId));
 }
 
 /** Clear all per-account data (sign-out). */
@@ -123,24 +133,33 @@ export const useAuth = create<AuthState>((set, get) => ({
   authError: null,
 
   load: async () => {
-    const repo = getRepo();
-    await repo.init();
+    // CRITICAL: `loaded` must become true no matter what. app/index.tsx holds the
+    // splash on `!loaded`, so any throw here (a backend hiccup, an unprovisioned
+    // table) would otherwise hang the app forever. On failure we start signed-out.
     let account: Account | null = null;
-    if (isBackendConfigured()) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
-      const { data } = await getSupabase().auth.getSession();
-      const user = data.session?.user;
-      if (user) {
-        account = await accountFromSupabase(user.id, user.email ?? null, (user.user_metadata?.full_name as string) ?? null);
-        await loadAccountData(user.id);
+    try {
+      const repo = getRepo();
+      await repo.init();
+      if (isBackendConfigured()) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
+        const { data } = await getSupabase().auth.getSession();
+        const user = data.session?.user;
+        if (user) {
+          account = await accountFromSupabase(user.id, user.email ?? null, (user.user_metadata?.full_name as string) ?? null);
+          await loadAccountData(user.id);
+        }
+      } else {
+        const sessionId = await repo.getSession();
+        account = sessionId ? await repo.getAccount(sessionId) : null;
+        if (account) await loadAccountData(account.id);
       }
-    } else {
-      const sessionId = await repo.getSession();
-      account = sessionId ? await repo.getAccount(sessionId) : null;
-      if (account) await loadAccountData(account.id);
+    } catch (e) {
+      console.warn('[auth] load failed; starting signed-out', e);
+      account = null;
+    } finally {
+      set({ loaded: true, account });
     }
-    set({ loaded: true, account });
   },
 
   clearError: () => set({ authError: null }),
@@ -303,7 +322,12 @@ export const useAuth = create<AuthState>((set, get) => ({
 
     const practices = starterPractices(Date.now(), selection);
     for (const p of practices) await repo.upsertPractice(current.id, p);
-    await repo.saveOnboarding(current.id, answers, Date.now());
+    // Best-effort: persisting the questionnaire must not block finishing onboarding.
+    try {
+      await repo.saveOnboarding(current.id, answers, Date.now());
+    } catch (e) {
+      console.warn('[auth] saveOnboarding failed; continuing', e);
+    }
 
     const updated: Account = {
       ...current,

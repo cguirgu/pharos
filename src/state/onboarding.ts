@@ -20,7 +20,14 @@ export const useOnboarding = create<OnboardingState>((set, get) => ({
   answers: null,
 
   load: async (accountId) => {
-    const answers = await getRepo().getOnboarding(accountId);
+    // Resilient: a read failure (e.g. a backend missing the onboarding_answers
+    // table) must never block app startup — degrade to "no answers yet".
+    let answers: OnboardingAnswers | null = null;
+    try {
+      answers = await getRepo().getOnboarding(accountId);
+    } catch (e) {
+      console.warn('[onboarding] load failed; continuing without answers', e);
+    }
     set({ accountId, answers });
   },
 
@@ -28,7 +35,12 @@ export const useOnboarding = create<OnboardingState>((set, get) => ({
     const accountId = get().accountId;
     set({ answers });
     if (!accountId) return;
-    await getRepo().saveOnboarding(accountId, answers, Date.now());
+    // Persistence is best-effort — a failure here must not break onboarding.
+    try {
+      await getRepo().saveOnboarding(accountId, answers, Date.now());
+    } catch (e) {
+      console.warn('[onboarding] save failed; answers kept in memory only', e);
+    }
   },
 
   clear: () => set({ accountId: null, answers: null }),

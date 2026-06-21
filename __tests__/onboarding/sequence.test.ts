@@ -5,10 +5,14 @@ import {
   buildSequence,
   startersForGoals,
   progressFraction,
+  isProgressScreen,
   MAX_PREVIEWS,
   GOAL_TO_STARTER,
+  ALL_GOALS,
+  PART_OF_DAY_TIME,
   type OnboardingAnswers,
   type GoalKey,
+  type Screen,
 } from '../../src/domain/onboarding';
 
 const answers = (goals: GoalKey[]): OnboardingAnswers => ({ goals, experience: null, reminder: null });
@@ -62,5 +66,75 @@ describe('progressFraction', () => {
     // the preview screen (index 3) does not bump the fraction past the 3 questions before it
     expect(progressFraction(seq, 3)).toBeCloseTo(3 / 6);
     expect(progressFraction(seq, 4)).toBeCloseTo(3 / 6); // crossing the preview adds nothing
+  });
+
+  test('is clamped to [0,1] for out-of-range cursors', () => {
+    const seq = buildSequence(answers([]));
+    expect(progressFraction(seq, -5)).toBe(0);
+    expect(progressFraction(seq, 999)).toBe(1);
+  });
+
+  test('no-goals flow has 6 question screens and even sixths', () => {
+    const seq = buildSequence(answers([]));
+    expect(seq.filter(isProgressScreen)).toHaveLength(6);
+    expect(progressFraction(seq, 1)).toBeCloseTo(1 / 6);
+  });
+
+  test('an empty sequence never divides by zero', () => {
+    expect(progressFraction([], 0)).toBe(0);
+    expect(progressFraction([], 3)).toBe(0);
+  });
+});
+
+describe('isProgressScreen', () => {
+  test('only preview screens are excluded from progress', () => {
+    const kinds: Screen['kind'][] = ['name-journey', 'goals', 'experience', 'rule', 'reminder', 'notify'];
+    for (const kind of kinds) expect(isProgressScreen({ kind } as Screen)).toBe(true);
+    expect(isProgressScreen({ kind: 'preview', goal: 'coptic' })).toBe(false);
+  });
+});
+
+describe('startersForGoals — edge cases', () => {
+  test('duplicate goals collapse to a single starter, preserving first-seen order', () => {
+    expect(startersForGoals(['prayer', 'prayer', 'word', 'prayer'])).toEqual(['agpeya', 'word']);
+  });
+
+  test('all goals → all five starter practices (coptic contributes none)', () => {
+    const all = startersForGoals(ALL_GOALS);
+    expect(all).toEqual(['fasts', 'agpeya', 'word', 'saint', 'journal']);
+    expect(all).not.toContain(undefined);
+  });
+
+  test('every goal except "coptic" maps to a defined starter', () => {
+    for (const g of ALL_GOALS) {
+      const expectStarter = g !== 'coptic';
+      expect(GOAL_TO_STARTER[g] !== undefined).toBe(expectStarter);
+    }
+  });
+});
+
+describe('buildSequence — invariants', () => {
+  test('always opens on name-journey and ends on notify, for any goal selection', () => {
+    for (const goals of [[], ['coptic'], ALL_GOALS] as GoalKey[][]) {
+      const seq = buildSequence(answers(goals));
+      expect(seq[0]!.kind).toBe('name-journey');
+      expect(seq[seq.length - 1]!.kind).toBe('notify');
+      // the question backbone is always present and in order
+      const questionKinds = seq.filter(isProgressScreen).map((s) => s.kind);
+      expect(questionKinds).toEqual(['name-journey', 'goals', 'experience', 'rule', 'reminder', 'notify']);
+    }
+  });
+
+  test('previews are the FIRST MAX_PREVIEWS goals in chosen order', () => {
+    const chosen: GoalKey[] = ['journal', 'coptic', 'fasts', 'word'];
+    const previews = buildSequence(answers(chosen)).filter((s) => s.kind === 'preview') as Extract<Screen, { kind: 'preview' }>[];
+    expect(previews.map((p) => p.goal)).toEqual(['journal', 'coptic', 'fasts']); // first 3, order preserved
+    expect(previews.length).toBeLessThanOrEqual(MAX_PREVIEWS);
+  });
+});
+
+describe('PART_OF_DAY_TIME', () => {
+  test('every part of day has a valid HH:MM default', () => {
+    for (const t of Object.values(PART_OF_DAY_TIME)) expect(t).toMatch(/^\d{2}:\d{2}$/);
   });
 });

@@ -109,6 +109,9 @@ export function isProgressScreen(screen: Screen): boolean {
 export function progressFraction(sequence: readonly Screen[], cursor: number): number {
   const total = sequence.filter(isProgressScreen).length;
   if (total <= 0) return 0;
-  const done = sequence.slice(0, cursor).filter(isProgressScreen).length;
+  // Clamp first: a negative cursor must not become a negative slice index (which
+  // would count from the END of the array), and over-range simply caps at 1.
+  const c = Math.max(0, cursor);
+  const done = sequence.slice(0, c).filter(isProgressScreen).length;
   return Math.min(1, done / total);
 }
