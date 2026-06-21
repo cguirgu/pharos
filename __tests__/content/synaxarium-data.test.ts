@@ -6,6 +6,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { setSynaxariumData, saintsOn, type SynaxariumDataset } from '../../src/domain/content/synaxarium';
+import { CONTENT_LICENSED } from '../../src/content/flags';
 import { toCoptic } from '../../src/domain/coptic';
 
 const FILE = join(__dirname, '..', '..', 'content', 'synaxarium', 'synaxarium.json');
@@ -24,13 +25,17 @@ const hasData = existsSync(FILE);
     expect(payload.draft).toBe(true);
   });
 
-  test('saintsOn resolves a commemoration for a real date with non-empty life', () => {
+  test('the dataset holds real lives; saintsOn withholds the draft life while unlicensed', () => {
     // Koiak 29 (Coptic Nativity) — a well-populated day.
+    const payload = JSON.parse(readFileSync(FILE, 'utf8')) as { days: Record<string, { life: string }> };
+    expect((payload.days['4-29']?.life.length ?? 0)).toBeGreaterThan(0); // dataset has real text
+
     const entries = saintsOn({ year: 1742, month: 4, day: 29, monthName: 'Koiak' });
     expect(entries.length).toBeGreaterThan(0);
     expect(entries[0]!.feasts && entries[0]!.feasts.length).toBeGreaterThan(0);
-    expect(entries[0]!.life.length).toBeGreaterThan(0);
     expect(entries[0]!.draft).toBe(true);
+    // the unlicensed life is gated out of the lookup (feast name still resolves)
+    if (!CONTENT_LICENSED) expect(entries[0]!.life).toBe('');
   });
 
   test('wires through a Gregorian date via the calendar engine', () => {

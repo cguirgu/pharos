@@ -11,7 +11,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getSupabase } from '../lib/supabase';
 import { matchesHighlightFilter } from './repo';
-import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter } from './repo';
+import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter, AccountExport } from './repo';
 import type { Practice, PracticeLog } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
 import type { Highlight } from '../domain/highlights';
@@ -323,6 +323,51 @@ export class SupabaseRepo implements Repo {
         .from('onboarding_answers')
         .upsert({ account_id: accountId, answers: JSON.stringify(answers), completed_at: completedAt }),
     );
+  }
+
+  // --- account deletion & export ---
+  // Full deletion of a synced account is done by the `delete-account` Edge
+  // Function (service-role → auth.admin.deleteUser → ON DELETE CASCADE). This
+  // client-side row delete is a best-effort fallback (RLS-scoped to the caller).
+  async deleteAccount(accountId: string): Promise<void> {
+    for (const table of ['practices', 'practice_logs', 'rest_days', 'journal_entries', 'highlights', 'reading_plans', 'reading_progress', 'office_logs', 'learn_lessons', 'onboarding_answers']) {
+      unwrap(await this.sb.from(table).delete().eq('account_id', accountId));
+    }
+    unwrap(await this.sb.from('profiles').delete().eq('id', accountId));
+  }
+
+  async exportAccountData(accountId: string): Promise<AccountExport> {
+    const acc = await this.getAccount(accountId);
+    const readingPlans = (unwrap(await this.sb.from('reading_plans').select('*').eq('account_id', accountId)) ?? []).map(
+      (r: Row) => ({ planId: r.plan_id, startDate: parseDateKey(r.start_date), createdAt: r.created_at }),
+    );
+    const readingProgress = (unwrap(await this.sb.from('reading_progress').select('*').eq('account_id', accountId)) ?? []).map(
+      (r: Row) => ({ planId: r.plan_id, dayNumber: r.day_number, completedOn: r.completed_on }),
+    );
+    const officeLogs = (unwrap(await this.sb.from('office_logs').select('*').eq('account_id', accountId)) ?? []).map(
+      (r: Row) => ({ date: r.date, officeKey: r.office_key }),
+    );
+    return {
+      exportedAt: 0, // stamped by the caller
+      profile: {
+        id: accountId,
+        email: acc?.email ?? '',
+        displayName: acc?.displayName ?? null,
+        journeyStage: acc?.journeyStage ?? null,
+        createdAt: acc?.createdAt ?? 0,
+        onboardingComplete: acc?.onboardingComplete ?? false,
+      },
+      onboarding: await this.getOnboarding(accountId),
+      practices: await this.listPractices(accountId),
+      practiceLogs: await this.listLogs(accountId),
+      restDays: await this.listRestDays(accountId),
+      journal: await this.listJournal(accountId),
+      highlights: await this.listHighlights(accountId),
+      readingPlans,
+      readingProgress,
+      officeLogs,
+      learn: await this.listLearn(accountId),
+    };
   }
 
   // --- device-local key/value (prefs only — never synced) ---

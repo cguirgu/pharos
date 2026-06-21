@@ -12,7 +12,7 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { eq, and } from 'drizzle-orm';
 import * as s from './schema';
 import { CREATE_SQL } from './schema';
-import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter } from './repo';
+import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter, AccountExport } from './repo';
 import { normalizeEmail, matchesHighlightFilter } from './repo';
 import type { OnboardingAnswers } from '../domain/onboarding';
 import type { Practice, PracticeLog, Cadence, Measure, Category, Kind, PracticeState, DayStatus, Reminder } from '../domain/rule';
@@ -445,6 +445,64 @@ export class SqliteRepo implements Repo {
         set: { answers: JSON.stringify(answers), completedAt },
       })
       .run();
+  }
+
+  // --- account deletion & export ---
+  async deleteAccount(accountId: string): Promise<void> {
+    this.db.delete(s.practices).where(eq(s.practices.accountId, accountId)).run();
+    this.db.delete(s.practiceLogs).where(eq(s.practiceLogs.accountId, accountId)).run();
+    this.db.delete(s.restDays).where(eq(s.restDays.accountId, accountId)).run();
+    this.db.delete(s.journalEntries).where(eq(s.journalEntries.accountId, accountId)).run();
+    this.db.delete(s.highlights).where(eq(s.highlights.accountId, accountId)).run();
+    this.db.delete(s.readingPlans).where(eq(s.readingPlans.accountId, accountId)).run();
+    this.db.delete(s.readingProgress).where(eq(s.readingProgress.accountId, accountId)).run();
+    this.db.delete(s.officeLogs).where(eq(s.officeLogs.accountId, accountId)).run();
+    this.db.delete(s.learnLessons).where(eq(s.learnLessons.accountId, accountId)).run();
+    this.db.delete(s.onboardingAnswers).where(eq(s.onboardingAnswers.accountId, accountId)).run();
+    this.db.delete(s.accounts).where(eq(s.accounts.id, accountId)).run();
+  }
+
+  async exportAccountData(accountId: string): Promise<AccountExport> {
+    const acc = await this.getAccount(accountId);
+    const readingPlans = this.db
+      .select()
+      .from(s.readingPlans)
+      .where(eq(s.readingPlans.accountId, accountId))
+      .all()
+      .map((r) => ({ planId: r.planId, startDate: parseDateKey(r.startDate), createdAt: r.createdAt }));
+    const readingProgress = this.db
+      .select()
+      .from(s.readingProgress)
+      .where(eq(s.readingProgress.accountId, accountId))
+      .all()
+      .map((r) => ({ planId: r.planId, dayNumber: r.dayNumber, completedOn: r.completedOn }));
+    const officeLogs = this.db
+      .select()
+      .from(s.officeLogs)
+      .where(eq(s.officeLogs.accountId, accountId))
+      .all()
+      .map((r) => ({ date: r.date, officeKey: r.officeKey }));
+    return {
+      exportedAt: 0, // stamped by the caller
+      profile: {
+        id: accountId,
+        email: acc?.email ?? '',
+        displayName: acc?.displayName ?? null,
+        journeyStage: acc?.journeyStage ?? null,
+        createdAt: acc?.createdAt ?? 0,
+        onboardingComplete: acc?.onboardingComplete ?? false,
+      },
+      onboarding: await this.getOnboarding(accountId),
+      practices: await this.listPractices(accountId),
+      practiceLogs: await this.listLogs(accountId),
+      restDays: await this.listRestDays(accountId),
+      journal: await this.listJournal(accountId),
+      highlights: await this.listHighlights(accountId),
+      readingPlans,
+      readingProgress,
+      officeLogs,
+      learn: await this.listLearn(accountId),
+    };
   }
 
   // --- global key/value ---

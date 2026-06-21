@@ -78,13 +78,13 @@ export const PRIVACY: LegalDoc = {
     {
       heading: 'Data retention and deletion',
       body: [
-        `Synced data is kept while your account exists. You can delete content in the app at any time. To delete your account and all associated synced data, contact us at ${contactEmail}; deleting your account cascades to remove your synced practices, logs, journal, highlights, plans, and profile. Content stored only on your device is removed when you delete the app.`,
+        `Synced data is kept while your account exists. You can delete content in the app at any time. To delete your account and all associated data, use “Delete account” in Settings (the You tab); this permanently removes your account and cascades to remove your practices, logs, journal, highlights, plans, learning progress, and profile. Content stored only on your device is also removed when you delete the app. You may still email ${contactEmail} for help.`,
       ],
     },
     {
       heading: 'Your rights',
       body: [
-        `Depending on where you live, you may have rights to access, correct, export, or delete your personal data, and to withdraw consent. To exercise any of these, email ${contactEmail} and we will respond within a reasonable time.`,
+        `Depending on where you live, you may have rights to access, correct, export, or delete your personal data, and to withdraw consent. You can export your data and delete your account directly in Settings (the You tab); for anything else, email ${contactEmail} and we will respond within a reasonable time.`,
       ],
     },
     {

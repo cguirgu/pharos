@@ -1,7 +1,7 @@
 /**
  * You — streaks, marks, stats, settings, and the account (PRD §5.6).
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
@@ -20,6 +20,9 @@ import { useLearning } from '../../src/state/learning';
 import { isLessonPassed } from '../../src/domain/learn/course';
 import { proficiencyFor } from '../../src/domain/learn/proficiency';
 import { useClock } from '../../src/state/clock';
+import { getRepo } from '../../src/db/repo';
+import { exportAndShare } from '../../src/platform/exportData';
+import { dateKey } from '../../src/domain/rule';
 import { youStats } from '../../src/domain/stats';
 import { evaluateMarks } from '../../src/domain/marks';
 import type { PracticeLog } from '../../src/domain/rule';
@@ -38,6 +41,20 @@ export default function YouScreen() {
   const setTextSize = useTextScale((s) => s.setSize);
   const { account, signOut } = useAuth();
   const today = useClock((s) => s.today);
+  const [exporting, setExporting] = useState(false);
+
+  const onExport = async () => {
+    if (!account || exporting) return;
+    setExporting(true);
+    try {
+      const data = await getRepo().exportAccountData(account.id);
+      await exportAndShare({ ...data, exportedAt: Date.now() }, dateKey(today));
+    } catch {
+      // best-effort; the share sheet simply doesn't open on failure
+    } finally {
+      setExporting(false);
+    }
+  };
   const practices = useRule((s) => s.practices);
   const logs = useRule((s) => s.logs);
   const restDays = useRule((s) => s.restDays);
@@ -118,6 +135,8 @@ export default function YouScreen() {
         <SettingRow label={copy.you.about} onPress={() => router.push('/you/about')} />
         <SettingRow label={copy.you.privacy} onPress={() => router.push('/you/privacy')} />
         <SettingRow label={copy.you.terms} onPress={() => router.push('/you/terms')} />
+        <SettingRow label={exporting ? copy.you.exportWorking : copy.you.exportData} onPress={onExport} />
+        <SettingRow label={copy.you.deleteAccount} onPress={() => router.push('/you/delete-account')} danger />
 
         <View style={{ height: 24 }} />
         <Btn
@@ -145,13 +164,13 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-function SettingRow({ label, onPress }: { label: string; onPress?: () => void }) {
+function SettingRow({ label, onPress, danger }: { label: string; onPress?: () => void; danger?: boolean }) {
   const styles = useStyles(makeStyles);
   const t = useThemeColors();
   return (
     <Pressable onPress={onPress}>
       <Register>
-        <Text style={styles.rowLabel}>{label}</Text>
+        <Text style={[styles.rowLabel, danger && { color: t.rubricHi }]}>{label}</Text>
         <Caps size={14} color={t.ink3}>{onPress ? '›' : ''}</Caps>
       </Register>
     </Pressable>

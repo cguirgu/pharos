@@ -10,8 +10,18 @@
  * TODO(verify-content): supply verified Synaxarium entries (see TESTING.md).
  */
 import type { CopticDate } from '../coptic';
+import { CONTENT_LICENSED } from '../../content/flags';
 
 export const LIFE_TBD = '⟨ life to be supplied from a verified Synaxarium ⟩';
+
+/**
+ * Withhold a draft (unlicensed) life until content is licensed: the feast `name`
+ * and `title` are structural facts and stay; only the prose `life` is blanked.
+ */
+export function gateLife(entry: SynaxariumEntry, licensed: boolean): SynaxariumEntry {
+  if (licensed || !entry.draft) return entry;
+  return { ...entry, life: '' };
+}
 
 export interface SynaxariumEntry {
   /** Coptic month 1–13. */
@@ -60,19 +70,21 @@ export const SYNAXARIUM: readonly SynaxariumEntry[] = [
 /** Commemorations on a given Coptic date. Uses the loaded dataset, else seeds. */
 export function saintsOn(coptic: CopticDate): SynaxariumEntry[] {
   const entry = dataset?.days[`${coptic.month}-${coptic.day}`];
-  if (entry && entry.feasts.length > 0) {
-    return [
-      {
-        copticMonth: coptic.month,
-        copticDay: coptic.day,
-        name: entry.feasts[0] ?? '',
-        feasts: entry.feasts,
-        life: entry.life,
-        draft: true,
-      },
-    ];
-  }
-  return SYNAXARIUM.filter((e) => e.copticMonth === coptic.month && e.copticDay === coptic.day);
+  const found: SynaxariumEntry[] =
+    entry && entry.feasts.length > 0
+      ? [
+          {
+            copticMonth: coptic.month,
+            copticDay: coptic.day,
+            name: entry.feasts[0] ?? '',
+            feasts: entry.feasts,
+            life: entry.life,
+            draft: true,
+          },
+        ]
+      : SYNAXARIUM.filter((e) => e.copticMonth === coptic.month && e.copticDay === coptic.day);
+  // Withhold unlicensed draft lives until permission is confirmed.
+  return found.map((e) => gateLife(e, CONTENT_LICENSED));
 }
 
 /** The primary commemoration of the day, or null. */

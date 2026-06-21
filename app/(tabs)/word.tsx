@@ -235,7 +235,7 @@ export default function WordScreen() {
               </Caps>
             ) : null}
             <Fleuron />
-            {saint ? (
+            {saint && saint.life ? (
               <SelectableProse
                 text={saint.life}
                 textStyle={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}

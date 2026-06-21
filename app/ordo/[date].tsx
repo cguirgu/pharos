@@ -69,7 +69,7 @@ export default function OrdoDay() {
 
         <Rubric num="Ⲙ">{copy.hours.saint}</Rubric>
         <Text style={styles.saintName}>{saint?.name ?? '—'}</Text>
-        <Text style={styles.saintLife}>{saint?.life ?? copy.hours.noSaint}</Text>
+        <Text style={styles.saintLife}>{saint?.life || copy.hours.noSaint}</Text>
       </ScrollView>
     </Page>
   );

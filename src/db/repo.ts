@@ -59,6 +59,30 @@ export interface LearnLessonRecord {
   total: number;
 }
 
+/** A full, portable snapshot of one account's data (for the in-app export). */
+export interface AccountExport {
+  exportedAt: number;
+  /** Profile only — never the password hash/salt. */
+  profile: {
+    id: string;
+    email: string;
+    displayName: string | null;
+    journeyStage: JourneyStage | null;
+    createdAt: number;
+    onboardingComplete: boolean;
+  };
+  onboarding: OnboardingAnswers | null;
+  practices: Practice[];
+  practiceLogs: PracticeLog[];
+  restDays: string[];
+  journal: JournalEntry[];
+  highlights: Highlight[];
+  readingPlans: ReadingEnrollment[];
+  readingProgress: { planId: string; dayNumber: number; completedOn?: string }[];
+  officeLogs: { date: string; officeKey: string }[];
+  learn: LearnLessonRecord[];
+}
+
 /** Optional narrowing for highlight queries (used by the reader overlay). */
 export interface HighlightFilter {
   source?: HighlightSource;
@@ -77,6 +101,10 @@ export interface Repo {
   getAccount(id: string): Promise<Account | null>;
   listAccounts(): Promise<Account[]>;
   updateAccount(account: Account): Promise<void>;
+  /** Remove the account row and every per-account row it owns (local delete). */
+  deleteAccount(accountId: string): Promise<void>;
+  /** Gather a full, portable snapshot of one account's data. */
+  exportAccountData(accountId: string): Promise<AccountExport>;
   getSession(): Promise<string | null>;
   setSession(accountId: string | null): Promise<void>;
 
@@ -300,6 +328,54 @@ export class MemoryRepo implements Repo {
   }
   async saveOnboarding(accountId: string, answers: OnboardingAnswers): Promise<void> {
     this.onboarding.set(accountId, answers);
+  }
+
+  // account deletion & export
+  async deleteAccount(accountId: string): Promise<void> {
+    this.accounts.delete(accountId);
+    this.practices.delete(accountId);
+    this.logs.delete(accountId);
+    this.rest.delete(accountId);
+    this.journal.delete(accountId);
+    this.highlights.delete(accountId);
+    this.enrollments.delete(accountId);
+    this.readDays.delete(accountId);
+    this.offices.delete(accountId);
+    this.learn.delete(accountId);
+    this.onboarding.delete(accountId);
+  }
+
+  async exportAccountData(accountId: string): Promise<AccountExport> {
+    const acc = this.accounts.get(accountId);
+    const enrollments = [...this.bucket(this.enrollments, accountId).values()];
+    const readDays = this.bucket(this.readDays, accountId);
+    const readingProgress: AccountExport['readingProgress'] = [];
+    for (const [planId, days] of readDays) for (const dayNumber of days) readingProgress.push({ planId, dayNumber });
+    const officeLogs = [...this.setBucket(this.offices, accountId)].map((k) => {
+      const [date, officeKey] = k.split('|');
+      return { date: date!, officeKey: officeKey! };
+    });
+    return {
+      exportedAt: 0, // stamped by the caller (no clock in the repo)
+      profile: {
+        id: accountId,
+        email: acc?.email ?? '',
+        displayName: acc?.displayName ?? null,
+        journeyStage: acc?.journeyStage ?? null,
+        createdAt: acc?.createdAt ?? 0,
+        onboardingComplete: acc?.onboardingComplete ?? false,
+      },
+      onboarding: this.onboarding.get(accountId) ?? null,
+      practices: [...this.bucket(this.practices, accountId).values()],
+      practiceLogs: [...this.bucket(this.logs, accountId).values()],
+      restDays: [...this.setBucket(this.rest, accountId)],
+      journal: [...this.bucket(this.journal, accountId).values()],
+      highlights: [...this.bucket(this.highlights, accountId).values()],
+      readingPlans: enrollments,
+      readingProgress,
+      officeLogs,
+      learn: [...this.bucket(this.learn, accountId).values()],
+    };
   }
 
   // global key/value

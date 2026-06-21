@@ -78,6 +78,8 @@ interface AuthState {
   signUpWithPassword: (email: string, password: string) => Promise<boolean>;
   signInWithPassword: (email: string, password: string) => Promise<boolean>;
   signOut: () => Promise<void>;
+  /** Permanently delete the account and all its data, then sign out. */
+  deleteAccount: () => Promise<void>;
   completeOnboarding: (input: OnboardingInput) => Promise<void>;
 }
 
@@ -307,6 +309,30 @@ export const useAuth = create<AuthState>((set, get) => ({
         await getSupabase().auth.signOut();
         await googleSignOut();
       } else {
+        await getRepo().setSession(null);
+      }
+    } finally {
+      clearAccountData();
+      set({ account: null });
+    }
+  },
+
+  deleteAccount: async () => {
+    const acc = get().account;
+    if (!acc) return;
+    try {
+      if (isBackendConfigured()) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
+        const { googleSignOut } = require('../platform/googleAuth') as typeof import('../platform/googleAuth');
+        // Service-role Edge Function deletes the auth user → ON DELETE CASCADE
+        // removes every synced row; then end the local session.
+        const { error } = await getSupabase().functions.invoke('delete-account');
+        if (error) throw new Error(error.message);
+        await getSupabase().auth.signOut();
+        await googleSignOut();
+      } else {
+        await getRepo().deleteAccount(acc.id);
         await getRepo().setSession(null);
       }
     } finally {
