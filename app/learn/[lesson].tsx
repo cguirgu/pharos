@@ -172,9 +172,7 @@ export default function LessonPlayer() {
             <Pressable onPress={() => playCoptic(current.audioKey)} style={styles.audioBtn} hitSlop={8}>
               <Caps size={9} ls={1.8} color={t.goldHi}>♪ {copy.learn.listen}</Caps>
             </Pressable>
-          ) : isSpell || isConcept ? null : (
-            <Caps size={8} ls={1.6} color={t.ink3} style={{ marginTop: 12 }}>{copy.learn.audioSoon}</Caps>
-          )}
+          ) : null}
         </View>
 
         <Fleuron />

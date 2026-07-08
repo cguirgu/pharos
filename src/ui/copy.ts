@@ -61,6 +61,7 @@ export const copy = {
     promise:
       'A guiding light into the faith of the Copts — prayer, fasting, and the Word, one day at a time.',
     begin: 'Begin the journey',
+    continueApple: 'Continue with Apple',
     continueGoogle: 'Continue with Google',
     signingIn: 'Signing in…',
     signInError: 'Sign-in did not complete. Please try again.',
@@ -183,6 +184,23 @@ export const copy = {
     about: 'About & attributions',
     privacy: 'Privacy policy',
     terms: 'Terms of service',
+    support: 'Support Pharos',
+    supportScreen: {
+      title: 'Support Pharos',
+      heading: 'Tend the lamp',
+      body: 'Pharos is kept by one pair of hands and offered freely. If it has served your prayer, a gift helps keep the lamp lit — entirely as you wish, never required.',
+      tipsTitle: 'A one-time gift',
+      tipsHint: 'Whatever is on your heart.',
+      subTitle: 'Become a supporter',
+      subHint: 'A small gift each month or year.',
+      restore: 'Restore purchases',
+      thanks: 'Thank you. The lamp burns a little brighter.',
+      supporterActive: 'You are a supporter of Pharos. Thank you for keeping the lamp lit.',
+      unavailable: 'Support is unavailable right now. Please try again later.',
+      // Required auto-renew disclosure for the subscription (App Review 3.1.2).
+      legal:
+        'Payment is charged to your Apple ID at confirmation. A subscription renews automatically unless cancelled at least 24 hours before the period ends. Manage or cancel anytime in your App Store account settings.',
+    },
     exportData: 'Export my data',
     exportWorking: 'Preparing your data…',
     exportError: 'Could not prepare the export. Please try again.',

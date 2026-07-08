@@ -9,6 +9,7 @@ import { Folio, Rubric, Caps, Numeral, Btn, Register, Segmented } from '../../sr
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
+import { SUPPORT_ENABLED } from '../../src/content/flags';
 import { useTheme, type ThemeMode } from '../../src/state/theme';
 import { useTextScale, type TextSize } from '../../src/state/textScale';
 import { useAuth } from '../../src/state/auth';
@@ -132,6 +133,9 @@ export default function YouScreen() {
         </View>
         <SettingRow label={copy.you.reminders} onPress={() => router.push('/you/reminders')} />
         <SettingRow label={copy.you.fastingNuance} />
+        {SUPPORT_ENABLED ? (
+          <SettingRow label={copy.you.support} onPress={() => router.push('/you/support')} />
+        ) : null}
         <SettingRow label={copy.you.about} onPress={() => router.push('/you/about')} />
         <SettingRow label={copy.you.privacy} onPress={() => router.push('/you/privacy')} />
         <SettingRow label={copy.you.terms} onPress={() => router.push('/you/terms')} />

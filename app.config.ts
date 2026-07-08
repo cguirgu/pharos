@@ -19,7 +19,7 @@ const config: ExpoConfig = {
   // Must match the slug of the EAS project referenced by extra.eas.projectId.
   slug: 'pharos-coptic-orthodox-friend',
   scheme: 'pharos',
-  version: '0.1.0',
+  version: '1.0.0',
   // EAS Update: OTA channel + runtime version (tied to `version` above).
   runtimeVersion: { policy: 'appVersion' },
   updates: {
@@ -32,6 +32,8 @@ const config: ExpoConfig = {
   ios: {
     bundleIdentifier: 'com.pharosapp.app',
     supportsTablet: false,
+    // Sign in with Apple — required alongside Google sign-in (Guideline 4.8).
+    usesAppleSignIn: true,
     infoPlist: {
       // Optional Supabase account sync + Google sign-in use only standard HTTPS/
       // TLS, which is exempt from US export-encryption filing — so this stays
@@ -62,6 +64,7 @@ const config: ExpoConfig = {
     'expo-router',
     'expo-sqlite',
     'expo-audio',
+    'expo-apple-authentication',
     [
       'expo-splash-screen',
       {
@@ -106,6 +109,9 @@ const config: ExpoConfig = {
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY || null,
     googleIosClientId: process.env.GOOGLE_IOS_CLIENT_ID || null,
     googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID || null,
+    // RevenueCat public iOS SDK key (optional "Support Pharos" in-app purchases).
+    // When absent the support feature stays inert (Expo Go / unconfigured builds).
+    revenueCatIosKey: process.env.REVENUECAT_IOS_KEY || null,
   },
 };
 

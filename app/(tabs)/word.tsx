@@ -12,6 +12,7 @@ import { SelectableProse } from '../../src/ui/SelectableProse';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
+import { CONTENT_LICENSED } from '../../src/content/flags';
 import { liturgicalLabel } from '../../src/ui/format';
 import { useClock } from '../../src/state/clock';
 import { useReading } from '../../src/state/reading';
@@ -224,31 +225,29 @@ export default function WordScreen() {
           </>
         ) : null}
 
-        {/* Commemoration of the day — the Synaxarium life, drag-select to mark. */}
-        <View onLayout={onCommemLayout}>
-          <Rubric num="Ⲙ">{copy.word.commemoration}</Rubric>
-          <View style={styles.saint}>
-            <Text style={styles.saintName}>{saint?.name ?? '—'}</Text>
-            {saint?.title ? (
-              <Caps size={8.5} ls={1.4} color={t.ink3} style={{ marginTop: 4 }}>
-                {saint.title}
-              </Caps>
-            ) : null}
-            <Fleuron />
-            {saint && saint.life ? (
+        {/* Commemoration of the day — the Synaxarium life. Hidden until the
+            saint-life text is licensed (only structural facts exist otherwise),
+            so no placeholder is shown. */}
+        {CONTENT_LICENSED && saint?.life ? (
+          <View onLayout={onCommemLayout}>
+            <Rubric num="Ⲙ">{copy.word.commemoration}</Rubric>
+            <View style={styles.saint}>
+              <Text style={styles.saintName}>{saint.name}</Text>
+              {saint.title ? (
+                <Caps size={8.5} ls={1.4} color={t.ink3} style={{ marginTop: 4 }}>
+                  {saint.title}
+                </Caps>
+              ) : null}
+              <Fleuron />
               <SelectableProse
                 text={saint.life}
                 textStyle={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}
                 onSaveSelection={onSaveLifeSelection}
                 onPressWhole={markWholeSaint}
               />
-            ) : (
-              <Text style={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}>
-                {copy.word.noCommemoration}
-              </Text>
-            )}
+            </View>
           </View>
-        </View>
+        ) : null}
       </ScrollView>
     </Page>
   );

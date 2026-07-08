@@ -86,6 +86,8 @@ interface AuthState {
   load: () => Promise<void>;
   clearError: () => void;
   signInWithGoogle: () => Promise<boolean>;
+  /** Native Sign in with Apple (backend mode; iOS). */
+  signInWithApple: () => Promise<boolean>;
   signUpWithPassword: (email: string, password: string) => Promise<boolean>;
   /** Verify the emailed 6-digit code; on success a session is established. */
   verifyEmailOtp: (email: string, token: string) => Promise<boolean>;
@@ -210,6 +212,35 @@ export const useAuth = create<AuthState>((set, get) => ({
       await getRepo().setSession(account.id);
       clearAccountData();
       await loadAccountData(account.id);
+      set({ account });
+      return true;
+    } catch (e) {
+      set({ authError: e instanceof Error ? e.message : 'Sign-in failed' });
+      return false;
+    } finally {
+      set({ signingIn: false });
+    }
+  },
+
+  signInWithApple: async () => {
+    set({ signingIn: true, authError: null });
+    try {
+      if (!isBackendConfigured()) {
+        set({ authError: 'Sign in with Apple needs the backend configured.' });
+        return false;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { signInWithApple } = require('../platform/appleAuth') as typeof import('../platform/appleAuth');
+      const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
+      const res = await signInWithApple();
+      if (!res.ok) {
+        set({ authError: res.error === 'cancelled' ? null : res.error });
+        return false;
+      }
+      const { data } = await getSupabase().auth.getUser();
+      const account = await accountFromSupabase(res.userId, data.user?.email ?? null, (data.user?.user_metadata?.full_name as string) ?? null);
+      clearAccountData();
+      await loadAccountData(res.userId);
       set({ account });
       return true;
     } catch (e) {

@@ -13,6 +13,7 @@ import { DevDate } from '../../src/ui/DevDate';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
+import { HOURS_READY, CONTENT_LICENSED } from '../../src/content/flags';
 import { folioDate, liturgicalLabel, practiceSubtitle } from '../../src/ui/format';
 import { useClock } from '../../src/state/clock';
 import { useRule } from '../../src/state/rule';
@@ -100,14 +101,23 @@ export default function TodayScreen() {
           </View>
         </View>
 
-        {/* fast / feast banner */}
+        {/* fast / feast banner — opens the Hours only when that content is ready */}
         {isFast ? (
-          <Pressable style={styles.banner} onPress={() => router.navigate('/(tabs)/hours' as never)}>
-            <Caps color={t.rubricHi} size={10} ls={2.2}>
-              {info.season?.name ?? 'A fast day'}
-            </Caps>
-            <Text style={styles.bannerRuling}>{info.fast.ruling}</Text>
-          </Pressable>
+          HOURS_READY ? (
+            <Pressable style={styles.banner} onPress={() => router.navigate('/(tabs)/hours' as never)}>
+              <Caps color={t.rubricHi} size={10} ls={2.2}>
+                {info.season?.name ?? 'A fast day'}
+              </Caps>
+              <Text style={styles.bannerRuling}>{info.fast.ruling}</Text>
+            </Pressable>
+          ) : (
+            <View style={styles.banner}>
+              <Caps color={t.rubricHi} size={10} ls={2.2}>
+                {info.season?.name ?? 'A fast day'}
+              </Caps>
+              <Text style={styles.bannerRuling}>{info.fast.ruling}</Text>
+            </View>
+          )
         ) : info.feast ? (
           <View style={[styles.banner, { borderColor: 'rgba(127,191,154,0.4)' }]}>
             <Caps color={t.feast} size={10} ls={2.2}>
@@ -117,8 +127,9 @@ export default function TodayScreen() {
           </View>
         ) : null}
 
-        {/* commemoration of the day — collapsible, remembers its state */}
-        {saint ? (
+        {/* commemoration of the day — collapsible, remembers its state.
+            Hidden until the saint-life text is licensed (no placeholder shown). */}
+        {CONTENT_LICENSED && saint ? (
           <View style={styles.commem}>
             <Pressable style={styles.commemHead} onPress={toggleCommem} hitSlop={6}>
               <Caps size={10.5} ls={2.6} color={t.rubricHi}>

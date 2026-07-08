@@ -9,6 +9,7 @@ import { SheetBar, Rubric, Caps, Register, Fleuron } from '../../src/ui/componen
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
+import { CONTENT_LICENSED } from '../../src/content/flags';
 import { folioDate } from '../../src/ui/format';
 import { getDayInfo } from '../../src/domain/coptic';
 import { primarySaint } from '../../src/domain/content/synaxarium';
@@ -67,9 +68,13 @@ export default function OrdoDay() {
           </View>
         ) : null}
 
-        <Rubric num="Ⲙ">{copy.hours.saint}</Rubric>
-        <Text style={styles.saintName}>{saint?.name ?? '—'}</Text>
-        <Text style={styles.saintLife}>{saint?.life || copy.hours.noSaint}</Text>
+        {CONTENT_LICENSED && saint?.life ? (
+          <>
+            <Rubric num="Ⲙ">{copy.hours.saint}</Rubric>
+            <Text style={styles.saintName}>{saint.name}</Text>
+            <Text style={styles.saintLife}>{saint.life}</Text>
+          </>
+        ) : null}
       </ScrollView>
     </Page>
   );

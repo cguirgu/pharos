@@ -1,8 +1,8 @@
 /**
  * Welcome (from OnbWelcome2): the seal, the promise, and the way in.
  */
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Page } from '../../src/ui/Page';
@@ -20,7 +20,7 @@ export default function Welcome() {
   const r = useResponsive();
   const insets = useSafeAreaInsets();
   const wordmarkSize = r.scale(64);
-  const signInWithGoogle = useAuth((s) => s.signInWithGoogle);
+  const signInWithApple = useAuth((s) => s.signInWithApple);
   const signingIn = useAuth((s) => s.signingIn);
   const authError = useAuth((s) => s.authError);
   const clearError = useAuth((s) => s.clearError);
@@ -28,8 +28,17 @@ export default function Welcome() {
   // Clear any error left over from a password screen when landing here.
   useEffect(() => clearError(), [clearError]);
 
-  const onGoogle = async () => {
-    const ok = await signInWithGoogle();
+  // Offer Sign in with Apple where available (iOS 13+ on a real/dev build).
+  const [appleAvailable, setAppleAvailable] = useState(false);
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { isAppleAuthAvailable } = require('../../src/platform/appleAuth') as typeof import('../../src/platform/appleAuth');
+    void isAppleAuthAvailable().then(setAppleAvailable);
+  }, []);
+
+  const onApple = async () => {
+    const ok = await signInWithApple();
     if (ok) router.replace('/'); // the routing gate sends to onboarding or the tabs
   };
   return (
@@ -47,10 +56,12 @@ export default function Welcome() {
         <Text style={[styles.promise, { fontSize: r.scale(22), maxWidth: r.textWidth }]}>{copy.auth.promise}</Text>
       </View>
       <View style={[styles.bottom, { paddingBottom: insets.bottom + 8 }]}>
-        <Btn kind="solid" onPress={onGoogle} disabled={signingIn}>
-          {signingIn ? copy.auth.signingIn : copy.auth.continueGoogle}
-        </Btn>
-        <Btn kind="line" onPress={() => router.push('/auth/signup')} disabled={signingIn}>
+        {appleAvailable ? (
+          <Btn kind="solid" onPress={onApple} disabled={signingIn}>
+            {signingIn ? copy.auth.signingIn : copy.auth.continueApple}
+          </Btn>
+        ) : null}
+        <Btn kind={appleAvailable ? 'line' : 'solid'} onPress={() => router.push('/auth/signup')} disabled={signingIn}>
           {copy.auth.withEmail}
         </Btn>
         {authError ? (
