@@ -7,7 +7,7 @@
  * Expo Go without keys. Either way, account changes drive every per-account store.
  */
 import { create } from 'zustand';
-import { getRepo, type Account, type JourneyStage } from '../db/repo';
+import { getRepo, getLocalRepo, GUEST_ACCOUNT_ID, type Account, type JourneyStage, type Repo } from '../db/repo';
 import { isBackendConfigured } from '../lib/config';
 import { validateCredentials, isValidEmail, type AuthErrorCode } from '../domain/auth/credentials';
 import { hashPassword, verifyPassword, randomSalt } from '../platform/hash';
@@ -96,6 +96,8 @@ interface AuthState {
   /** Abandon the pending confirmation (e.g. to use a different email). */
   clearPendingConfirm: () => void;
   signInWithPassword: (email: string, password: string) => Promise<boolean>;
+  /** Use the app without an account: a guest session whose data stays on-device. */
+  continueAsGuest: () => Promise<boolean>;
   signOut: () => Promise<void>;
   /** Permanently delete the account and all its data, then sign out. */
   deleteAccount: () => Promise<void>;
@@ -127,14 +129,13 @@ function mapSupabaseAuthError(message: string): AuthErrorCode | string {
   return message;
 }
 
-/** Ensure (and return) the single local dev account for the unconfigured fallback. */
-async function ensureDevAccount(): Promise<Account> {
-  const repo = getRepo();
-  let account = await repo.getAccount(DEV_ACCOUNT_ID);
+/** Ensure (and return) a fixed local account (the dev fallback or the guest). */
+async function ensureLocalAccount(repo: Repo, accountId: string, email: string): Promise<Account> {
+  let account = await repo.getAccount(accountId);
   if (!account) {
     account = {
-      id: DEV_ACCOUNT_ID,
-      email: 'dev@local',
+      id: accountId,
+      email,
       passwordHash: '',
       salt: '',
       createdAt: Date.now(),
@@ -172,6 +173,15 @@ export const useAuth = create<AuthState>((set, get) => ({
         if (user) {
           account = await accountFromSupabase(user.id, user.email ?? null, (user.user_metadata?.full_name as string) ?? null);
           await loadAccountData(user.id);
+        } else {
+          // No backend session — restore a guest session if one was chosen.
+          // Strictly the guest id: a stale dev/local marker must never leak in.
+          const local = getLocalRepo();
+          await local.init();
+          if ((await local.getSession()) === GUEST_ACCOUNT_ID) {
+            account = await local.getAccount(GUEST_ACCOUNT_ID);
+            if (account) await loadAccountData(GUEST_ACCOUNT_ID);
+          }
         }
       } else {
         const sessionId = await repo.getSession();
@@ -208,7 +218,7 @@ export const useAuth = create<AuthState>((set, get) => ({
         return true;
       }
       // dev fallback (no keys) — one local account, no real auth
-      const account = await ensureDevAccount();
+      const account = await ensureLocalAccount(getRepo(), DEV_ACCOUNT_ID, 'dev@local');
       await getRepo().setSession(account.id);
       clearAccountData();
       await loadAccountData(account.id);
@@ -408,6 +418,27 @@ export const useAuth = create<AuthState>((set, get) => ({
     }
   },
 
+  continueAsGuest: async () => {
+    set({ signingIn: true, authError: null });
+    try {
+      // The guest lives in the LOCAL repo even when the backend is configured —
+      // their data never leaves the device (see GUEST_ACCOUNT_ID in db/repo).
+      const repo = getRepo(GUEST_ACCOUNT_ID);
+      await repo.init();
+      const account = await ensureLocalAccount(repo, GUEST_ACCOUNT_ID, '');
+      await repo.setSession(GUEST_ACCOUNT_ID);
+      clearAccountData();
+      await loadAccountData(GUEST_ACCOUNT_ID);
+      set({ account });
+      return true;
+    } catch (e) {
+      set({ authError: e instanceof Error ? e.message : 'Could not continue' });
+      return false;
+    } finally {
+      set({ signingIn: false });
+    }
+  },
+
   signOut: async () => {
     try {
       if (isBackendConfigured()) {
@@ -416,9 +447,13 @@ export const useAuth = create<AuthState>((set, get) => ({
         const { googleSignOut } = require('../platform/googleAuth') as typeof import('../platform/googleAuth');
         await getSupabase().auth.signOut();
         await googleSignOut();
-      } else {
-        await getRepo().setSession(null);
       }
+      // Always clear the local session marker: it holds the active session in the
+      // unconfigured fallback and the guest session in production. A stale marker
+      // must not resurrect guest mode on the next launch.
+      const local = getLocalRepo();
+      await local.init();
+      await local.setSession(null);
     } finally {
       clearAccountData();
       set({ account: null, pendingConfirmEmail: null });
@@ -432,7 +467,8 @@ export const useAuth = create<AuthState>((set, get) => ({
     // If any step throws it propagates to the caller (the delete screen) and the
     // user is left signed in to their still-live account — never stranded as
     // "signed out" of an account that wasn't deleted.
-    if (isBackendConfigured()) {
+    // A guest has no server rows: their delete is always the local branch.
+    if (isBackendConfigured() && acc.id !== GUEST_ACCOUNT_ID) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
       const { googleSignOut } = require('../platform/googleAuth') as typeof import('../platform/googleAuth');
@@ -454,9 +490,18 @@ export const useAuth = create<AuthState>((set, get) => ({
       } catch (e) {
         console.warn('[auth] googleSignOut after delete failed; ignoring', e);
       }
+      // Best-effort: drop any stale local guest marker so it can't silently
+      // resurrect a guest session after the account is gone.
+      try {
+        const local = getLocalRepo();
+        await local.init();
+        await local.setSession(null);
+      } catch (e) {
+        console.warn('[auth] clearing local session after delete failed; ignoring', e);
+      }
     } else {
-      await getRepo().deleteAccount(acc.id);
-      await getRepo().setSession(null);
+      await getRepo(acc.id).deleteAccount(acc.id);
+      await getRepo(acc.id).setSession(null);
     }
     clearAccountData();
     set({ account: null, pendingConfirmEmail: null });
@@ -465,7 +510,7 @@ export const useAuth = create<AuthState>((set, get) => ({
   completeOnboarding: async ({ displayName, journeyStage, selection, answers }) => {
     const current = get().account;
     if (!current) return;
-    const repo = getRepo();
+    const repo = getRepo(current.id);
 
     const practices = starterPractices(Date.now(), selection);
     for (const p of practices) await repo.upsertPractice(current.id, p);

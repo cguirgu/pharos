@@ -66,6 +66,7 @@ export const copy = {
     signingIn: 'Signing in…',
     signInError: 'Sign-in did not complete. Please try again.',
     haveAccount: 'I already keep an account',
+    guest: 'Continue without an account',
     or: 'or',
     withEmail: 'Continue with email',
     signUpTitle: 'Keep an account',
@@ -170,6 +171,9 @@ export const copy = {
 
   you: {
     head: 'You',
+    guestLabel: 'Guest',
+    guestHint: 'Your rule, journal, and progress stay on this device only. An account begins its own rule, kept in sync across devices; what you tend as a guest remains here.',
+    guestCta: 'Create an account',
     signOut: 'Sign out',
     switch: 'Switch account',
     addAccount: 'Create another account',

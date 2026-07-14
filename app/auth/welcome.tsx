@@ -21,6 +21,7 @@ export default function Welcome() {
   const insets = useSafeAreaInsets();
   const wordmarkSize = r.scale(64);
   const signInWithApple = useAuth((s) => s.signInWithApple);
+  const continueAsGuest = useAuth((s) => s.continueAsGuest);
   const signingIn = useAuth((s) => s.signingIn);
   const authError = useAuth((s) => s.authError);
   const clearError = useAuth((s) => s.clearError);
@@ -40,6 +41,10 @@ export default function Welcome() {
   const onApple = async () => {
     const ok = await signInWithApple();
     if (ok) router.replace('/'); // the routing gate sends to onboarding or the tabs
+  };
+  const onGuest = async () => {
+    const ok = await continueAsGuest();
+    if (ok) router.replace('/');
   };
   return (
     <Page>
@@ -72,6 +77,9 @@ export default function Welcome() {
         <Pressable style={styles.link} onPress={() => router.push('/auth/signin')} hitSlop={10}>
           <Caps size={9.5} ls={1.4} color={t.ink2}>{copy.auth.haveAccount}</Caps>
         </Pressable>
+        <Pressable style={styles.guestLink} onPress={onGuest} disabled={signingIn} hitSlop={10}>
+          <Caps size={9.5} ls={1.4} color={t.gold}>{copy.auth.guest}</Caps>
+        </Pressable>
       </View>
     </Page>
   );
@@ -91,4 +99,5 @@ const makeStyles = (t: Palette) => StyleSheet.create({
   bottom: { gap: 10 },
   error: { alignItems: 'center', paddingTop: 6 },
   link: { alignItems: 'center', paddingVertical: 12 },
+  guestLink: { alignItems: 'center', paddingBottom: 12, paddingTop: 2 },
 });

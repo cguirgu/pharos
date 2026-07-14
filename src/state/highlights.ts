@@ -53,7 +53,7 @@ export const useHighlights = create<HighlightsState>((set, get) => ({
   items: [],
 
   load: async (accountId) => {
-    const items = await getRepo().listHighlights(accountId);
+    const items = await getRepo(accountId).listHighlights(accountId);
     set({ accountId, items });
   },
 
@@ -76,7 +76,7 @@ export const useHighlights = create<HighlightsState>((set, get) => ({
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
     };
-    await getRepo().upsertHighlight(accountId, highlight);
+    await getRepo(accountId).upsertHighlight(accountId, highlight);
     set((st) => {
       const rest = st.items.filter((h) => h.id !== highlight.id);
       return { items: [highlight, ...rest].sort((a, b) => b.createdAt - a.createdAt) };
@@ -87,7 +87,7 @@ export const useHighlights = create<HighlightsState>((set, get) => ({
   remove: async (hId) => {
     const accountId = get().accountId;
     if (!accountId) return;
-    await getRepo().deleteHighlight(accountId, hId);
+    await getRepo(accountId).deleteHighlight(accountId, hId);
     set((st) => ({ items: st.items.filter((h) => h.id !== hId) }));
   },
 

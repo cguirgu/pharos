@@ -52,7 +52,7 @@ export const useRule = create<RuleState>((set, get) => ({
   restDays: new Set(),
 
   load: async (accountId) => {
-    const repo = getRepo();
+    const repo = getRepo(accountId);
     await repo.init();
     const [practices, logs, rest] = [
       await repo.listPractices(accountId),
@@ -67,7 +67,7 @@ export const useRule = create<RuleState>((set, get) => ({
   reseed: async () => {
     const accountId = get().accountId;
     if (!accountId) return;
-    const repo = getRepo();
+    const repo = getRepo(accountId);
     for (const p of get().practices) await repo.deletePractice(accountId, p.id);
     const seeded = starterPractices(Date.now(), DEFAULT_SELECTION);
     for (const p of seeded) await repo.upsertPractice(accountId, p);
@@ -77,7 +77,7 @@ export const useRule = create<RuleState>((set, get) => ({
   savePractice: async (p) => {
     const accountId = get().accountId;
     if (!accountId) return;
-    await getRepo().upsertPractice(accountId, p);
+    await getRepo(accountId).upsertPractice(accountId, p);
     set((st) => {
       const exists = st.practices.some((x) => x.id === p.id);
       const practices = exists ? st.practices.map((x) => (x.id === p.id ? p : x)) : [...st.practices, p];
@@ -88,7 +88,7 @@ export const useRule = create<RuleState>((set, get) => ({
   removePractice: async (id) => {
     const accountId = get().accountId;
     if (!accountId) return;
-    await getRepo().deletePractice(accountId, id);
+    await getRepo(accountId).deletePractice(accountId, id);
     set((st) => ({
       practices: st.practices.filter((p) => p.id !== id),
       logs: st.logs.filter((l) => l.practiceId !== id),
@@ -99,7 +99,7 @@ export const useRule = create<RuleState>((set, get) => ({
     const accountId = get().accountId;
     if (!accountId) return;
     const log = logFromValue(practice, date, value);
-    await getRepo().upsertLog(accountId, log);
+    await getRepo(accountId).upsertLog(accountId, log);
     set((st) => ({ logs: upsertLogLocal(st.logs, log) }));
   },
 
@@ -107,7 +107,7 @@ export const useRule = create<RuleState>((set, get) => ({
     const accountId = get().accountId;
     if (!accountId) return;
     const log = logFromParts(practice, date, completed);
-    await getRepo().upsertLog(accountId, log);
+    await getRepo(accountId).upsertLog(accountId, log);
     set((st) => ({ logs: upsertLogLocal(st.logs, log) }));
   },
 
@@ -116,7 +116,7 @@ export const useRule = create<RuleState>((set, get) => ({
     if (!accountId) return;
     const current = get().logsFor(practice.id).find((l) => dateKey(l.date) === dateKey(date));
     const log = toggleBinary(practice, date, current);
-    await getRepo().upsertLog(accountId, log);
+    await getRepo(accountId).upsertLog(accountId, log);
     set((st) => ({ logs: upsertLogLocal(st.logs, log) }));
   },
 
@@ -124,7 +124,7 @@ export const useRule = create<RuleState>((set, get) => ({
     const accountId = get().accountId;
     if (!accountId) return;
     const key = dateKey(date);
-    await getRepo().setRestDay(accountId, key, on);
+    await getRepo(accountId).setRestDay(accountId, key, on);
     set((st) => {
       const next = new Set(st.restDays);
       if (on) next.add(key);

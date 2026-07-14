@@ -37,7 +37,7 @@ export const useLearning = create<LearnState>((set, get) => ({
   lessons: {},
 
   load: async (accountId) => {
-    const records = await getRepo().listLearn(accountId);
+    const records = await getRepo(accountId).listLearn(accountId);
     const lessons: Record<string, LessonRecord> = {};
     for (const r of records) lessons[r.lessonId] = { completedOn: r.completedOn, correct: r.correct, total: r.total };
     set({ accountId, lessons });
@@ -50,7 +50,7 @@ export const useLearning = create<LearnState>((set, get) => ({
     if (!accountId) return;
     const best = Math.max(correct, get().lessons[lessonId]?.correct ?? 0);
     const on = dateKey(today);
-    await getRepo().completeLesson(accountId, lessonId, correct, total, on);
+    await getRepo(accountId).completeLesson(accountId, lessonId, correct, total, on);
     set((st) => ({ lessons: { ...st.lessons, [lessonId]: { completedOn: on, correct: best, total } } }));
   },
 
