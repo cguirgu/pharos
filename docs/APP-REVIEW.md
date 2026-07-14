@@ -1,5 +1,56 @@
 # Getting Pharos through App Review
 
+## Round 2 — rejection of 1.0 (16), July 14, 2026 (submission 55accd52-4d9a-44ff-b600-c143a44cc2e6)
+
+Apple rejected build 16 on two guidelines. Both are fixed; resubmission needs a
+**new binary** (code changed) plus two App Store Connect / web steps.
+
+### Fix A — Guideline 5.1.1(v): forced registration
+The app required sign-in before any feature. **Added guest mode**: a
+"Continue without an account" link on the welcome screen opens the full app —
+onboarding, rule, journal, Bible, Learn — with all data stored **only on the
+device** (the local SQLite store; the backend is never touched by a guest).
+Sync, and nothing else, still requires an account. This also makes the privacy
+policy's long-standing "without signing in, your content never leaves your
+device" true in practice.
+
+Code: `GUEST_ACCOUNT_ID` + per-account repo dispatch (`src/db/repo.ts`),
+`continueAsGuest` / guest session restore (`src/state/auth.ts`), welcome link
+(`app/auth/welcome.tsx`), guest account panel (`app/(tabs)/you.tsx`).
+Guest → sign-up does NOT migrate the on-device data (deliberate; the guest rows
+are preserved locally, so a migration can ship later).
+
+### Fix B — Guideline 1.5: Support URL
+`https://pharos-app.com/` had no support information. **Added
+`web/support/index.html`** — contact email, response expectation, and FAQ
+(account deletion, data export, reminders) — and a Support link on the landing
+page.
+
+### Resubmission steps
+1. Push `web/` to main so Vercel redeploys; verify `https://pharos-app.com/support/` loads.
+2. App Store Connect → App Information: set **Support URL** to
+   `https://pharos-app.com/support/`.
+3. Update **App Review Information** notes (see below — sign-in is no longer required).
+4. New build: `eas build -p ios --profile production` then `eas submit -p ios --latest`
+   (bump the build number; verify `npm test` + `npx tsc --noEmit` first).
+5. Reply to the App Review message, e.g.:
+
+> Thank you for the review. Both issues are addressed in the new build:
+>
+> **5.1.1(v):** The app no longer requires registration. A "Continue without an
+> account" option on the welcome screen gives full access to the app's features
+> (daily rule, Coptic calendar, offline Bible, learning path, journal), with all
+> data stored on-device. An account is only required for the account-based
+> feature of syncing data across devices.
+>
+> **1.5:** The Support URL now points to https://pharos-app.com/support/, which
+> provides a contact email and support information. We've updated the Support
+> URL field in App Store Connect accordingly.
+
+---
+
+## Round 1 — pre-submission fixes
+
 Two things in the earlier build were likely to bounce a first submission. Both are
 now fixed in code; each needs a small external step + a **fresh build** (native
 config changed, so this can't ship as an OTA update).
@@ -47,8 +98,10 @@ node is currently broken via Homebrew — see note at bottom.)*
 
 ## App Review Information — paste into App Store Connect
 
-**Sign-In required:** Yes. A demo account is below; reviewers may also use Sign in with
-Apple or Google.
+**Sign-In required:** No. The app is fully usable without an account via
+"Continue without an account" on the welcome screen. A demo account is provided for
+testing the optional account features (sync, deletion, export); reviewers may also
+use Sign in with Apple.
 
 > Demo account
 > Username: `<create a Supabase email/password account and put it here>`
@@ -59,14 +112,16 @@ Apple or Google.
 > calendar (fasts/feasts), an offline King James Bible with reading plans, a Coptic
 > alphabet learning path, a journal, and highlights.
 >
-> Sign in with Apple, Google, or email/password to reach the app. All features are
-> available immediately after sign-in; no special hardware or configuration is needed.
+> No sign-in is required: choose "Continue without an account" on the welcome screen
+> to use every feature with data stored on-device. Creating an account (Sign in with
+> Apple or email/password) is optional and only adds syncing across devices.
 >
 > Account deletion is in-app: You → Delete account (removes the account and all synced
 > data). Data export is under You → Export my data.
 >
-> The app collects only what's needed to run the account (email, display name, and the
-> user's own rule/journal/reading data for sync). No ads, no tracking, no analytics.
+> The app collects only what's needed to run the optional account (email, display name,
+> and the user's own rule/journal/reading data for sync). Guests' data never leaves the
+> device. No ads, no tracking, no analytics.
 
 **Contact:** provide first/last name, phone, and email (e.g. `thepharosapp@gmail.com`).
 
