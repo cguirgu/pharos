@@ -1,21 +1,24 @@
 /**
  * Seal — the Coptic-cross roundel, echoing the app icon: ruled roundel · four
- * diamond accents · flared cross · center medallion. Used for brand imagery.
+ * diamond accents · the Coptic Orthodox cross (four equal flared arms, each
+ * ending in three points — twelve in all — around the central circle).
  *
  * Pass `animated` to play a kindle sequence on mount: the medallion glows, the
- * cross arms draw outward, then the flares and diamonds fade up — the
- * opening/welcome screen and the onboarding "lamp lit" finish use this.
- * The static default is unchanged.
+ * cross arms fade up, then the diamonds settle — the opening/welcome screen and
+ * the onboarding "lamp lit" finish use this. The static default is unchanged.
  */
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { useThemeColors } from '../useStyles';
 
-/** The four cross arms, drawn outward from the center medallion. */
-const ARMS = ['M32 27 L32 16', 'M32 37 L32 48', 'M27 32 L16 32', 'M37 32 L48 32'];
-/** Perpendicular end-caps that flare each arm (cross formée, in line art). */
-const CAPS = ['M28.8 16 L35.2 16', 'M28.8 48 L35.2 48', 'M16 28.8 L16 35.2', 'M48 28.8 L48 35.2'];
+/** The four arms of the Coptic cross: equal, flared, three-pointed ends. */
+const ARMS = [
+  'M 30.1 25 L 26.6 11.6 L 27 10 L 30.2 12.4 L 32 10 L 33.8 12.4 L 37 10 L 37.4 11.6 L 33.9 25 Z',
+  'M 39 30.1 L 52.4 26.6 L 54 27 L 51.6 30.2 L 54 32 L 51.6 33.8 L 54 37 L 52.4 37.4 L 39 33.9 Z',
+  'M 33.9 39 L 37.4 52.4 L 37 54 L 33.8 51.6 L 32 54 L 30.2 51.6 L 27 54 L 26.6 52.4 L 30.1 39 Z',
+  'M 25 33.9 L 11.6 37.4 L 10 37 L 12.4 33.8 L 10 32 L 12.4 30.2 L 10 27 L 11.6 26.6 L 25 30.1 Z',
+];
 /** Diamond accents on the ring between the two circles, at the compass points. */
 const DIAMONDS = [
   'M32 2.6 L33.9 4.5 L32 6.4 L30.1 4.5 Z',
@@ -23,7 +26,6 @@ const DIAMONDS = [
   'M32 57.6 L33.9 59.5 L32 61.4 L30.1 59.5 Z',
   'M4.5 30.1 L6.4 32 L4.5 33.9 L2.6 32 Z',
 ];
-const DASH = 12; // ≥ the arm length, so offset DASH→0 draws each fully
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -47,21 +49,18 @@ export function Seal({
       <Svg width={size} height={size} viewBox="0 0 64 64">
         {/* ruled roundel */}
         <Circle cx={32} cy={32} r={30} stroke={stroke} strokeWidth={1} opacity={0.5} fill="none" />
-        <Circle cx={32} cy={32} r={25} stroke={stroke} strokeWidth={0.6} opacity={0.3} fill="none" />
+        <Circle cx={32} cy={32} r={26} stroke={stroke} strokeWidth={0.6} opacity={0.3} fill="none" />
         {/* diamond accents */}
         {DIAMONDS.map((d, i) => (
           <Path key={i} d={d} fill={stroke} opacity={0.6} />
         ))}
-        {/* cross arms + flared caps */}
+        {/* the cross */}
         {ARMS.map((d, i) => (
-          <Path key={i} d={d} stroke={stroke} strokeWidth={1.6} strokeLinecap="round" />
-        ))}
-        {CAPS.map((d, i) => (
-          <Path key={i} d={d} stroke={stroke} strokeWidth={1.2} strokeLinecap="round" />
+          <Path key={i} d={d} fill={stroke} />
         ))}
         {/* center medallion */}
-        <Circle cx={32} cy={32} r={4.6} stroke={stroke} strokeWidth={1.2} fill="none" />
-        <Circle cx={32} cy={32} r={1.3} fill={stroke} />
+        <Circle cx={32} cy={32} r={4.4} stroke={stroke} strokeWidth={1.4} fill="none" />
+        <Circle cx={32} cy={32} r={1.4} fill={stroke} />
       </Svg>
     );
   }
@@ -83,34 +82,21 @@ function AnimatedSeal({ size, stroke, delay }: { size: number; stroke: string; d
 
   const roundelOpacity = clamp(0, 0.3); // 0 → 1 over the first third
   const medallionProgress = clamp(0.15, 0.45); // the center kindles first
-  const dotRadius = medallionProgress.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1.3] });
-  const armDraw = clamp(0.3, 0.65); // the arms draw outward from the center
-  const armOffset = armDraw.interpolate({ inputRange: [0, 1], outputRange: [DASH, 0] });
-  const trimProgress = clamp(0.6, 0.9); // flares + diamonds settle last
+  const dotRadius = medallionProgress.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1.4] });
+  const armProgress = clamp(0.3, 0.7); // the cross rises out of the center
+  const trimProgress = clamp(0.65, 0.92); // the diamonds settle last
 
   return (
     <Svg width={size} height={size} viewBox="0 0 64 64">
       <AnimatedCircle cx={32} cy={32} r={30} stroke={stroke} strokeWidth={1} opacity={Animated.multiply(roundelOpacity, 0.5)} fill="none" />
-      <AnimatedCircle cx={32} cy={32} r={25} stroke={stroke} strokeWidth={0.6} opacity={Animated.multiply(roundelOpacity, 0.3)} fill="none" />
+      <AnimatedCircle cx={32} cy={32} r={26} stroke={stroke} strokeWidth={0.6} opacity={Animated.multiply(roundelOpacity, 0.3)} fill="none" />
       {DIAMONDS.map((d, i) => (
         <AnimatedPath key={i} d={d} fill={stroke} opacity={Animated.multiply(trimProgress, 0.6)} />
       ))}
       {ARMS.map((d, i) => (
-        <AnimatedPath
-          key={i}
-          d={d}
-          stroke={stroke}
-          strokeWidth={1.6}
-          strokeLinecap="round"
-          strokeDasharray={DASH}
-          strokeDashoffset={armOffset}
-          opacity={armDraw}
-        />
+        <AnimatedPath key={i} d={d} fill={stroke} opacity={armProgress} />
       ))}
-      {CAPS.map((d, i) => (
-        <AnimatedPath key={i} d={d} stroke={stroke} strokeWidth={1.2} strokeLinecap="round" opacity={trimProgress} />
-      ))}
-      <AnimatedCircle cx={32} cy={32} r={4.6} stroke={stroke} strokeWidth={1.2} fill="none" opacity={medallionProgress} />
+      <AnimatedCircle cx={32} cy={32} r={4.4} stroke={stroke} strokeWidth={1.4} fill="none" opacity={medallionProgress} />
       <AnimatedCircle cx={32} cy={32} r={dotRadius} fill={stroke} opacity={medallionProgress} />
     </Svg>
   );
