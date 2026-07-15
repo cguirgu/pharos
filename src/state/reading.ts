@@ -40,7 +40,7 @@ export const useReading = create<ReadingState>((set, get) => ({
   plans: {},
 
   load: async (accountId, _today) => {
-    const repo = getRepo();
+    const repo = getRepo(accountId);
     const plans: Record<string, PlanState> = {};
     for (const plan of PLANS) {
       const enrollment = await repo.getEnrollment(accountId, plan.id);
@@ -57,7 +57,7 @@ export const useReading = create<ReadingState>((set, get) => ({
     const accountId = get().accountId;
     if (!accountId || get().plans[planId] || !planById(planId)) return;
     const enrollment = { planId, startDate: today, createdAt: Date.now() };
-    await getRepo().enroll(accountId, enrollment);
+    await getRepo(accountId).enroll(accountId, enrollment);
     set((st) => ({ plans: { ...st.plans, [planId]: { planId, startDate: today, completedDays: [] } } }));
   },
 
@@ -65,7 +65,7 @@ export const useReading = create<ReadingState>((set, get) => ({
     const accountId = get().accountId;
     const plan = get().plans[planId];
     if (!accountId || !plan || plan.completedDays.includes(dayNumber)) return;
-    await getRepo().markReadDay(accountId, planId, dayNumber, dateKey(today));
+    await getRepo(accountId).markReadDay(accountId, planId, dayNumber, dateKey(today));
     set((st) => ({
       plans: {
         ...st.plans,

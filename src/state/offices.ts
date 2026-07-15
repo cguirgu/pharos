@@ -27,7 +27,7 @@ export const useOffices = create<OfficesState>((set, get) => ({
   prayed: {},
 
   load: async (accountId) => {
-    const total = await getRepo().countOfficeLogs(accountId);
+    const total = await getRepo(accountId).countOfficeLogs(accountId);
     set({ accountId, total, prayed: {} });
   },
 
@@ -37,7 +37,7 @@ export const useOffices = create<OfficesState>((set, get) => ({
     const accountId = get().accountId;
     const key = dateKey(date);
     if (!accountId || get().prayed[key]) return;
-    const keys = await getRepo().listOfficeLogs(accountId, key);
+    const keys = await getRepo(accountId).listOfficeLogs(accountId, key);
     set((st) => ({ prayed: { ...st.prayed, [key]: keys } }));
   },
 
@@ -45,7 +45,7 @@ export const useOffices = create<OfficesState>((set, get) => ({
     const accountId = get().accountId;
     if (!accountId) return;
     const key = dateKey(date);
-    await getRepo().setOfficeLog(accountId, key, office, on);
+    await getRepo(accountId).setOfficeLog(accountId, key, office, on);
     set((st) => {
       const cur = new Set(st.prayed[key] ?? []);
       const had = cur.has(office);

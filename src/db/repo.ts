@@ -388,13 +388,56 @@ export class MemoryRepo implements Repo {
 }
 
 let repo: Repo | null = null;
+let localRepo: Repo | null = null;
+
+/**
+ * The guest account. Guests never touch the backend: their data lives in the
+ * LOCAL repo (SQLite on device) even when Supabase is configured, honoring the
+ * privacy policy's "without signing in, your content never leaves your device".
+ */
+export const GUEST_ACCOUNT_ID = 'guest-local';
+
+function makeLocalRepo(): Repo {
+  if (Platform.OS === 'web' || Platform.OS === 'windows' || Platform.OS === 'macos') {
+    return new MemoryRepo();
+  }
+  // Lazy require so expo-sqlite is never loaded on web / in jest.
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { SqliteRepo } = require('./sqliteRepo') as typeof import('./sqliteRepo');
+    return new SqliteRepo();
+  } catch {
+    return new MemoryRepo();
+  }
+}
+
+/**
+ * The on-device repository, for data that must never reach the backend (the
+ * guest account). When the backend isn't configured this IS the active repo,
+ * so dev/tests keep a single store for both session and data.
+ */
+export function getLocalRepo(): Repo {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { isBackendConfigured } = require('../lib/config') as typeof import('../lib/config');
+    if (!isBackendConfigured()) return getRepo();
+  } catch {
+    return getRepo();
+  }
+  if (!localRepo) localRepo = makeLocalRepo();
+  return localRepo;
+}
 
 /**
  * The active repository. Supabase when configured (online-first, RLS-scoped),
  * otherwise the local store (SQLite on device, memory on web/tests) — so the app
  * still runs in Expo Go / dev without backend keys.
+ *
+ * Pass the owning `accountId` for per-account data: the guest account is
+ * dispatched to the local repo, everything else to the default.
  */
-export function getRepo(): Repo {
+export function getRepo(accountId?: string): Repo {
+  if (accountId === GUEST_ACCOUNT_ID) return getLocalRepo();
   if (repo) return repo;
   // Lazy require so the Supabase client (and its native deps) load only when needed.
   try {
@@ -409,24 +452,14 @@ export function getRepo(): Repo {
   } catch {
     // fall through to the local repo
   }
-  if (Platform.OS === 'web' || Platform.OS === 'windows' || Platform.OS === 'macos') {
-    repo = new MemoryRepo();
-  } else {
-    // Lazy require so expo-sqlite is never loaded on web / in jest.
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { SqliteRepo } = require('./sqliteRepo') as typeof import('./sqliteRepo');
-      repo = new SqliteRepo();
-    } catch {
-      repo = new MemoryRepo();
-    }
-  }
+  repo = makeLocalRepo();
   return repo;
 }
 
 /** Test/dev hook to force a specific repo. */
 export function setRepo(r: Repo): void {
   repo = r;
+  localRepo = r;
 }
 
 export { normalizeEmail };

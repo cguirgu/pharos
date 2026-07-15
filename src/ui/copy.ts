@@ -56,8 +56,7 @@ export const copy = {
 
   auth: {
     era: 'Anno Martyrum 1742',
-    wordmark: 'Pharos',
-    coptic: 'ⲡⲓⲫⲁⲣⲟⲥ',
+    wordmark: 'Coptic Daily\nCompanion',
     promise:
       'A guiding light into the faith of the Copts — prayer, fasting, and the Word, one day at a time.',
     begin: 'Begin the journey',
@@ -66,6 +65,7 @@ export const copy = {
     signingIn: 'Signing in…',
     signInError: 'Sign-in did not complete. Please try again.',
     haveAccount: 'I already keep an account',
+    guest: 'Continue without an account',
     or: 'or',
     withEmail: 'Continue with email',
     signUpTitle: 'Keep an account',
@@ -170,6 +170,9 @@ export const copy = {
 
   you: {
     head: 'You',
+    guestLabel: 'Guest',
+    guestHint: 'Your rule, journal, and progress stay on this device only. An account begins its own rule, kept in sync across devices; what you tend as a guest remains here.',
+    guestCta: 'Create an account',
     signOut: 'Sign out',
     switch: 'Switch account',
     addAccount: 'Create another account',
@@ -184,18 +187,18 @@ export const copy = {
     about: 'About & attributions',
     privacy: 'Privacy policy',
     terms: 'Terms of service',
-    support: 'Support Pharos',
+    support: 'Support the app',
     supportScreen: {
-      title: 'Support Pharos',
+      title: 'Support the app',
       heading: 'Tend the lamp',
-      body: 'Pharos is kept by one pair of hands and offered freely. If it has served your prayer, a gift helps keep the lamp lit — entirely as you wish, never required.',
+      body: 'This app is kept by one pair of hands and offered freely. If it has served your prayer, a gift helps keep the lamp lit — entirely as you wish, never required.',
       tipsTitle: 'A one-time gift',
       tipsHint: 'Whatever is on your heart.',
       subTitle: 'Become a supporter',
       subHint: 'A small gift each month or year.',
       restore: 'Restore purchases',
       thanks: 'Thank you. The lamp burns a little brighter.',
-      supporterActive: 'You are a supporter of Pharos. Thank you for keeping the lamp lit.',
+      supporterActive: 'You are a supporter of this app. Thank you for keeping the lamp lit.',
       unavailable: 'Support is unavailable right now. Please try again later.',
       // Required auto-renew disclosure for the subscription (App Review 3.1.2).
       legal:
@@ -232,7 +235,7 @@ export const copy = {
     ] as const,
     fastingNuance: 'Show fish-allowed nuance',
     aboutBody:
-      'Pharos keeps your rule on this device alone. Liturgical and scriptural texts are drawn from the verified sources credited below; anything not yet supplied is clearly marked as a placeholder.',
+      'Coptic Daily Companion keeps your rule on this device alone. Liturgical and scriptural texts are drawn from the verified sources credited below; anything not yet supplied is clearly marked as a placeholder.',
     attributionsTitle: 'Attributions & sources',
     attributions: [
       {
@@ -249,7 +252,7 @@ export const copy = {
       },
       {
         title: 'The liturgical calendar',
-        body: 'The Coptic calendar, fasts, and feasts are computed within Pharos (Anno Martyrum dating and the Julian Paschal computus) and cross-checked against published Coptic sources.',
+        body: 'The Coptic calendar, fasts, and feasts are computed within the app (Anno Martyrum dating and the Julian Paschal computus) and cross-checked against published Coptic sources.',
       },
       {
         title: 'The Agpeya',

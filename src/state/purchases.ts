@@ -1,5 +1,5 @@
 /**
- * Purchases store — the optional "Support Pharos" flow (in-app purchases via
+ * Purchases store — the optional "Support the app" flow (in-app purchases via
  * RevenueCat). Thin glue over `src/platform/purchases.ts`, same pattern as the
  * other stores. Resilient: a failure degrades to "support unavailable" and never
  * throws (mirrors the startup-resilience contract).

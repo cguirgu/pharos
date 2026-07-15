@@ -45,7 +45,7 @@ Advertising Data / Device Advertising ID, Audio/Photos/Videos, Gameplay content.
 
 ## Google OAuth consent screen ("branding") fields
 - **App name**: Pharos
-- **User support email**: thepharosapp@gmail.com
+- **User support email**: support@cgsoftwarestudio.com
 - **App logo**: `assets/icon.png` (1024×1024)
 - **Application home page**: optional (a marketing/landing URL if you have one)
 - **Privacy policy URL**: your hosted `/legal/privacy/` URL

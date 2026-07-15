@@ -24,7 +24,7 @@ export const useOnboarding = create<OnboardingState>((set, get) => ({
     // table) must never block app startup — degrade to "no answers yet".
     let answers: OnboardingAnswers | null = null;
     try {
-      answers = await getRepo().getOnboarding(accountId);
+      answers = await getRepo(accountId).getOnboarding(accountId);
     } catch (e) {
       console.warn('[onboarding] load failed; continuing without answers', e);
     }
@@ -37,7 +37,7 @@ export const useOnboarding = create<OnboardingState>((set, get) => ({
     if (!accountId) return;
     // Persistence is best-effort — a failure here must not break onboarding.
     try {
-      await getRepo().saveOnboarding(accountId, answers, Date.now());
+      await getRepo(accountId).saveOnboarding(accountId, answers, Date.now());
     } catch (e) {
       console.warn('[onboarding] save failed; answers kept in memory only', e);
     }

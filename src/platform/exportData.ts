@@ -18,14 +18,14 @@ export async function exportAndShare(data: AccountExport, dateKey: string): Prom
   const json = JSON.stringify(data, null, 2);
   const dir = FileSystem.cacheDirectory ?? '';
   // User-facing name stays friendly; the random suffix makes the path unguessable.
-  const uri = `${dir}pharos-export-${dateKey}-${id()}.json`;
+  const uri = `${dir}coptic-daily-export-${dateKey}-${id()}.json`;
   await FileSystem.writeAsStringAsync(uri, json);
   try {
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(uri, {
         mimeType: 'application/json',
         UTI: 'public.json',
-        dialogTitle: 'Export your Pharos data',
+        dialogTitle: 'Export your data',
       });
     }
   } finally {

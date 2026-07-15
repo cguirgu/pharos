@@ -6,7 +6,7 @@ import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Page } from '../../src/ui/Page';
-import { PharosSeal, Caps, Btn, Fleuron } from '../../src/ui/components';
+import { Seal, Caps, Btn, Fleuron } from '../../src/ui/components';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { useResponsive } from '../../src/ui/useResponsive';
@@ -19,8 +19,9 @@ export default function Welcome() {
   const t = useThemeColors();
   const r = useResponsive();
   const insets = useSafeAreaInsets();
-  const wordmarkSize = r.scale(64);
+  const wordmarkSize = r.scale(36);
   const signInWithApple = useAuth((s) => s.signInWithApple);
+  const continueAsGuest = useAuth((s) => s.continueAsGuest);
   const signingIn = useAuth((s) => s.signingIn);
   const authError = useAuth((s) => s.authError);
   const clearError = useAuth((s) => s.clearError);
@@ -41,6 +42,10 @@ export default function Welcome() {
     const ok = await signInWithApple();
     if (ok) router.replace('/'); // the routing gate sends to onboarding or the tabs
   };
+  const onGuest = async () => {
+    const ok = await continueAsGuest();
+    if (ok) router.replace('/');
+  };
   return (
     <Page>
       <View style={styles.top}>
@@ -49,9 +54,8 @@ export default function Welcome() {
         </Caps>
       </View>
       <View style={styles.center}>
-        <PharosSeal size={r.scale(96)} animated delay={120} />
-        <Text style={[styles.wordmark, { fontSize: wordmarkSize, lineHeight: wordmarkSize + 4 }]}>{copy.auth.wordmark}</Text>
-        <Text style={styles.coptic}>{copy.auth.coptic}</Text>
+        <Seal size={r.scale(96)} animated delay={120} />
+        <Text style={[styles.wordmark, { fontSize: wordmarkSize, lineHeight: wordmarkSize + 6 }]}>{copy.auth.wordmark}</Text>
         <Fleuron />
         <Text style={[styles.promise, { fontSize: r.scale(22), maxWidth: r.textWidth }]}>{copy.auth.promise}</Text>
       </View>
@@ -72,6 +76,9 @@ export default function Welcome() {
         <Pressable style={styles.link} onPress={() => router.push('/auth/signin')} hitSlop={10}>
           <Caps size={9.5} ls={1.4} color={t.ink2}>{copy.auth.haveAccount}</Caps>
         </Pressable>
+        <Pressable style={styles.guestLink} onPress={onGuest} disabled={signingIn} hitSlop={10}>
+          <Caps size={9.5} ls={1.4} color={t.gold}>{copy.auth.guest}</Caps>
+        </Pressable>
       </View>
     </Page>
   );
@@ -80,8 +87,7 @@ export default function Welcome() {
 const makeStyles = (t: Palette) => StyleSheet.create({
   top: { alignItems: 'center', paddingTop: 8 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  wordmark: { fontFamily: font.display, color: t.parch, marginTop: 14 },
-  coptic: { fontFamily: font.coptic, fontSize: 22, color: t.gold, marginTop: 2 },
+  wordmark: { fontFamily: font.display, color: t.parch, marginTop: 14, textAlign: 'center' },
   promise: {
     fontFamily: font.displayItalic,
     color: t.goldHi,
@@ -91,4 +97,5 @@ const makeStyles = (t: Palette) => StyleSheet.create({
   bottom: { gap: 10 },
   error: { alignItems: 'center', paddingTop: 6 },
   link: { alignItems: 'center', paddingVertical: 12 },
+  guestLink: { alignItems: 'center', paddingBottom: 12, paddingTop: 2 },
 });

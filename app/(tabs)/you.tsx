@@ -21,7 +21,7 @@ import { useLearning } from '../../src/state/learning';
 import { isLessonPassed } from '../../src/domain/learn/course';
 import { proficiencyFor } from '../../src/domain/learn/proficiency';
 import { useClock } from '../../src/state/clock';
-import { getRepo } from '../../src/db/repo';
+import { getRepo, GUEST_ACCOUNT_ID } from '../../src/db/repo';
 import { exportAndShare } from '../../src/platform/exportData';
 import { dateKey } from '../../src/domain/rule';
 import { youStats } from '../../src/domain/stats';
@@ -41,6 +41,7 @@ export default function YouScreen() {
   const textSize = useTextScale((s) => s.size);
   const setTextSize = useTextScale((s) => s.setSize);
   const { account, signOut } = useAuth();
+  const isGuest = account?.id === GUEST_ACCOUNT_ID;
   const today = useClock((s) => s.today);
   const [exporting, setExporting] = useState(false);
 
@@ -48,7 +49,7 @@ export default function YouScreen() {
     if (!account || exporting) return;
     setExporting(true);
     try {
-      const data = await getRepo().exportAccountData(account.id);
+      const data = await getRepo(account.id).exportAccountData(account.id);
       await exportAndShare({ ...data, exportedAt: Date.now() }, dateKey(today));
     } catch {
       // best-effort; the share sheet simply doesn't open on failure
@@ -77,7 +78,7 @@ export default function YouScreen() {
 
   return (
     <Page>
-      <Folio left={copy.you.head} right={account?.email ?? ''} glyph="Ⲉ" />
+      <Folio left={copy.you.head} right={isGuest ? copy.you.guestLabel : account?.email ?? ''} glyph="Ⲉ" />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
         <View style={styles.head}>
           <Text style={styles.name}>{account?.displayName ?? 'Friend'}</Text>
@@ -139,19 +140,32 @@ export default function YouScreen() {
         <SettingRow label={copy.you.about} onPress={() => router.push('/you/about')} />
         <SettingRow label={copy.you.privacy} onPress={() => router.push('/you/privacy')} />
         <SettingRow label={copy.you.terms} onPress={() => router.push('/you/terms')} />
-        <SettingRow label={exporting ? copy.you.exportWorking : copy.you.exportData} onPress={onExport} />
-        <SettingRow label={copy.you.deleteAccount} onPress={() => router.push('/you/delete-account')} danger />
+        {!isGuest ? (
+          <>
+            <SettingRow label={exporting ? copy.you.exportWorking : copy.you.exportData} onPress={onExport} />
+            <SettingRow label={copy.you.deleteAccount} onPress={() => router.push('/you/delete-account')} danger />
+          </>
+        ) : null}
 
         <View style={{ height: 24 }} />
-        <Btn
-          kind="rubric"
-          onPress={async () => {
-            await signOut();
-            router.replace('/auth/welcome');
-          }}
-        >
-          {copy.you.signOut}
-        </Btn>
+        {isGuest ? (
+          <>
+            <Text style={styles.guestHint}>{copy.you.guestHint}</Text>
+            <Btn kind="solid" onPress={() => router.push('/auth/welcome')}>
+              {copy.you.guestCta}
+            </Btn>
+          </>
+        ) : (
+          <Btn
+            kind="rubric"
+            onPress={async () => {
+              await signOut();
+              router.replace('/auth/welcome');
+            }}
+          >
+            {copy.you.signOut}
+          </Btn>
+        )}
       </ScrollView>
     </Page>
   );
@@ -190,6 +204,7 @@ const makeStyles = (t: Palette) => StyleSheet.create({
   mark: { width: '33.33%', alignItems: 'center', gap: 6, paddingVertical: 16, borderWidth: 1, borderColor: t.ruleDim, marginLeft: -1, marginTop: -1 },
   markGlyph: { fontFamily: font.display, fontSize: 26 },
   rowLabel: { flex: 1, fontFamily: font.display, fontSize: 19, color: t.parch },
+  guestHint: { fontFamily: font.display, fontSize: 15, lineHeight: 22, color: t.ink2, marginBottom: 14 },
   acctRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
   acctName: { flex: 1, fontFamily: font.display, fontSize: 19, color: t.parch },
 });

@@ -53,7 +53,7 @@ export async function rescheduleAll(
       const when = new Date(n.date.year, n.date.month - 1, n.date.day, h ?? 9, m ?? 0, 0);
       if (when.getTime() <= Date.now()) continue; // never schedule in the past
       await Notifications.scheduleNotificationAsync({
-        content: { title: n.title || 'Pharos', body: n.body },
+        content: { title: n.title || 'Coptic Daily Companion', body: n.body },
         trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: when },
       });
     }

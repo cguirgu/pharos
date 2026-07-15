@@ -25,7 +25,7 @@ export const useJournal = create<JournalState>((set, get) => ({
   entries: [],
 
   load: async (accountId) => {
-    const entries = await getRepo().listJournal(accountId);
+    const entries = await getRepo(accountId).listJournal(accountId);
     set({ accountId, entries });
   },
 
@@ -45,7 +45,7 @@ export const useJournal = create<JournalState>((set, get) => ({
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
     };
-    await getRepo().upsertJournal(accountId, entry);
+    await getRepo(accountId).upsertJournal(accountId, entry);
     set((st) => {
       const rest = st.entries.filter((e) => e.id !== entry.id);
       return { entries: [entry, ...rest].sort((a, b) => b.createdAt - a.createdAt) };
@@ -56,7 +56,7 @@ export const useJournal = create<JournalState>((set, get) => ({
   remove: async (entryId) => {
     const accountId = get().accountId;
     if (!accountId) return;
-    await getRepo().deleteJournal(accountId, entryId);
+    await getRepo(accountId).deleteJournal(accountId, entryId);
     set((st) => ({ entries: st.entries.filter((e) => e.id !== entryId) }));
   },
 

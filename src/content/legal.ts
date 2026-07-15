@@ -1,5 +1,5 @@
 /**
- * Canonical legal copy for Pharos — the ONE source of truth.
+ * Canonical legal copy for Coptic Daily Companion — the ONE source of truth.
  *
  * Rendered in-app by app/you/privacy.tsx and app/you/terms.tsx, and emitted as
  * public HTML by scripts/build-legal.mjs (web/legal/**) for the URLs required by
@@ -8,11 +8,11 @@
  */
 
 export const LEGAL_META = {
-  appName: 'Pharos',
+  appName: 'Coptic Daily Companion',
   /** Shown to users + used in the OAuth consent screen / App Store listing. */
-  contactEmail: 'thepharosapp@gmail.com',
+  contactEmail: 'support@cgsoftwarestudio.com',
   /** Last substantive revision. Bump whenever the text below changes. */
-  effectiveDate: 'June 18, 2026',
+  effectiveDate: 'July 15, 2026',
 } as const;
 
 export type LegalSection = {

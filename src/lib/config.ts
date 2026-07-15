@@ -22,7 +22,7 @@ export function isBackendConfigured(): boolean {
   return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 }
 
-/** True when in-app purchases (the optional "Support Pharos" flow) are wired. */
+/** True when in-app purchases (the optional "Support the app" flow) are wired. */
 export function isPurchasesConfigured(): boolean {
   return Boolean(REVENUECAT_IOS_KEY);
 }

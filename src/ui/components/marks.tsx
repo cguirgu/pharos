@@ -1,5 +1,5 @@
 /**
- * The lozenge mark motif — the only "icon" in Pharos (DESIGN-SPEC §1/§4).
+ * The lozenge mark motif — the only "icon" in the app (DESIGN-SPEC §1/§4).
  * Mark (practice status), Tally (progress strip), Dots (multi-part progress).
  */
 import React, { useEffect, useRef } from 'react';
