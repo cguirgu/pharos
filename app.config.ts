@@ -1,21 +1,22 @@
 import type { ExpoConfig } from 'expo/config';
 
 /**
- * Pharos Expo config.
+ * Coptic Daily Companion Expo config.
  *
  * The EAS project is already created; its id is injected via
  * `extra.eas.projectId` (linked with `eas init --id …`). Visual identity uses
- * the codex palette — splash is the gold beacon on oxford ink (#0C1020).
+ * the codex palette — splash is the gold cross emblem on oxford ink (#0C1020).
  *
- * The app icon (assets/icon.png, 1024×1024, the gold beacon on oxford ink) is
+ * The app icon (assets/icon.png, 1024×1024, the gold cross emblem on oxford ink) is
  * the App Store marketing icon; Expo derives every smaller size from it. The
- * splash (assets/splash.png) recomposites that same beacon onto oxford ink so
+ * splash (assets/splash.png) recomposites that same emblem onto oxford ink so
  * the launch screen fades seamlessly into the app background.
  * TODO(fonts): bundle Noto Sans Coptic .ttf for the ornament glyphs; the two
  * Latin families load at runtime via @expo-google-fonts.
  */
 const config: ExpoConfig = {
-  name: 'Pharos',
+  // Home-screen label; the App Store listing carries the full "Coptic Daily Companion".
+  name: 'Coptic Daily',
   // Must match the slug of the EAS project referenced by extra.eas.projectId.
   slug: 'pharos-coptic-orthodox-friend',
   scheme: 'pharos',
@@ -109,7 +110,7 @@ const config: ExpoConfig = {
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY || null,
     googleIosClientId: process.env.GOOGLE_IOS_CLIENT_ID || null,
     googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID || null,
-    // RevenueCat public iOS SDK key (optional "Support Pharos" in-app purchases).
+    // RevenueCat public iOS SDK key (optional "Support the app" in-app purchases).
     // When absent the support feature stays inert (Expo Go / unconfigured builds).
     revenueCatIosKey: process.env.REVENUECAT_IOS_KEY || null,
   },

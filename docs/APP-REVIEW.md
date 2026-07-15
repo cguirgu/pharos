@@ -1,4 +1,4 @@
-# Getting Pharos through App Review
+# Getting Coptic Daily Companion through App Review
 
 ## Round 2 — rejection of 1.0 (16), July 14, 2026 (submission 55accd52-4d9a-44ff-b600-c143a44cc2e6)
 
@@ -108,7 +108,7 @@ use Sign in with Apple.
 > Password: `<password>`
 
 **Review notes:**
-> Pharos is a Coptic Orthodox devotional companion — a daily rule of life, the Coptic
+> Coptic Daily Companion is a Coptic Orthodox devotional app — a daily rule of life, the Coptic
 > calendar (fasts/feasts), an offline King James Bible with reading plans, a Coptic
 > alphabet learning path, a journal, and highlights.
 >
@@ -123,7 +123,7 @@ use Sign in with Apple.
 > and the user's own rule/journal/reading data for sync). Guests' data never leaves the
 > device. No ads, no tracking, no analytics.
 
-**Contact:** provide first/last name, phone, and email (e.g. `thepharosapp@gmail.com`).
+**Contact:** provide first/last name, phone, and email (e.g. `support@cgsoftwarestudio.com`).
 
 ---
 

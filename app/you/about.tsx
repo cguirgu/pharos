@@ -6,7 +6,7 @@ import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
-import { SheetBar, Rubric, Caps, Fleuron, PharosSeal } from '../../src/ui/components';
+import { SheetBar, Rubric, Caps, Fleuron, Seal } from '../../src/ui/components';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
@@ -20,7 +20,7 @@ export default function About() {
       <SheetBar left="You" title={copy.you.about} onBack={() => router.back()} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         <View style={{ alignItems: 'center', paddingVertical: 16 }}>
-          <PharosSeal size={64} />
+          <Seal size={64} />
           <Fleuron />
         </View>
         <Text style={styles.body}>{copy.you.aboutBody}</Text>

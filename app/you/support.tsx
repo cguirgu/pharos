@@ -1,5 +1,5 @@
 /**
- * Support Pharos — the optional, never-required way to give. Funds support the
+ * Support the app — the optional, never-required way to give. Funds support the
  * developer, so this uses In-App Purchase only (no external/Stripe path on iOS).
  * One-time tips ship now; the auto-renewable supporter subscription is shown only
  * when SUPPORT_SUBSCRIPTION_ENABLED (it must carry a real benefit before App
@@ -10,7 +10,7 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import type { PurchasesPackage } from 'react-native-purchases';
 import { Page } from '../../src/ui/Page';
-import { SheetBar, Rubric, Caps, Fleuron, PharosSeal, Btn } from '../../src/ui/components';
+import { SheetBar, Rubric, Caps, Fleuron, Seal, Btn } from '../../src/ui/components';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
@@ -55,7 +55,7 @@ export default function Support() {
       <SheetBar left={copy.you.head} title={c.title} onBack={() => router.back()} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         <View style={{ alignItems: 'center', paddingVertical: 16 }}>
-          <PharosSeal size={64} />
+          <Seal size={64} />
           <Fleuron />
         </View>
 

@@ -6,7 +6,8 @@
 import { useAuth } from '../../src/state/auth';
 import { useRule } from '../../src/state/rule';
 import { useOnboarding } from '../../src/state/onboarding';
-import { MemoryRepo, setRepo } from '../../src/db/repo';
+import { MemoryRepo, setRepo, getRepo } from '../../src/db/repo';
+import { starterPractices } from '../../src/db/seed';
 import type { OnboardingAnswers } from '../../src/domain/onboarding';
 
 const ANSWERS: OnboardingAnswers = {
@@ -51,6 +52,26 @@ test('completeOnboarding writes the profile and creates the chosen rule', async 
   expect(useRule.getState().practices.map((p) => p.name)).toEqual(['Pray the Agpeya', 'Read the Word']);
   // the questionnaire is persisted and loaded into its store
   expect(useOnboarding.getState().answers).toEqual(ANSWERS);
+});
+
+test('completeOnboarding is idempotent — a retry does not duplicate the starter rule', async () => {
+  await auth().signInWithGoogle();
+  const input = { displayName: 'Mina', journeyStage: 'returning' as const, selection: ['agpeya', 'word'] as const, answers: ANSWERS };
+  await auth().completeOnboarding({ ...input, selection: [...input.selection] });
+  await auth().completeOnboarding({ ...input, selection: [...input.selection] }); // e.g. a retry after a reported failure
+  expect(useRule.getState().practices.map((p) => p.name)).toEqual(['Pray the Agpeya', 'Read the Word']);
+});
+
+test('a retry after a partial failure inserts only the missing starters', async () => {
+  await auth().signInWithGoogle();
+  const accId = auth().account!.id;
+  // Simulate a first attempt that died mid-loop: only the first starter landed.
+  const [agpeya] = starterPractices(Date.now(), ['agpeya']);
+  await getRepo().upsertPractice(accId, agpeya!);
+  await auth().completeOnboarding({ displayName: 'M', journeyStage: 'returning', selection: ['agpeya', 'word'], answers: ANSWERS });
+  const names = useRule.getState().practices.map((p) => p.name);
+  expect(names.filter((n) => n === 'Pray the Agpeya')).toHaveLength(1);
+  expect(names).toEqual(['Pray the Agpeya', 'Read the Word']);
 });
 
 test('sign-out clears data; signing back in restores it', async () => {

@@ -11,7 +11,7 @@ import { View, Text, ScrollView, Pressable, StyleSheet, KeyboardAvoidingView, Pl
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Page } from '../../src/ui/Page';
-import { ProgressBar, Field, Caps, Copt, Mark, Toggle, Btn, Fleuron, Segmented, PharosSeal } from '../../src/ui/components';
+import { ProgressBar, Field, Caps, Copt, Mark, Toggle, Btn, Fleuron, Segmented, Seal } from '../../src/ui/components';
 import { SlideFade, Stagger } from '../../src/ui/anim';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
@@ -48,6 +48,10 @@ const GOAL_GLYPH: Record<GoalKey, string> = {
 const EXPERIENCE: ExperienceLevel[] = ['new', 'some', 'rooted'];
 const PARTS: PartOfDay[] = ['morning', 'noon', 'evening'];
 
+/** Cap OS font scaling on the display titles: their tight manual lineHeight
+ *  clips the display face's ascenders at large Dynamic Type sizes. */
+const TITLE_MAX_FONT_SCALE = 1.4;
+
 export default function Onboarding() {
   const router = useRouter();
   const styles = useStyles(makeStyles);
@@ -67,6 +71,11 @@ export default function Onboarding() {
   const [dir, setDir] = useState<1 | -1>(1);
   const [busy, setBusy] = useState(false);
   const [lit, setLit] = useState(false);
+  // Refs, not state: guards must hold within a single render batch, where two
+  // taps would otherwise both see the same pre-update state.
+  const transitioning = useRef(false); // one step per slide — a double-tap can't skip a screen
+  const finishing = useRef(false); // finish() runs at most once at a time
+  const seededGoalsKey = useRef<string | null>(null); // the goals the rule was last seeded from
 
   // The screen run depends only on the chosen goals (which insert previews).
   const orderedGoals = useMemo(() => ALL_GOALS.filter((g) => goals.has(g)), [goals]);
@@ -82,10 +91,14 @@ export default function Onboarding() {
   const scrollPad = { paddingBottom: insets.bottom + 24 };
 
   const next = () => {
+    if (transitioning.current) return;
+    transitioning.current = true;
     setDir(1);
     setCursor((c) => Math.min(sequence.length - 1, c + 1));
   };
   const back = () => {
+    if (transitioning.current) return;
+    transitioning.current = true;
     setDir(-1);
     setCursor((c) => Math.max(0, c - 1));
   };
@@ -103,14 +116,21 @@ export default function Onboarding() {
       return n;
     });
 
-  // Leaving the goals step: pre-seed the starter rule from the chosen goals.
+  // Leaving the goals step: pre-seed the starter rule from the chosen goals —
+  // but only when the goals changed since the last seeding, so Back → Continue
+  // never clobbers manual edits made on the rule screen.
   const leaveGoals = () => {
-    const seeded = startersForGoals(orderedGoals);
-    setSelected(new Set(seeded.length ? seeded : DEFAULT_SELECTION));
+    if (seededGoalsKey.current !== goalsKey) {
+      const seeded = startersForGoals(orderedGoals);
+      setSelected(new Set(seeded.length ? seeded : DEFAULT_SELECTION));
+      seededGoalsKey.current = goalsKey;
+    }
     next();
   };
 
   const finish = async (allowReminders: boolean) => {
+    if (finishing.current) return;
+    finishing.current = true;
     setBusy(true);
     const reminder = { partOfDay: part, time: PART_OF_DAY_TIME[part] };
     const answers: OnboardingAnswers = { goals: orderedGoals, experience, reminder };
@@ -122,6 +142,7 @@ export default function Onboarding() {
       await completeOnboarding({ displayName: name, journeyStage: journey, selection: [...selected], answers });
       setLit(true); // the rewarding "lamp lit" moment
     } finally {
+      finishing.current = false; // a failed attempt may be retried
       setBusy(false);
     }
   };
@@ -138,9 +159,9 @@ export default function Onboarding() {
     return (
       <Page>
         <View style={styles.litWrap}>
-          <PharosSeal size={r.scale(108)} animated delay={120} />
+          <Seal size={r.scale(108)} animated delay={120} />
           <Fleuron />
-          <Text style={[title, { textAlign: 'center' }]}>{copy.onboarding.finishTitle}</Text>
+          <Text style={[title, { textAlign: 'center' }]} maxFontSizeMultiplier={TITLE_MAX_FONT_SCALE}>{copy.onboarding.finishTitle}</Text>
           <Text style={[styles.sub, { textAlign: 'center', maxWidth: r.textWidth }]}>{copy.onboarding.finishSub}</Text>
         </View>
         <View style={{ paddingBottom: insets.bottom + 8 }}>
@@ -163,12 +184,12 @@ export default function Onboarding() {
         <ProgressBar fraction={progressFraction(sequence, cursor)} />
       </View>
 
-      <SlideFade key={cursor} dir={dir} style={{ flex: 1 }}>
+      <SlideFade key={cursor} dir={dir} style={{ flex: 1 }} onDone={() => { transitioning.current = false; }}>
         {screen.kind === 'name-journey' ? (
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
             <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={scrollPad}>
               <Caps color={t.rubricHi} size={10} ls={2.4}>{copy.onboarding.journeyKicker}</Caps>
-              <Text style={title}>{copy.onboarding.journeyTitle}</Text>
+              <Text style={title} maxFontSizeMultiplier={TITLE_MAX_FONT_SCALE}>{copy.onboarding.journeyTitle}</Text>
               <Text style={styles.sub}>{copy.onboarding.journeySub}</Text>
               <Stagger>
                 {JOURNEY.map((j) => {
@@ -196,7 +217,7 @@ export default function Onboarding() {
         {screen.kind === 'goals' ? (
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={scrollPad}>
             <Caps color={t.rubricHi} size={10} ls={2.4}>{copy.onboarding.goalsKicker}</Caps>
-            <Text style={title}>{copy.onboarding.goalsTitle}</Text>
+            <Text style={title} maxFontSizeMultiplier={TITLE_MAX_FONT_SCALE}>{copy.onboarding.goalsTitle}</Text>
             <Text style={styles.sub}>{copy.onboarding.goalsSub}</Text>
             <View style={{ marginTop: 12 }}>
               <Stagger>
@@ -224,7 +245,7 @@ export default function Onboarding() {
         {screen.kind === 'experience' ? (
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={scrollPad}>
             <Caps color={t.rubricHi} size={10} ls={2.4}>{copy.onboarding.experienceKicker}</Caps>
-            <Text style={title}>{copy.onboarding.experienceTitle}</Text>
+            <Text style={title} maxFontSizeMultiplier={TITLE_MAX_FONT_SCALE}>{copy.onboarding.experienceTitle}</Text>
             <Text style={styles.sub}>{copy.onboarding.experienceSub}</Text>
             <View style={{ marginTop: 12 }}>
               <Stagger>
@@ -251,9 +272,9 @@ export default function Onboarding() {
         {screen.kind === 'preview' ? (
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 6, ...scrollPad }}>
             <View style={styles.previewTop}>
-              <PharosSeal size={r.scale(60)} animated delay={80} />
+              <Seal size={r.scale(60)} animated delay={80} />
               <Caps color={t.rubricHi} size={10} ls={2.4} style={{ marginTop: 18 }}>{copy.onboarding.previewKicker}</Caps>
-              <Text style={[title, { textAlign: 'center' }]}>{copy.onboarding.previews[screen.goal]!.title}</Text>
+              <Text style={[title, { textAlign: 'center' }]} maxFontSizeMultiplier={TITLE_MAX_FONT_SCALE}>{copy.onboarding.previews[screen.goal]!.title}</Text>
               <View style={{ marginTop: 10, gap: 12, maxWidth: r.textWidth }}>
                 <Stagger base={1}>
                   {copy.onboarding.previews[screen.goal]!.lines.map((line, i) => (
@@ -272,7 +293,7 @@ export default function Onboarding() {
         {screen.kind === 'rule' ? (
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={scrollPad}>
             <Caps color={t.rubricHi} size={10} ls={2.4}>{copy.onboarding.rhythmKicker}</Caps>
-            <Text style={title}>{copy.onboarding.rhythmTitle}</Text>
+            <Text style={title} maxFontSizeMultiplier={TITLE_MAX_FONT_SCALE}>{copy.onboarding.rhythmTitle}</Text>
             <Text style={styles.sub}>{copy.onboarding.rhythmSub}</Text>
             <View style={{ marginTop: 18 }}>
               <Stagger>
@@ -295,7 +316,7 @@ export default function Onboarding() {
         {screen.kind === 'reminder' ? (
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={scrollPad}>
             <Caps color={t.rubricHi} size={10} ls={2.4}>{copy.onboarding.reminderKicker}</Caps>
-            <Text style={title}>{copy.onboarding.reminderTitle}</Text>
+            <Text style={title} maxFontSizeMultiplier={TITLE_MAX_FONT_SCALE}>{copy.onboarding.reminderTitle}</Text>
             <Text style={styles.sub}>{copy.onboarding.reminderSub}</Text>
             <View style={{ marginTop: 22 }}>
               <Segmented
@@ -315,10 +336,10 @@ export default function Onboarding() {
         {screen.kind === 'notify' ? (
           <View style={{ flex: 1 }}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 10 }}>
-              <PharosSeal size={r.scale(72)} />
+              <Seal size={r.scale(72)} />
               <Fleuron />
               <Caps color={t.rubricHi} size={10} ls={2.4}>{copy.onboarding.notifKicker}</Caps>
-              <Text style={[title, { textAlign: 'center' }]}>{copy.onboarding.notifTitle}</Text>
+              <Text style={[title, { textAlign: 'center' }]} maxFontSizeMultiplier={TITLE_MAX_FONT_SCALE}>{copy.onboarding.notifTitle}</Text>
               <Text style={[styles.sub, { textAlign: 'center', maxWidth: r.textWidth }]}>{copy.onboarding.notifSub}</Text>
             </ScrollView>
             <View style={{ paddingBottom: insets.bottom + 8 }}>

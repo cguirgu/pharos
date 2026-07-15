@@ -1,5 +1,5 @@
 /**
- * RevenueCat (in-app purchases) wrapper for the optional "Support Pharos" flow.
+ * RevenueCat (in-app purchases) wrapper for the optional "Support the app" flow.
  *
  * Funds support the developer, so Apple mandates In-App Purchase — there is no
  * external/Stripe path on iOS. The native module is required LAZILY (inside the

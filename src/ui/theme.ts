@@ -1,5 +1,5 @@
 /**
- * Pharos design tokens — the source of truth for the "codex" visual language.
+ * Coptic Daily Companion design tokens — the source of truth for the "codex" visual language.
  *
  * Two on-brand palettes (dark oxford-ink and warm-parchment light) share the
  * same gold / vermilion / feast accents; only the surfaces and inks invert.

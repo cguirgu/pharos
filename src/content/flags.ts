@@ -18,7 +18,7 @@ export const CONTENT_LICENSED = false;
 export const HOURS_READY = false;
 
 /**
- * Master switch for the optional "Support Pharos" in-app-purchase feature
+ * Master switch for the optional "Support the app" in-app-purchase feature
  * (the You-screen row + the support screen). Stays OFF until the external setup
  * is done — see docs/SUPPORT-IAP.md (App Store Connect products, RevenueCat key,
  * a fresh dev build). While false, nothing about support is shown anywhere.

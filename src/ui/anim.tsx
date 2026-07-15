@@ -16,6 +16,7 @@ export function SlideFade({
   duration = 280,
   delay = 0,
   style,
+  onDone,
 }: {
   children: React.ReactNode;
   /** 1 = incoming from the right (forward); -1 = from the left (back). */
@@ -24,11 +25,16 @@ export function SlideFade({
   duration?: number;
   delay?: number;
   style?: StyleProp<ViewStyle>;
+  /** Called when the enter animation completes (also fires if interrupted). */
+  onDone?: () => void;
 }) {
   const p = useRef(new Animated.Value(0)).current; // 0 → 1
+  // Held in a ref so a new callback identity never restarts the animation.
+  const done = useRef(onDone);
+  done.current = onDone;
   useEffect(() => {
     p.setValue(0);
-    Animated.timing(p, { toValue: 1, duration, delay, useNativeDriver: true }).start();
+    Animated.timing(p, { toValue: 1, duration, delay, useNativeDriver: true }).start(() => done.current?.());
   }, [p, duration, delay]);
   const translateX = p.interpolate({ inputRange: [0, 1], outputRange: [dir * distance, 0] });
   return (

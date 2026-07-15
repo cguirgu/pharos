@@ -4,5 +4,5 @@ export { Mark, Tally, Dots, type MarkState } from './marks';
 export { Btn, Chip, Segmented, Stepper, Toggle } from './controls';
 export { NavLedger, type NavTab } from './NavLedger';
 export { SheetBar } from './SheetBar';
-export { PharosSeal } from './PharosSeal';
+export { Seal } from './Seal';
 export { StepDots, Field, ProgressBar } from './forms';

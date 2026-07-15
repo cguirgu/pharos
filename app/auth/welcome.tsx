@@ -6,7 +6,7 @@ import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Page } from '../../src/ui/Page';
-import { PharosSeal, Caps, Btn, Fleuron } from '../../src/ui/components';
+import { Seal, Caps, Btn, Fleuron } from '../../src/ui/components';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { useResponsive } from '../../src/ui/useResponsive';
@@ -19,7 +19,7 @@ export default function Welcome() {
   const t = useThemeColors();
   const r = useResponsive();
   const insets = useSafeAreaInsets();
-  const wordmarkSize = r.scale(64);
+  const wordmarkSize = r.scale(36);
   const signInWithApple = useAuth((s) => s.signInWithApple);
   const continueAsGuest = useAuth((s) => s.continueAsGuest);
   const signingIn = useAuth((s) => s.signingIn);
@@ -54,9 +54,8 @@ export default function Welcome() {
         </Caps>
       </View>
       <View style={styles.center}>
-        <PharosSeal size={r.scale(96)} animated delay={120} />
-        <Text style={[styles.wordmark, { fontSize: wordmarkSize, lineHeight: wordmarkSize + 4 }]}>{copy.auth.wordmark}</Text>
-        <Text style={styles.coptic}>{copy.auth.coptic}</Text>
+        <Seal size={r.scale(96)} animated delay={120} />
+        <Text style={[styles.wordmark, { fontSize: wordmarkSize, lineHeight: wordmarkSize + 6 }]}>{copy.auth.wordmark}</Text>
         <Fleuron />
         <Text style={[styles.promise, { fontSize: r.scale(22), maxWidth: r.textWidth }]}>{copy.auth.promise}</Text>
       </View>
@@ -88,8 +87,7 @@ export default function Welcome() {
 const makeStyles = (t: Palette) => StyleSheet.create({
   top: { alignItems: 'center', paddingTop: 8 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  wordmark: { fontFamily: font.display, color: t.parch, marginTop: 14 },
-  coptic: { fontFamily: font.coptic, fontSize: 22, color: t.gold, marginTop: 2 },
+  wordmark: { fontFamily: font.display, color: t.parch, marginTop: 14, textAlign: 'center' },
   promise: {
     fontFamily: font.displayItalic,
     color: t.goldHi,

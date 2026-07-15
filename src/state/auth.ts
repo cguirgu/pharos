@@ -512,7 +512,11 @@ export const useAuth = create<AuthState>((set, get) => ({
     if (!current) return;
     const repo = getRepo(current.id);
 
-    const practices = starterPractices(Date.now(), selection);
+    // Idempotent: a retry after a partial failure must not duplicate starters.
+    // starterPractices() mints fresh ids each call, so dedupe by template name
+    // against what the account already has.
+    const existing = new Set((await repo.listPractices(current.id)).map((p) => p.name));
+    const practices = starterPractices(Date.now(), selection).filter((p) => !existing.has(p.name));
     for (const p of practices) await repo.upsertPractice(current.id, p);
     // Best-effort: persisting the questionnaire must not block finishing onboarding.
     try {
