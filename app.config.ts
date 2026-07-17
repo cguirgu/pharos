@@ -33,12 +33,28 @@ const config: ExpoConfig = {
   ios: {
     bundleIdentifier: 'com.pharosapp.app',
     supportsTablet: false,
-    // Sign in with Apple — required alongside Google sign-in (Guideline 4.8).
+    // Sign in with Apple — the only third-party login we offer (alongside
+    // email/password), so this satisfies Guideline 4.8.
     usesAppleSignIn: true,
+    // Apple privacy manifest (Guideline 5.1.1 / ITMS-91053). The app does no
+    // tracking. The one required-reason API our own storage layer touches is
+    // UserDefaults (via expo-secure-store + async-storage), reason CA92.1
+    // ("access info from the same app"). Third-party pods ship their own
+    // manifests, which Expo merges into the built PrivacyInfo.xcprivacy.
+    privacyManifests: {
+      NSPrivacyTracking: false,
+      NSPrivacyTrackingDomains: [],
+      NSPrivacyAccessedAPITypes: [
+        {
+          NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
+          NSPrivacyAccessedAPITypeReasons: ['CA92.1'],
+        },
+      ],
+    },
     infoPlist: {
-      // Optional Supabase account sync + Google sign-in use only standard HTTPS/
-      // TLS, which is exempt from US export-encryption filing — so this stays
-      // false. (The app still runs fully local when no backend keys are set.)
+      // Optional Supabase account sync uses only standard HTTPS/TLS, which is
+      // exempt from US export-encryption filing — so this stays false. (The app
+      // still runs fully local when no backend keys are set.)
       ITSAppUsesNonExemptEncryption: false,
     },
   },
@@ -52,10 +68,10 @@ const config: ExpoConfig = {
     },
   },
   plugins: [
-    // Build Google pods (GoogleSignIn → AppCheckCore → GoogleUtilities,
-    // RecaptchaInterop) as static frameworks so the Swift pods get module maps.
-    // Without this, `pod install` fails: those C pods "do not define modules"
-    // and can't be linked as static libraries.
+    // Build pods as static frameworks so Swift/C pods that ship as static
+    // libraries get proper module maps at `pod install`. (Originally added for
+    // the now-removed third-party sign-in pods; likely no longer strictly
+    // required — safe to revisit on the next EAS build.)
     [
       'expo-build-properties',
       {
@@ -83,14 +99,6 @@ const config: ExpoConfig = {
       },
     ],
     'expo-secure-store',
-    [
-      '@react-native-google-signin/google-signin',
-      {
-        // The iOS reversed-client-id URL scheme (from the Google iOS OAuth
-        // client). Provide via the GOOGLE_IOS_URL_SCHEME env / EAS secret.
-        iosUrlScheme: process.env.GOOGLE_IOS_URL_SCHEME ?? 'com.googleusercontent.apps.PLACEHOLDER',
-      },
-    ],
   ],
   // typedRoutes is intentionally OFF: its generated route union only refreshes
   // under `expo start`, which made `tsc` reject valid new routes. Hrefs are
@@ -104,12 +112,10 @@ const config: ExpoConfig = {
     },
     // Backend + auth keys (injected from env / EAS secrets; never committed).
     // When supabaseUrl + supabaseAnonKey are present the app runs against
-    // Supabase with Google sign-in; otherwise it falls back to the local dev
-    // store + a local dev sign-in (so it still runs in Expo Go without keys).
+    // Supabase (Sign in with Apple + email/password); otherwise it falls back to
+    // the local dev store (so it still runs in Expo Go without keys).
     supabaseUrl: process.env.SUPABASE_URL || null,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY || null,
-    googleIosClientId: process.env.GOOGLE_IOS_CLIENT_ID || null,
-    googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID || null,
     // RevenueCat public iOS SDK key (optional "Support the app" in-app purchases).
     // When absent the support feature stays inert (Expo Go / unconfigured builds).
     revenueCatIosKey: process.env.REVENUECAT_IOS_KEY || null,

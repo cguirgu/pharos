@@ -7,7 +7,7 @@
  * the iOS Keychain / Android Keystore, so tokens are encrypted at rest.
  *
  * SecureStore warns/refuses above ~2048 bytes per value, and a Supabase session
- * (especially with Google user_metadata) can exceed that, so we transparently
+ * (especially with Apple user_metadata) can exceed that, so we transparently
  * CHUNK large values across several Keychain entries and reassemble on read.
  *
  * Web has no SecureStore — Expo web falls back to AsyncStorage (the prior

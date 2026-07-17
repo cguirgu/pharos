@@ -124,7 +124,9 @@ export class SupabaseRepo implements Repo {
     // The `profiles` row is seeded by the on-auth-user-created trigger.
   }
   async findAccountByEmail(): Promise<Account | null> {
-    return null; // no email lookup in Google-only mode
+    // Backend accounts are keyed by Supabase Auth id; email lookups are handled
+    // by Supabase Auth (Apple / email sign-in), not by a profiles-table query.
+    return null;
   }
   async getAccount(id: string): Promise<Account | null> {
     const data = unwrap(await this.sb.from('profiles').select('*').eq('id', id).maybeSingle());

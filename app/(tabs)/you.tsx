@@ -2,8 +2,9 @@
  * You — streaks, marks, stats, settings, and the account (PRD §5.6).
  */
 import React, { useMemo, useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
+import { LEGAL_META } from '../../src/content/legal';
 import { Page } from '../../src/ui/Page';
 import { Folio, Rubric, Caps, Numeral, Btn, Register, Segmented } from '../../src/ui/components';
 import { font, type Palette } from '../../src/ui/theme';
@@ -44,6 +45,17 @@ export default function YouScreen() {
   const isGuest = account?.id === GUEST_ACCOUNT_ID;
   const today = useClock((s) => s.today);
   const [exporting, setExporting] = useState(false);
+
+  // Tappable support contact (App Review Guideline 1.5). Best-effort: a device
+  // with no mail client simply does nothing rather than throwing to the UI.
+  const onContact = async () => {
+    const url = `mailto:${LEGAL_META.contactEmail}?subject=${encodeURIComponent('Coptic Daily Companion')}`;
+    try {
+      await Linking.openURL(url);
+    } catch {
+      // no mail client available — nothing to do
+    }
+  };
 
   const onExport = async () => {
     if (!account || exporting) return;
@@ -138,6 +150,7 @@ export default function YouScreen() {
           <SettingRow label={copy.you.support} onPress={() => router.push('/you/support')} />
         ) : null}
         <SettingRow label={copy.you.about} onPress={() => router.push('/you/about')} />
+        <SettingRow label={copy.you.contact} onPress={onContact} />
         <SettingRow label={copy.you.privacy} onPress={() => router.push('/you/privacy')} />
         <SettingRow label={copy.you.terms} onPress={() => router.push('/you/terms')} />
         {!isGuest ? (

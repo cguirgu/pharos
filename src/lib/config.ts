@@ -13,8 +13,6 @@ const str = (v: unknown): string | null => (typeof v === 'string' && v.length > 
 
 export const SUPABASE_URL = str(extra.supabaseUrl);
 export const SUPABASE_ANON_KEY = str(extra.supabaseAnonKey);
-export const GOOGLE_IOS_CLIENT_ID = str(extra.googleIosClientId);
-export const GOOGLE_WEB_CLIENT_ID = str(extra.googleWebClientId);
 export const REVENUECAT_IOS_KEY = str(extra.revenueCatIosKey);
 
 /** True when the app should talk to Supabase (keys present). */

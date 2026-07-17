@@ -3,16 +3,16 @@
  *
  * Rendered in-app by app/you/privacy.tsx and app/you/terms.tsx, and emitted as
  * public HTML by scripts/build-legal.mjs (web/legal/**) for the URLs required by
- * the App Store privacy field and the Google OAuth consent screen. Edit here, then
- * re-run `node scripts/build-legal.mjs` so the hosted pages stay in sync.
+ * the App Store privacy field. Edit here, then re-run `node scripts/build-legal.mjs`
+ * so the hosted pages stay in sync.
  */
 
 export const LEGAL_META = {
   appName: 'Coptic Daily Companion',
-  /** Shown to users + used in the OAuth consent screen / App Store listing. */
+  /** Shown to users + used in the App Store listing. */
   contactEmail: 'support@cgsoftwarestudio.com',
   /** Last substantive revision. Bump whenever the text below changes. */
-  effectiveDate: 'July 15, 2026',
+  effectiveDate: 'July 16, 2026',
 } as const;
 
 export type LegalSection = {
@@ -47,10 +47,10 @@ export const PRIVACY: LegalDoc = {
     {
       heading: 'Data we process when you sign in and sync',
       body: [
-        `Signing in is optional and exists only to back up your rule and sync it across your devices. When you sign in with Google, we receive and store:`,
+        `Signing in is optional and exists only to back up your rule and sync it across your devices. You can sign in with Sign in with Apple or with an email and password. When you sign in, we receive and store:`,
       ],
       bullets: [
-        'Account identifiers: your email address and the account id provided by Google sign-in, plus an optional display name.',
+        'Account identifiers: your email address and a unique account id, plus an optional display name.',
         'Your rule content: practices and practice logs, rest days, journal entries, highlights and notes, reading plans and progress, daily-office logs, and lesson results.',
         'A profile record: your chosen journey stage and whether onboarding is complete.',
       ],
@@ -62,11 +62,11 @@ export const PRIVACY: LegalDoc = {
       ],
     },
     {
-      heading: 'Service providers',
-      body: [`Two providers process data strictly to operate the app:`],
+      heading: 'Service providers and sign-in',
+      body: [`We rely on the following to operate the app:`],
       bullets: [
-        'Supabase — hosts the database and authentication that store and sync your synced content. Access is protected by per-account Row-Level Security so a row is only ever readable or writable by its owner.',
-        'Google — provides sign-in. We receive your email, account id, and (if available) name. Your use of Google sign-in is also subject to Google’s Privacy Policy.',
+        'Supabase — hosts the database and authentication that store and sync your content. Access is protected by per-account Row-Level Security so a row is only ever readable or writable by its owner.',
+        'Sign in with Apple — if you choose it, Apple shares your name and email address (or a private-relay email that forwards to you) with us to create your account. Your use of Sign in with Apple is also subject to Apple’s Privacy Policy.',
       ],
     },
     {
@@ -127,7 +127,7 @@ export const TERMS: LegalDoc = {
     {
       heading: 'Your account',
       body: [
-        `If you sign in, you are responsible for keeping access to your Google account secure and for the activity under your ${appName} account. Notify us promptly of any unauthorized use.`,
+        `If you sign in, you are responsible for keeping your sign-in credentials — your Apple ID, or your email and password — secure, and for the activity under your ${appName} account. Notify us promptly of any unauthorized use.`,
       ],
     },
     {

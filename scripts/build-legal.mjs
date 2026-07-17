@@ -1,7 +1,7 @@
 /**
  * Emit the public legal pages from the canonical source (src/content/legal.ts)
  * into web/legal/** so they can be hosted and pasted into the App Store privacy
- * field + the Google OAuth consent screen.
+ * field.
  *
  *   node scripts/build-legal.mjs
  *

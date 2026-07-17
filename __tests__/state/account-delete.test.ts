@@ -60,7 +60,7 @@ test('auth.deleteAccount (local path) clears the account, stores, and repo row',
   setRepo(new MemoryRepo());
   useRule.getState().clear();
   await useAuth.getState().load();
-  await useAuth.getState().signInWithGoogle();
+  await useAuth.getState().signUpWithPassword('mina@example.com', 'pa55word');
   await useAuth.getState().completeOnboarding({ displayName: 'Mina', journeyStage: 'returning', selection: ['agpeya'], answers });
   const id = useAuth.getState().account!.id;
   expect(useRule.getState().practices.length).toBeGreaterThan(0);

@@ -1,6 +1,6 @@
 /**
- * Native Sign in with Apple → Supabase session. Offered alongside Google to
- * satisfy App Review Guideline 4.8 (an equivalent privacy-preserving login).
+ * Native Sign in with Apple → Supabase session. Offered alongside email/password
+ * as a privacy-preserving login (App Review Guideline 4.8).
  *
  * The native module is required LAZILY so importing this file never touches the
  * native binary (the app still loads in Expo Go / unconfigured, where Apple

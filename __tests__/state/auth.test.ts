@@ -1,7 +1,8 @@
 /**
  * Auth store tests (MemoryRepo, unconfigured = local dev path): the single
  * signed-in user, session restore, onboarding, and per-account data wiring.
- * (Google/Supabase paths require keys + a device and are owner-verified.)
+ * Sessions are opened via the local email/password path — the real shipping
+ * fallback. (Apple/Supabase paths require keys + a device and are owner-verified.)
  */
 import { useAuth } from '../../src/state/auth';
 import { useRule } from '../../src/state/rule';
@@ -24,26 +25,33 @@ beforeEach(async () => {
 
 const auth = () => useAuth.getState();
 
+// Open a session the way the app does when unconfigured: a local, device-stored
+// email/password account. `signIn` creates it; `signBackIn` returns to it.
+const EMAIL = 'mina@example.com';
+const PW = 'pa55word';
+const signIn = () => auth().signUpWithPassword(EMAIL, PW);
+const signBackIn = () => auth().signInWithPassword(EMAIL, PW);
+
 test('starts loaded and signed out', () => {
   expect(auth().loaded).toBe(true);
   expect(auth().account).toBeNull();
 });
 
 test('sign-in opens a session, not yet onboarded', async () => {
-  const ok = await auth().signInWithGoogle();
+  const ok = await signIn();
   expect(ok).toBe(true);
   expect(auth().account).not.toBeNull();
   expect(auth().account?.onboardingComplete).toBe(false);
 });
 
 test('the session is restored on a fresh load', async () => {
-  await auth().signInWithGoogle();
+  await signIn();
   await auth().load(); // simulate relaunch against the same repo
   expect(auth().account).not.toBeNull();
 });
 
 test('completeOnboarding writes the profile and creates the chosen rule', async () => {
-  await auth().signInWithGoogle();
+  await signIn();
   await auth().completeOnboarding({ displayName: 'Mina', journeyStage: 'returning', selection: ['agpeya', 'word'], answers: ANSWERS });
   const acc = auth().account!;
   expect(acc.displayName).toBe('Mina');
@@ -55,7 +63,7 @@ test('completeOnboarding writes the profile and creates the chosen rule', async 
 });
 
 test('completeOnboarding is idempotent — a retry does not duplicate the starter rule', async () => {
-  await auth().signInWithGoogle();
+  await signIn();
   const input = { displayName: 'Mina', journeyStage: 'returning' as const, selection: ['agpeya', 'word'] as const, answers: ANSWERS };
   await auth().completeOnboarding({ ...input, selection: [...input.selection] });
   await auth().completeOnboarding({ ...input, selection: [...input.selection] }); // e.g. a retry after a reported failure
@@ -63,7 +71,7 @@ test('completeOnboarding is idempotent — a retry does not duplicate the starte
 });
 
 test('a retry after a partial failure inserts only the missing starters', async () => {
-  await auth().signInWithGoogle();
+  await signIn();
   const accId = auth().account!.id;
   // Simulate a first attempt that died mid-loop: only the first starter landed.
   const [agpeya] = starterPractices(Date.now(), ['agpeya']);
@@ -75,7 +83,7 @@ test('a retry after a partial failure inserts only the missing starters', async 
 });
 
 test('sign-out clears data; signing back in restores it', async () => {
-  await auth().signInWithGoogle();
+  await signIn();
   await auth().completeOnboarding({ displayName: 'A', journeyStage: 'returning', selection: ['agpeya'], answers: ANSWERS });
   expect(useRule.getState().practices).toHaveLength(1);
 
@@ -83,7 +91,7 @@ test('sign-out clears data; signing back in restores it', async () => {
   expect(auth().account).toBeNull();
   expect(useRule.getState().practices).toHaveLength(0);
 
-  await auth().signInWithGoogle();
+  await signBackIn();
   expect(useRule.getState().practices).toHaveLength(1); // same account, data persisted
 });
 

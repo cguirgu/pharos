@@ -73,7 +73,7 @@ test('auth.load ALWAYS marks loaded — even if session restore throws (the spla
 test('sign-in completes even when the onboarding table is missing (no splash hang)', async () => {
   setRepo(new FaultyOnboardingRepo());
   await useAuth.getState().load();
-  const ok = await useAuth.getState().signInWithGoogle();
+  const ok = await useAuth.getState().signUpWithPassword('mina@example.com', 'pa55word');
   expect(ok).toBe(true);
   expect(useAuth.getState().account).not.toBeNull(); // NOT bricked
   expect(useOnboarding.getState().answers).toBeNull();
@@ -82,7 +82,7 @@ test('sign-in completes even when the onboarding table is missing (no splash han
 test('startup survives even when every per-account read fails', async () => {
   setRepo(new AllReadsFailRepo());
   await useAuth.getState().load();
-  const ok = await useAuth.getState().signInWithGoogle();
+  const ok = await useAuth.getState().signUpWithPassword('mina@example.com', 'pa55word');
   expect(ok).toBe(true);
   expect(useAuth.getState().account).not.toBeNull();
   expect(useRule.getState().practices).toEqual([]); // degraded, not crashed
@@ -91,7 +91,7 @@ test('startup survives even when every per-account read fails', async () => {
 test('completeOnboarding still finishes when answers cannot be saved', async () => {
   setRepo(new FaultyOnboardingRepo());
   await useAuth.getState().load();
-  await useAuth.getState().signInWithGoogle();
+  await useAuth.getState().signUpWithPassword('mina@example.com', 'pa55word');
   await expect(
     useAuth.getState().completeOnboarding({ displayName: 'Mina', journeyStage: 'returning', selection: ['agpeya'], answers: ANSWERS }),
   ).resolves.toBeUndefined();
@@ -102,7 +102,7 @@ test('completeOnboarding still finishes when answers cannot be saved', async () 
 test('a healthy repo still persists and reloads answers (no regression)', async () => {
   setRepo(new MemoryRepo());
   await useAuth.getState().load();
-  await useAuth.getState().signInWithGoogle();
+  await useAuth.getState().signUpWithPassword('mina@example.com', 'pa55word');
   await useAuth.getState().completeOnboarding({ displayName: 'Mina', journeyStage: 'returning', selection: ['agpeya'], answers: ANSWERS });
   expect(useOnboarding.getState().answers).toEqual(ANSWERS);
   expect(await getRepo().getOnboarding(useAuth.getState().account!.id)).toEqual(ANSWERS);

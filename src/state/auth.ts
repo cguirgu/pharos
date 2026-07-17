@@ -1,10 +1,10 @@
 /**
- * Auth store — Google sign-in and email/password via Supabase. When the backend
- * is configured (keys present) Google uses an ID token and email/password uses
- * Supabase Auth; a single signed-in user maps to a Supabase session + `profiles`
- * row. When NOT configured it falls back to the local device store (local dev
- * sign-in, and locally-hashed email/password accounts), so the app still runs in
- * Expo Go without keys. Either way, account changes drive every per-account store.
+ * Auth store — Sign in with Apple and email/password via Supabase. When the
+ * backend is configured (keys present) Apple uses an identity token and
+ * email/password uses Supabase Auth; a single signed-in user maps to a Supabase
+ * session + `profiles` row. When NOT configured it falls back to the local device
+ * store (locally-hashed email/password accounts), so the app still runs in Expo
+ * Go without keys. Either way, account changes drive every per-account store.
  */
 import { create } from 'zustand';
 import { getRepo, getLocalRepo, GUEST_ACCOUNT_ID, type Account, type JourneyStage, type Repo } from '../db/repo';
@@ -22,8 +22,6 @@ import { useLearning } from './learning';
 import { useOnboarding } from './onboarding';
 import { useClock } from './clock';
 import type { OnboardingAnswers } from '../domain/onboarding';
-
-const DEV_ACCOUNT_ID = 'dev-local';
 
 /** Client-side OTP brute-force guard: after this many wrong codes, lock briefly.
  *  (Supabase also rate-limits server-side; this is defence in depth + clear UX.) */
@@ -85,7 +83,6 @@ interface AuthState {
 
   load: () => Promise<void>;
   clearError: () => void;
-  signInWithGoogle: () => Promise<boolean>;
   /** Native Sign in with Apple (backend mode; iOS). */
   signInWithApple: () => Promise<boolean>;
   signUpWithPassword: (email: string, password: string) => Promise<boolean>;
@@ -197,40 +194,6 @@ export const useAuth = create<AuthState>((set, get) => ({
   },
 
   clearError: () => set({ authError: null }),
-
-  signInWithGoogle: async () => {
-    set({ signingIn: true, authError: null });
-    try {
-      if (isBackendConfigured()) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const { signInWithGoogle } = require('../platform/googleAuth') as typeof import('../platform/googleAuth');
-        const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
-        const res = await signInWithGoogle();
-        if (!res.ok) {
-          set({ authError: res.error === 'cancelled' ? null : res.error });
-          return false;
-        }
-        const { data } = await getSupabase().auth.getUser();
-        const account = await accountFromSupabase(res.userId, data.user?.email ?? null, (data.user?.user_metadata?.full_name as string) ?? null);
-        clearAccountData();
-        await loadAccountData(res.userId);
-        set({ account });
-        return true;
-      }
-      // dev fallback (no keys) — one local account, no real auth
-      const account = await ensureLocalAccount(getRepo(), DEV_ACCOUNT_ID, 'dev@local');
-      await getRepo().setSession(account.id);
-      clearAccountData();
-      await loadAccountData(account.id);
-      set({ account });
-      return true;
-    } catch (e) {
-      set({ authError: e instanceof Error ? e.message : 'Sign-in failed' });
-      return false;
-    } finally {
-      set({ signingIn: false });
-    }
-  },
 
   signInWithApple: async () => {
     set({ signingIn: true, authError: null });
@@ -444,9 +407,7 @@ export const useAuth = create<AuthState>((set, get) => ({
       if (isBackendConfigured()) {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
-        const { googleSignOut } = require('../platform/googleAuth') as typeof import('../platform/googleAuth');
         await getSupabase().auth.signOut();
-        await googleSignOut();
       }
       // Always clear the local session marker: it holds the active session in the
       // unconfigured fallback and the guest session in production. A stale marker
@@ -471,7 +432,6 @@ export const useAuth = create<AuthState>((set, get) => ({
     if (isBackendConfigured() && acc.id !== GUEST_ACCOUNT_ID) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { getSupabase } = require('../lib/supabase') as typeof import('../lib/supabase');
-      const { googleSignOut } = require('../platform/googleAuth') as typeof import('../platform/googleAuth');
       // Service-role Edge Function deletes the auth user → ON DELETE CASCADE
       // removes every synced row.
       const { error } = await getSupabase().functions.invoke('delete-account');
@@ -479,16 +439,11 @@ export const useAuth = create<AuthState>((set, get) => ({
       // The server account is gone; clear the LOCAL session without a network
       // round-trip. scope:'local' won't fail on a revoke/network hiccup, so a
       // deleted user can't be silently restored from a persisted token at next
-      // launch. Google sign-out is best-effort.
+      // launch.
       try {
         await getSupabase().auth.signOut({ scope: 'local' });
       } catch (e) {
         console.warn('[auth] local signOut after delete failed; clearing anyway', e);
-      }
-      try {
-        await googleSignOut();
-      } catch (e) {
-        console.warn('[auth] googleSignOut after delete failed; ignoring', e);
       }
       // Best-effort: drop any stale local guest marker so it can't silently
       // resurrect a guest session after the account is gone.
