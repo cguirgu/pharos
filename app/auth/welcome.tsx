@@ -30,12 +30,18 @@ export default function Welcome() {
   useEffect(() => clearError(), [clearError]);
 
   // Offer Sign in with Apple where available (iOS 13+ on a real/dev build).
-  const [appleAvailable, setAppleAvailable] = useState(false);
+  // Hold the native module in state so the render can use Apple's official
+  // button; the require stays iOS-only so web/Expo Go never touch the binary.
+  const [appleAuth, setAppleAuth] = useState<typeof import('expo-apple-authentication') | null>(null);
+  const appleAvailable = appleAuth != null;
   useEffect(() => {
     if (Platform.OS !== 'ios') return;
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { isAppleAuthAvailable } = require('../../src/platform/appleAuth') as typeof import('../../src/platform/appleAuth');
-    void isAppleAuthAvailable().then(setAppleAvailable);
+    void isAppleAuthAvailable().then((ok) => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      if (ok) setAppleAuth(require('expo-apple-authentication') as typeof import('expo-apple-authentication'));
+    });
   }, []);
 
   const onApple = async () => {
@@ -60,10 +66,22 @@ export default function Welcome() {
         <Text style={[styles.promise, { fontSize: r.scale(22), maxWidth: r.textWidth }]}>{copy.auth.promise}</Text>
       </View>
       <View style={[styles.bottom, { paddingBottom: insets.bottom + 8 }]}>
-        {appleAvailable ? (
-          <Btn kind="solid" onPress={onApple} disabled={signingIn}>
-            {signingIn ? copy.auth.signingIn : copy.auth.continueApple}
-          </Btn>
+        {appleAuth ? (
+          // Apple's official Sign in with Apple button (App Review Guideline 4):
+          // the system component supplies the compliant logo, label, and styling.
+          <View style={{ opacity: signingIn ? 0.6 : 1 }} pointerEvents={signingIn ? 'none' : 'auto'}>
+            <appleAuth.AppleAuthenticationButton
+              buttonType={appleAuth.AppleAuthenticationButtonType.CONTINUE}
+              buttonStyle={
+                t.barStyle === 'dark'
+                  ? appleAuth.AppleAuthenticationButtonStyle.BLACK // light theme (parchment)
+                  : appleAuth.AppleAuthenticationButtonStyle.WHITE // dark theme (oxford ink)
+              }
+              cornerRadius={0}
+              onPress={onApple}
+              style={styles.appleButton}
+            />
+          </View>
         ) : null}
         <Btn kind={appleAvailable ? 'line' : 'solid'} onPress={() => router.push('/auth/signup')} disabled={signingIn}>
           {copy.auth.withEmail}
@@ -95,6 +113,7 @@ const makeStyles = (t: Palette) => StyleSheet.create({
     lineHeight: 32,
   },
   bottom: { gap: 10 },
+  appleButton: { width: '100%', height: 50 },
   error: { alignItems: 'center', paddingTop: 6 },
   link: { alignItems: 'center', paddingVertical: 12 },
   guestLink: { alignItems: 'center', paddingBottom: 12, paddingTop: 2 },
