@@ -34,12 +34,18 @@ describe('startersForGoals', () => {
 });
 
 describe('buildSequence', () => {
-  test('orders name → goals → experience → previews → rule → reminder → notify', () => {
+  test('orders name → feedback → goals → experience → previews → rule → reminder → notify', () => {
     const seq = buildSequence(answers(['coptic']));
     expect(seq.map((s) => s.kind)).toEqual([
-      'name-journey', 'goals', 'experience', 'preview', 'rule', 'reminder', 'notify',
+      'name-journey', 'feedback', 'goals', 'experience', 'preview', 'rule', 'reminder', 'notify',
     ]);
     expect(seq.find((s) => s.kind === 'preview')).toEqual({ kind: 'preview', goal: 'coptic' });
+  });
+
+  test('the feedback step sits second — right after name/journey', () => {
+    for (const goals of [[], ['coptic'], ALL_GOALS] as GoalKey[][]) {
+      expect(buildSequence(answers(goals))[1]!.kind).toBe('feedback');
+    }
   });
 
   test('a preview per chosen goal, capped at MAX_PREVIEWS', () => {
@@ -58,14 +64,15 @@ describe('buildSequence', () => {
 
 describe('progressFraction', () => {
   test('previews do not advance the progress bar; questions do', () => {
-    const seq = buildSequence(answers(['coptic'])); // 6 question screens + 1 preview
+    const seq = buildSequence(answers(['coptic'])); // 7 question screens + 1 preview
+    // name-journey, feedback, goals, experience, [preview], rule, reminder, notify
     // cursor 0 = nothing done
     expect(progressFraction(seq, 0)).toBe(0);
     // at the end, all question screens are behind us
     expect(progressFraction(seq, seq.length)).toBe(1);
-    // the preview screen (index 3) does not bump the fraction past the 3 questions before it
-    expect(progressFraction(seq, 3)).toBeCloseTo(3 / 6);
-    expect(progressFraction(seq, 4)).toBeCloseTo(3 / 6); // crossing the preview adds nothing
+    // the preview screen (index 4) does not bump the fraction past the 4 questions before it
+    expect(progressFraction(seq, 4)).toBeCloseTo(4 / 7);
+    expect(progressFraction(seq, 5)).toBeCloseTo(4 / 7); // crossing the preview adds nothing
   });
 
   test('is clamped to [0,1] for out-of-range cursors', () => {
@@ -74,10 +81,10 @@ describe('progressFraction', () => {
     expect(progressFraction(seq, 999)).toBe(1);
   });
 
-  test('no-goals flow has 6 question screens and even sixths', () => {
+  test('no-goals flow has 7 question screens and even sevenths', () => {
     const seq = buildSequence(answers([]));
-    expect(seq.filter(isProgressScreen)).toHaveLength(6);
-    expect(progressFraction(seq, 1)).toBeCloseTo(1 / 6);
+    expect(seq.filter(isProgressScreen)).toHaveLength(7);
+    expect(progressFraction(seq, 1)).toBeCloseTo(1 / 7);
   });
 
   test('an empty sequence never divides by zero', () => {
@@ -88,7 +95,7 @@ describe('progressFraction', () => {
 
 describe('isProgressScreen', () => {
   test('only preview screens are excluded from progress', () => {
-    const kinds: Screen['kind'][] = ['name-journey', 'goals', 'experience', 'rule', 'reminder', 'notify'];
+    const kinds: Screen['kind'][] = ['name-journey', 'feedback', 'goals', 'experience', 'rule', 'reminder', 'notify'];
     for (const kind of kinds) expect(isProgressScreen({ kind } as Screen)).toBe(true);
     expect(isProgressScreen({ kind: 'preview', goal: 'coptic' })).toBe(false);
   });
@@ -121,7 +128,7 @@ describe('buildSequence — invariants', () => {
       expect(seq[seq.length - 1]!.kind).toBe('notify');
       // the question backbone is always present and in order
       const questionKinds = seq.filter(isProgressScreen).map((s) => s.kind);
-      expect(questionKinds).toEqual(['name-journey', 'goals', 'experience', 'rule', 'reminder', 'notify']);
+      expect(questionKinds).toEqual(['name-journey', 'feedback', 'goals', 'experience', 'rule', 'reminder', 'notify']);
     }
   });
 

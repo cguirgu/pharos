@@ -11,7 +11,7 @@ import { View, Text, ScrollView, Pressable, StyleSheet, KeyboardAvoidingView, Pl
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Page } from '../../src/ui/Page';
-import { ProgressBar, Field, Caps, Copt, Mark, Toggle, Btn, Fleuron, Segmented, Seal } from '../../src/ui/components';
+import { ProgressBar, Field, Caps, Copt, Mark, Toggle, Btn, Fleuron, Segmented, Seal, FeedbackButton } from '../../src/ui/components';
 import { SlideFade, Stagger } from '../../src/ui/anim';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
@@ -71,6 +71,9 @@ export default function Onboarding() {
   const [dir, setDir] = useState<1 | -1>(1);
   const [busy, setBusy] = useState(false);
   const [lit, setLit] = useState(false);
+  // The feedback step holds its Continue button back for a beat, so the invitation
+  // to build with us is actually read before the user can advance.
+  const [feedbackCtaReady, setFeedbackCtaReady] = useState(false);
   // Refs, not state: guards must hold within a single render batch, where two
   // taps would otherwise both see the same pre-update state.
   const transitioning = useRef(false); // one step per slide — a double-tap can't skip a screen
@@ -155,6 +158,17 @@ export default function Onboarding() {
     }
   }, [lit]);
 
+  // Reveal the feedback step's Continue button after a short, deliberate pause.
+  useEffect(() => {
+    if (screen.kind !== 'feedback') return;
+    setFeedbackCtaReady(false);
+    const id = setTimeout(() => {
+      setFeedbackCtaReady(true);
+      keptFeedback();
+    }, 3000);
+    return () => clearTimeout(id);
+  }, [screen.kind]);
+
   if (lit) {
     return (
       <Page>
@@ -212,6 +226,43 @@ export default function Onboarding() {
               <Btn kind="solid" onPress={next} disabled={name.trim().length === 0}>{copy.onboarding.continue}</Btn>
             </ScrollView>
           </KeyboardAvoidingView>
+        ) : null}
+
+        {screen.kind === 'feedback' ? (
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, ...scrollPad }}>
+            <Caps color={t.rubricHi} size={10} ls={2.4}>{copy.onboarding.feedback.kicker}</Caps>
+            <Text style={title} maxFontSizeMultiplier={TITLE_MAX_FONT_SCALE}>{copy.onboarding.feedback.title}</Text>
+            <Text style={styles.sub}>{copy.onboarding.feedback.body}</Text>
+
+            {/* A faithful mock of a screen's top — the feedback button sits top-right,
+                exactly where the real one lives on every tab. */}
+            <View style={styles.previewFrame}>
+              <View style={styles.previewBar}>
+                <View style={styles.previewBarLeft}>
+                  <Copt size={12} color={t.gold}>Ⲁ</Copt>
+                  <Caps size={9} ls={1.5} color={t.ink3}>Today</Caps>
+                </View>
+                <FeedbackButton preview />
+              </View>
+              <View style={styles.previewRule} />
+              <View style={[styles.previewGhost, { width: '78%' }]} />
+              <View style={[styles.previewGhost, { width: '54%' }]} />
+            </View>
+            <Caps size={9} ls={1.3} color={t.ink2} style={styles.previewCaption}>
+              {copy.onboarding.feedback.previewCaption}
+            </Caps>
+
+            <View style={{ flex: 1, minHeight: 20 }} />
+            {feedbackCtaReady ? (
+              <SlideFade dir={1} distance={0}>
+                <Btn kind="solid" onPress={next}>{copy.onboarding.continue}</Btn>
+              </SlideFade>
+            ) : (
+              <Caps size={9} ls={2} color={t.ink3} style={{ textAlign: 'center', paddingVertical: 18 }}>
+                {copy.onboarding.feedback.wait}
+              </Caps>
+            )}
+          </ScrollView>
         ) : null}
 
         {screen.kind === 'goals' ? (
@@ -365,4 +416,10 @@ const makeStyles = (t: Palette) => StyleSheet.create({
   previewLine: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   previewText: { flex: 1, fontFamily: font.body, fontSize: 15, lineHeight: 22, color: t.parch },
   litWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10 },
+  previewFrame: { marginTop: 26, borderWidth: 1, borderColor: t.rule, backgroundColor: t.panel, padding: 14 },
+  previewBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  previewBarLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  previewRule: { height: 1, backgroundColor: t.rule, marginTop: 10 },
+  previewGhost: { height: 8, backgroundColor: t.ruleDim, marginTop: 14 },
+  previewCaption: { marginTop: 14, lineHeight: 15 },
 });

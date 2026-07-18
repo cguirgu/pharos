@@ -90,7 +90,7 @@ export default function YouScreen() {
 
   return (
     <Page>
-      <Folio left={copy.you.head} right={isGuest ? copy.you.guestLabel : account?.email ?? ''} glyph="Ⲉ" />
+      <Folio left={copy.you.head} right={isGuest ? copy.you.guestLabel : account?.email ?? ''} glyph="Ⲉ" reserveRight />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
         <View style={styles.head}>
           <Text style={styles.name}>{account?.displayName ?? 'Friend'}</Text>

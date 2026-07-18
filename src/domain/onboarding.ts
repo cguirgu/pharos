@@ -65,6 +65,7 @@ export const MAX_PREVIEWS = 3;
 
 export type Screen =
   | { kind: 'name-journey' }
+  | { kind: 'feedback' }
   | { kind: 'goals' }
   | { kind: 'experience' }
   | { kind: 'preview'; goal: GoalKey }
@@ -73,8 +74,13 @@ export type Screen =
   | { kind: 'notify' };
 
 /**
- * The ordered screens for the current answers: name/journey → goals → experience
- * → a preview per chosen goal (capped) → rule → reminder → notify.
+ * The ordered screens for the current answers: name/journey → "build it with us"
+ * (feedback invitation) → goals → experience → a preview per chosen goal (capped)
+ * → rule → reminder → notify.
+ *
+ * The feedback step sits second — right after the user tells us their name and
+ * where they are on the journey — so the invitation to shape the app together is
+ * the first thing they meet, before the questionnaire proper.
  */
 export function buildSequence(answers: OnboardingAnswers): Screen[] {
   const previews: Screen[] = answers.goals
@@ -82,6 +88,7 @@ export function buildSequence(answers: OnboardingAnswers): Screen[] {
     .map((goal) => ({ kind: 'preview', goal }));
   return [
     { kind: 'name-journey' },
+    { kind: 'feedback' },
     { kind: 'goals' },
     { kind: 'experience' },
     ...previews,
@@ -94,6 +101,7 @@ export function buildSequence(answers: OnboardingAnswers): Screen[] {
 /** The screen kinds that count toward the progress bar (previews don't). */
 const PROGRESS_KINDS: ReadonlySet<Screen['kind']> = new Set([
   'name-journey',
+  'feedback',
   'goals',
   'experience',
   'rule',

@@ -110,16 +110,20 @@ export function Folio({
   left,
   right,
   glyph,
+  reserveRight = false,
 }: {
   left: string;
   right?: string;
   glyph?: string;
+  /** Reserve space on the right so the global feedback button never overlaps the
+   *  running head. Set on the main tab screens, which render that button. */
+  reserveRight?: boolean;
 }) {
   const styles = useStyles(makeStyles);
   const t = useThemeColors();
   return (
     <View style={styles.folio}>
-      <View style={styles.folioRow}>
+      <View style={[styles.folioRow, reserveRight && styles.folioRowReserved]}>
         <View style={styles.folioLeft}>
           {glyph ? <Copt size={12} color={t.gold} style={{ marginTop: 1 }}>{glyph}</Copt> : null}
           <Caps color={t.ink2} size={9.5} ls={1.5} style={{ flexShrink: 1 }}>{left}</Caps>
@@ -220,6 +224,9 @@ const makeStyles = (t: Palette) => StyleSheet.create({
     paddingBottom: 8,
     gap: 16,
   },
+  // Clear the top-right feedback button (FEEDBACK_BUTTON_WIDTH ≈ 104 + gap) so the
+  // running head's right text never sits beneath it.
+  folioRowReserved: { paddingRight: 112 },
   folioLeft: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, flexShrink: 1 },
   folioRight: { flexShrink: 1, textAlign: 'right', maxWidth: '46%' },
   folioRule: { height: 1, backgroundColor: t.rule },

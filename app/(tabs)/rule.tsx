@@ -32,7 +32,7 @@ export default function RuleScreen() {
 
   return (
     <Page>
-      <Folio left={copy.rule.head} right={`${active.length} practices`} glyph="ⲣ" />
+      <Folio left={copy.rule.head} right={`${active.length} practices`} glyph="ⲣ" reserveRight />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
         <Rubric>{copy.rule.head}</Rubric>
         <Text style={styles.title}>{copy.rule.title}</Text>
