@@ -1,0 +1,61 @@
+name: Bug report
+description: Something in the app doesn't work the way it should
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting this. The more detail you give, the faster it gets fixed.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the problem in your own words.
+      placeholder: The streak reset even though I marked the day complete.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can someone else see this happen?
+      placeholder: |
+        1. Open the Rule tab
+        2. Mark "Agpeya — Prime" complete
+        3. Close and reopen the app
+        4. The check is gone
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect instead?
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device and OS version
+      placeholder: iPhone 14, iOS 18.2
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+      description: Found on the You tab, or the version you're running from source.
+      placeholder: 1.0.0
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot or recording
+      description: Optional, but a picture usually explains it instantly. Paste it here.
+    validations:
+      required: false

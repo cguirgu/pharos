@@ -12,9 +12,17 @@ design package; these docs track what is actually built.)
 | [RULE-ENGINE.md](./RULE-ENGINE.md) | Practice model, the six cadences, statuses, streaks & the flame. |
 | [PUBLISHING.md](./PUBLISHING.md) | EAS build/submit to the App Store + asset checklist. |
 | [CONTENT-SOURCES.md](./CONTENT-SOURCES.md) | Verified Coptic sources (Agpeya, Bible, lectionary, Synaxarium), licensing, downloads, storage. |
+| [BACKEND-SETUP.md](./BACKEND-SETUP.md) | Optional Supabase backend, Sign in with Apple, RLS. |
 
-Also at the repo root: `CLAUDE.md`/`handoff/CLAUDE.md` (working agreement),
-`TESTING.md` (live gate checklist + open liturgical questions), `README.md`.
+Also at the repo root:
+
+| File | Read it for |
+|---|---|
+| [CONTRIBUTING.md](../CONTRIBUTING.md) | How to set up, the three house rules, and how to open a pull request. |
+| [CONTENT-LICENSE.md](../CONTENT-LICENSE.md) | What the MIT license does **not** cover — the liturgical text. |
+| [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) · [SECURITY.md](../SECURITY.md) | Community standards; private vulnerability reporting. |
+| [TESTING.md](../TESTING.md) | Live gate checklist + open liturgical questions. |
+| [handoff/CLAUDE.md](../handoff/CLAUDE.md) | The original working agreement from the build handoff. |
 
 ## For future agents — fast orientation
 1. Skim `docs/APP-GOALS.md` and `docs/ARCHITECTURE.md`.
