@@ -1,0 +1,41 @@
+name: Feature request
+description: Suggest something the app should do
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before writing code for this, please open it here first and wait for a reply — that way
+        nobody spends a weekend on something that wasn't going to be merged.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Start with the need, not the solution.
+      placeholder: I keep forgetting which fast day it is when I'm planning meals ahead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like the app to do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything you've considered or tried instead?
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: fit
+    attributes:
+      label: Fit with the app
+      description: The app is deliberately quiet and unhurried — a lamp, not a game. See docs/APP-GOALS.md.
+      options:
+        - label: I've read docs/APP-GOALS.md and think this fits the app's purpose and voice
+          required: false

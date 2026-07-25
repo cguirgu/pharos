@@ -1,0 +1,54 @@
+name: Liturgical correction
+description: A fast, feast, reading, prayer, or translation is wrong
+labels: ["liturgical"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the most valuable kind of report this project can receive, and **you do not need
+        to be a programmer to file it**. People pray with this app — accuracy matters more than
+        any feature.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: What is incorrect?
+      options:
+        - A fasting rule or fast day
+        - A feast or its date
+        - The Coptic calendar date
+        - A daily reading (Katameros)
+        - Agpeya prayer text
+        - A Synaxarium entry (life of a saint)
+        - Coptic language / pronunciation
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: incorrect
+    attributes:
+      label: What does the app currently show?
+      description: Include the date it appears on, and a screenshot if you have one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: correct
+    attributes:
+      label: What should it show instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: source
+    attributes:
+      label: Authoritative source
+      description: >
+        This is the important part. Which diocese, published book, or church website establishes
+        the correct answer? Content is never changed on the basis of memory alone.
+      placeholder: |
+        e.g. Coptic Reader (Diocese of the Southern US), copticchurch.net Synaxarium,
+        St-Takla.org, or a named printed Agpeya edition — with the page or link.
+    validations:
+      required: true

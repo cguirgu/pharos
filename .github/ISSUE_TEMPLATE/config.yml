@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/cguirgu/pharos/discussions
+    about: Ask anything here — especially if it's your first time contributing.
+  - name: Contributing guide
+    url: https://github.com/cguirgu/pharos/blob/main/CONTRIBUTING.md
+    about: How to set up the project and open your first pull request.
+  - name: Report a security vulnerability
+    url: https://github.com/cguirgu/pharos/security/advisories/new
+    about: Please report security issues privately, never in a public issue.
+  - name: App support
+    url: mailto:support@cgsoftwarestudio.com
+    about: Help with the App Store app, your account, or a purchase.

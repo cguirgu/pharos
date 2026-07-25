@@ -10,7 +10,10 @@ coverage/
 
 expo-env.d.ts
 # @end expo-cli
-# Local secrets (Supabase + Google auth) — never commit
+# Local secrets — never commit
 .env
 .env.local
 .vercel
+
+# Local tool settings
+.claude/settings.local.json

@@ -18,8 +18,12 @@ eas init --id eab8c3fa-f2dc-498b-a065-91f799b0930d   # link this repo to the pro
 ```
 `eas.json` already defines three profiles: **development** (dev client) ·
 **preview** (internal/TestFlight) · **production** (store, auto-increments build #).
-`app.config.ts` sets `ios.bundleIdentifier` = `com.pharos.app` (change to your
-own reverse-DNS before first build) and `version`.
+`app.config.ts` sets `ios.bundleIdentifier` = `com.pharosapp.app` and `version`.
+
+> **Forking this project?** The EAS project id above belongs to the original app. Run
+> `eas init` to create your own project, and change `ios.bundleIdentifier` /
+> `android.package` in `app.config.ts` to your own reverse-DNS id before building. You do
+> not need any of this to run the app in Expo Go.
 
 ## Day-to-day testing (no build)
 ```bash
@@ -49,8 +53,11 @@ Then in App Store Connect: distribute to **TestFlight** (beta), and when ready,
 - [ ] Bundle **Noto Sans Coptic** `.ttf` (ornament glyphs).
 - [ ] Screenshots (6.7"/6.5"/5.5" or current required sizes).
 - [ ] Description, keywords, support URL, **privacy policy URL**.
-- [ ] App Privacy: **No data collected** — Pharos is local-only, no accounts, no
-      tracking (`ITSAppUsesNonExemptEncryption: false` already set).
+- [ ] App Privacy: no tracking and no analytics SDK. The app is local-first, but it
+      **does** offer optional accounts (Supabase — Sign in with Apple / email+password)
+      and optional "Support the app" in-app purchases, so declare the account data it
+      stores. (`ITSAppUsesNonExemptEncryption: false` already set.) See
+      `docs/APP_STORE_PRIVACY.md` for the filed answers.
 - [ ] Age rating; category (Lifestyle / Reference).
 - [ ] Resolve any open `TODO(verify-liturgical)` items + supply licensed Agpeya /
       Synaxarium text (see `TESTING.md`).
