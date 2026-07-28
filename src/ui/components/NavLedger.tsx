@@ -32,6 +32,9 @@ export function NavLedger({
         return (
           <Pressable
             key={tab.key}
+            accessibilityRole="tab"
+            accessibilityLabel={tab.label}
+            accessibilityState={{ selected: isActive }}
             onPress={() => onPress(tab.key)}
             style={[styles.col, i > 0 && styles.divider]}
           >
