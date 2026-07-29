@@ -5,10 +5,11 @@
  */
 import React from 'react';
 import { View } from 'react-native';
-import { Tabs, useRouter, useSegments } from 'expo-router';
+import { Tabs, useRouter, useSegments, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NavLedger, type NavTab } from '../../src/ui/components';
+import { NavLedger, FeedbackButton, type NavTab } from '../../src/ui/components';
 import { copy } from '../../src/ui/copy';
+import { space } from '../../src/ui/theme';
 import { useThemeColors } from '../../src/ui/useStyles';
 
 const TABS: readonly NavTab[] = [
@@ -23,6 +24,7 @@ const TABS: readonly NavTab[] = [
 export default function TabsLayout() {
   const router = useRouter();
   const segments = useSegments();
+  const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const t = useThemeColors();
   const active = (segments[segments.length - 1] as string) ?? 'today';
@@ -40,6 +42,16 @@ export default function TabsLayout() {
         <Tabs.Screen name="saved" />
         <Tabs.Screen name="you" />
       </Tabs>
+      {/* Persistent feedback affordance — top-right on every tab, aligned with the
+          Folio running head (which reserves space via `reserveRight`). */}
+      <View
+        pointerEvents="box-none"
+        style={{ position: 'absolute', top: insets.top + 6, right: space.page, zIndex: 20 }}
+      >
+        <FeedbackButton
+          onPress={() => router.push(`/feedback?from=${encodeURIComponent(pathname)}`)}
+        />
+      </View>
       <View style={{ paddingBottom: insets.bottom, backgroundColor: t.bg }}>
         <NavLedger
           tabs={TABS}

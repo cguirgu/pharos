@@ -43,7 +43,7 @@ export default function HoursScreen() {
 
   return (
     <Page>
-      <Folio left={copy.hours.head} right={liturgicalLabel(info)} glyph="Ⲃ" />
+      <Folio left={copy.hours.head} right={liturgicalLabel(info)} glyph="Ⲃ" reserveRight />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
         <Rubric>{copy.hours.head}</Rubric>
         <Text style={styles.title}>{copy.hours.title}</Text>

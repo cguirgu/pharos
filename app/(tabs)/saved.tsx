@@ -31,7 +31,7 @@ export default function SavedScreen() {
 
   return (
     <Page>
-      <Folio left={copy.highlights.head} right={copy.highlights.count(total)} glyph="Ⲋ" />
+      <Folio left={copy.highlights.head} right={copy.highlights.count(total)} glyph="Ⲋ" reserveRight />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
         <TextInput
           value={query}

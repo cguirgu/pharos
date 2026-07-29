@@ -6,3 +6,4 @@ export { NavLedger, type NavTab } from './NavLedger';
 export { SheetBar } from './SheetBar';
 export { Seal } from './Seal';
 export { StepDots, Field, ProgressBar } from './forms';
+export { FeedbackButton, FEEDBACK_BUTTON_WIDTH } from './FeedbackButton';

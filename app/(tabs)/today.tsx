@@ -83,7 +83,7 @@ export default function TodayScreen() {
 
   return (
     <Page>
-      <Folio left={folioDate(today)} right={liturgicalLabel(info)} glyph="ⲡ" />
+      <Folio left={folioDate(today)} right={liturgicalLabel(info)} glyph="ⲡ" reserveRight />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
         {/* greeting + flame */}
         <View style={styles.head}>

@@ -43,7 +43,7 @@ export default function LearnScreen() {
 
   return (
     <Page>
-      <Folio left={copy.learn.head} glyph="Ⲁ" />
+      <Folio left={copy.learn.head} glyph="Ⲁ" reserveRight />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
         {/* proficiency rank — tags the learner's Coptic level */}
         <View style={styles.rankCard}>

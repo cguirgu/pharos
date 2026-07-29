@@ -89,6 +89,7 @@ export default function RootLayout() {
             <Stack.Screen name="auth" />
             <Stack.Screen name="onboarding" />
             <Stack.Screen name="practice" options={{ presentation: 'card' }} />
+            <Stack.Screen name="feedback" options={{ presentation: 'modal' }} />
           </Stack>
         </ErrorBoundary>
       </SafeAreaProvider>

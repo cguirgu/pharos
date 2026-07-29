@@ -115,7 +115,7 @@ export default function WordScreen() {
 
   return (
     <Page>
-      <Folio left={copy.word.head} right={liturgicalLabel(info)} glyph="Ⲅ" />
+      <Folio left={copy.word.head} right={liturgicalLabel(info)} glyph="Ⲅ" reserveRight />
       <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
         {/* Whole-Bible browse */}
         <Rubric>{copy.word.bible}</Rubric>

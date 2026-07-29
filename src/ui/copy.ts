@@ -165,6 +165,43 @@ export const copy = {
     finishSub: 'Your rule is set. Begin in peace.',
     finishCta: 'Enter →',
     back: 'Back',
+
+    // "Build it with us" — the feedback invitation (onboarding step 2). Copy is
+    // deliberately App-Store-safe: it frames Pharos as being shaped WITH the
+    // community, never as a beta / trial / unfinished product.
+    feedback: {
+      kicker: 'Build it with us',
+      title: 'We are\nlistening',
+      body:
+        'This is the beginning of Pharos, and we are shaping it hand in hand with the community that prays with it. If something could serve you better — a word, a rhythm, a detail — tell us. We read every note, and we build from them.',
+      previewCaption: 'You’ll find this at the top of every screen — tap it whenever something moves you.',
+      wait: 'take a moment…',
+    },
+  },
+
+  // In-app feedback form (the top-right button + modal). Its submissions become
+  // structured Linear tickets on the maintainers' side.
+  feedback: {
+    button: 'Feedback',
+    barLeft: 'Close',
+    barTitle: 'Feedback',
+    heading: 'Help us shape Pharos',
+    intro: 'A word, a fix, an idea — whatever would serve you better. It reaches us directly.',
+    typeLabel: 'What is this?',
+    types: { bug: 'Bug', content: 'Content', idea: 'Idea', other: 'Other' } as Record<string, string>,
+    priorityLabel: 'How pressing?',
+    priorities: { urgent: 'Urgent', high: 'High', normal: 'Normal' } as Record<string, string>,
+    screenLabel: 'Where you are',
+    screenUnknown: '—',
+    messageLabel: 'Your note',
+    messagePlaceholder: 'What could serve you better?',
+    submit: 'Send feedback →',
+    sending: 'Sending…',
+    error: 'That didn’t send. Please try again in a moment.',
+    offline: 'Feedback needs a connection right now. Please try again later.',
+    thanksTitle: 'Received with thanks',
+    thanksBody: 'We read every word. Thank you for helping us tend the lamp.',
+    thanksCta: 'Done',
   },
 
   you: {
