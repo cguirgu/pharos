@@ -1,9 +1,29 @@
 /**
- * Content-licensing flags. Some bundled content (the draft Synaxarium saint
- * lives, translated from St. George C.O.C. Chicago) is still pending written
- * permission. Until that's confirmed, `CONTENT_LICENSED` stays false and the
- * draft lives are withheld from the UI (feast names — structural facts — still
- * show). Flip to `true` once permission is secured.
+ * The Synaxarium ships in two tiers, because two different things are bundled
+ * under one filename and only one of them needs anyone's permission.
+ *
+ * TIER 1 — the COMMEMORATIONS: which saints and feasts fall on which Coptic
+ * day. A calendar of facts, arranged the way the Church's own calendar dictates
+ * — not creative expression — so these ship now. They are what the Today card,
+ * the Saint-of-the-day screen, the Ordo day, and the commemoration reminder
+ * render.
+ *
+ * This is also the kill switch. Flip it to `false` and `synaxariumDay` stops
+ * reading the bundled dataset entirely, falling back to the six project-authored
+ * seed feasts in `domain/content/synaxarium.ts`; no third-party wording renders
+ * anywhere in the app. One line, one release. See docs/permissions/.
+ */
+export const SYNAXARIUM_NAMES = true;
+
+/**
+ * TIER 2 — the LIVES: the day's narrative account, in the English translation of
+ * St. George C.O.C. Chicago. Copyrighted expression, still pending that church's
+ * written permission (docs/permissions/01-st-george-chicago.md), so it is
+ * withheld — and withheld in the DOMAIN, by `gateDayLife`, not merely hidden by
+ * a UI condition. No screen can leak what never reaches it.
+ *
+ * Flip to `true` once permission is secured and the accounts light up on the
+ * Saint screen, the Word tab, and the Ordo day with no other change.
  */
 export const CONTENT_LICENSED = false;
 

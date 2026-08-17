@@ -2,7 +2,7 @@
  * Ordo day detail — Coptic date, season, fast ruling, feast, commemoration.
  */
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
 import { SheetBar, Rubric, Caps, Register, Fleuron } from '../../src/ui/components';
@@ -11,23 +11,20 @@ import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 import { CONTENT_LICENSED } from '../../src/content/flags';
 import { folioDate } from '../../src/ui/format';
+import { useClock } from '../../src/state/clock';
 import { getDayInfo } from '../../src/domain/coptic';
-import { primarySaint } from '../../src/domain/content/synaxarium';
-import type { CivilDate } from '../../src/domain/coptic';
-
-function parse(key: string): CivilDate {
-  const [y, m, d] = key.split('-').map(Number);
-  return { year: y ?? 2026, month: m ?? 1, day: d ?? 1 };
-}
+import { parseDateKey, dateKey } from '../../src/domain/rule';
+import { synaxariumDay, hasLife } from '../../src/domain/content/synaxarium';
 
 export default function OrdoDay() {
   const router = useRouter();
   const styles = useStyles(makeStyles);
   const t = useThemeColors();
   const { date } = useLocalSearchParams<{ date: string }>();
-  const civil = parse(date ?? '');
+  const today = useClock((s) => s.today);
+  const civil = parseDateKey(date ?? '') ?? today;
   const info = getDayInfo(civil);
-  const saint = primarySaint(info.coptic);
+  const day = synaxariumDay(info.coptic);
 
   return (
     <Page>
@@ -68,11 +65,22 @@ export default function OrdoDay() {
           </View>
         ) : null}
 
-        {CONTENT_LICENSED && saint?.life ? (
+        {/* The commemorations always show; the account only once licensed. */}
+        {day && day.commemorations.length > 0 ? (
           <>
             <Rubric num="Ⲙ">{copy.hours.saint}</Rubric>
-            <Text style={styles.saintName}>{saint.name}</Text>
-            <Text style={styles.saintLife}>{saint.life}</Text>
+            {day.commemorations.map((c, i) => (
+              <Text key={`${i}-${c}`} style={[styles.saintName, i > 0 && { marginTop: 8 }]}>
+                {c}
+              </Text>
+            ))}
+            {CONTENT_LICENSED && hasLife(day) ? (
+              <Text style={styles.saintLife}>{day.life}</Text>
+            ) : (
+              <Pressable onPress={() => router.push(`/saint/${dateKey(civil)}`)} hitSlop={6} style={{ marginTop: 10 }}>
+                <Caps size={8.5} ls={1.4} color={t.gold}>{copy.ordo.openCommemoration}</Caps>
+              </Pressable>
+            )}
           </>
         ) : null}
       </ScrollView>
