@@ -18,6 +18,7 @@ export const copy = {
     kept: (n: number, m: number) => `Kept ${n} / ${m}`,
     ruleToday: 'Your rule today',
     commemoration: 'Commemoration of the day',
+    commemorationMore: (n: number) => (n === 1 ? 'and one more' : `and ${n} more`),
     journal: 'The journal',
     openJournal: 'Open the journal →',
     resting: 'Resting today',
@@ -244,7 +245,7 @@ export const copy = {
       },
       {
         title: 'The Synaxarium',
-        body: 'Daily commemorations from the open “coptic-synaxarium” dataset (randogoth, Codeberg). English text by St. George Coptic Orthodox Church, Chicago. Used in draft pending written permission.',
+        body: 'Which saints and feasts the Church remembers on each Coptic day is drawn from the open “coptic-synaxarium” dataset (randogoth, Codeberg), whose English wording is by St. George Coptic Orthodox Church, Chicago. The written lives from that translation are not shown in the app while we await the church’s written permission.',
       },
       {
         title: 'Daily readings · the Katameros',
@@ -265,7 +266,7 @@ export const copy = {
     ],
     awaiting: 'Still to be supplied (from verified, official sources)',
     awaitingItems: [
-      'Confirmation/clearance of the Synaxarium translation for release.',
+      'The written lives of the saints — awaiting written permission from St. George Coptic Orthodox Church, Chicago, for their English translation. The daily commemorations themselves are already shown.',
       'The NKJV, if licensed (served online; KJV remains the offline default).',
     ],
   },
@@ -289,6 +290,25 @@ export const copy = {
     head: 'The Ordo',
     title: 'Calendar of the Church',
     legend: { feast: 'Feast', fast: 'Fast', today: 'Today' },
+    commemoration: 'Saints',
+    openCommemoration: 'Open the commemoration →',
+  },
+
+  /**
+   * The commemoration of the day. Two tiers: the commemorations themselves —
+   * whom the Church remembers — always render; the written account only once
+   * its translation is licensed. Nothing here may be a placeholder: when the
+   * account is withheld the screen omits that section rather than promising it.
+   */
+  saint: {
+    head: 'The commemoration',
+    title: 'Whom the Church remembers today',
+    none: 'No commemoration is recorded for this day.',
+    account: 'The account of the day',
+    accountNote: 'One account, covering all of the day’s commemorations.',
+    source: 'Commemorations: the Coptic Synaxarium. English wording: St. George Coptic Orthodox Church, Chicago.',
+    prev: 'The day before',
+    next: 'The day after',
   },
 
   word: {
@@ -315,6 +335,7 @@ export const copy = {
     noPlans: 'You are not following a plan yet.',
     // Commemoration of the day (the Synaxarium life), shown beneath the readings.
     commemoration: 'Commemoration of the day',
+    openCommemoration: 'Read the commemoration →',
     noCommemoration: '⟨ commemoration to be supplied from a verified Synaxarium ⟩',
   },
 

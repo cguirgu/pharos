@@ -22,4 +22,4 @@ export {
   globalFlame,
 } from './streaks';
 export type { StreakOptions, FlameOptions, HistoryCell } from './streaks';
-export { dateKey, weekStart, monthStart, sameWeek, sameMonth } from './dates';
+export { dateKey, parseDateKey, weekStart, monthStart, sameWeek, sameMonth } from './dates';

@@ -22,7 +22,8 @@ import { getDayInfo } from '../../src/domain/coptic';
 import { PLANS, isPlanComplete } from '../../src/domain/content/readingPlan';
 import { readingsOn, readingLabel } from '../../src/domain/content';
 import { BOOKS, type BookId } from '../../src/domain/content/bible';
-import { primarySaint } from '../../src/domain/content/synaxarium';
+import { synaxariumDay, hasLife } from '../../src/domain/content/synaxarium';
+import { dateKey } from '../../src/domain/rule';
 import { synaxariumAnchorFromSelection, type RawSelection } from '../../src/domain/highlights';
 import { fetchTodaysReadings } from '../../src/platform/katameros';
 
@@ -41,7 +42,7 @@ export default function WordScreen() {
   const saveHighlight = useHighlights((s) => s.save);
   const scale = useTextScale((s) => s.scale);
   const info = getDayInfo(today);
-  const saint = primarySaint(info.coptic);
+  const day = synaxariumDay(info.coptic);
 
   // Deep-link from Today's commemoration card → scroll to that section. The
   // section's y is captured on layout; we scroll once it's known and the
@@ -86,23 +87,27 @@ export default function WordScreen() {
   // Drag-select within the life → save just that span. The whole-life save is
   // kept as a secondary fallback (onPressWhole) when nothing is selected.
   const onSaveLifeSelection = async (sel: RawSelection) => {
-    if (!saint) return;
+    if (!day) return;
     const built = synaxariumAnchorFromSelection(
       { copticMonth: info.coptic.month, copticDay: info.coptic.day },
       sel,
-      saint.life,
+      day.life,
     );
     if (!built) return;
-    const id = await saveHighlight({ anchor: built.anchor, textSnapshot: built.snapshot, referenceLabel: refLabelFor(saint.name) });
+    const id = await saveHighlight({
+      anchor: built.anchor,
+      textSnapshot: built.snapshot,
+      referenceLabel: refLabelFor(day.commemorations[0] ?? ''),
+    });
     if (id) router.push(`/highlights/${id}`);
   };
 
   const markWholeSaint = async () => {
-    if (!saint) return;
+    if (!day) return;
     const id = await saveHighlight({
-      anchor: { source: 'synaxarium', copticMonth: info.coptic.month, copticDay: info.coptic.day, startOffset: 0, endOffset: saint.life.length },
-      textSnapshot: saint.life,
-      referenceLabel: refLabelFor(saint.name),
+      anchor: { source: 'synaxarium', copticMonth: info.coptic.month, copticDay: info.coptic.day, startOffset: 0, endOffset: day.life.length },
+      textSnapshot: day.life,
+      referenceLabel: refLabelFor(day.commemorations[0] ?? ''),
     });
     if (id) router.push(`/highlights/${id}`);
   };
@@ -225,26 +230,35 @@ export default function WordScreen() {
           </>
         ) : null}
 
-        {/* Commemoration of the day — the Synaxarium life. Hidden until the
-            saint-life text is licensed (only structural facts exist otherwise),
-            so no placeholder is shown. */}
-        {CONTENT_LICENSED && saint?.life ? (
+        {/* Commemoration of the day. The commemorations themselves always show;
+            the written account only once its translation is licensed — and when
+            it is not, we link to the Saint screen rather than show a stub. */}
+        {day && day.commemorations.length > 0 ? (
           <View onLayout={onCommemLayout}>
             <Rubric num="Ⲙ">{copy.word.commemoration}</Rubric>
             <View style={styles.saint}>
-              <Text style={styles.saintName}>{saint.name}</Text>
-              {saint.title ? (
-                <Caps size={8.5} ls={1.4} color={t.ink3} style={{ marginTop: 4 }}>
-                  {saint.title}
-                </Caps>
-              ) : null}
-              <Fleuron />
-              <SelectableProse
-                text={saint.life}
-                textStyle={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}
-                onSaveSelection={onSaveLifeSelection}
-                onPressWhole={markWholeSaint}
-              />
+              {day.commemorations.map((c, i) => (
+                <Text key={`${i}-${c}`} style={[styles.saintName, i > 0 && { marginTop: 8 }]}>
+                  {c}
+                </Text>
+              ))}
+              {CONTENT_LICENSED && hasLife(day) ? (
+                <>
+                  <Fleuron />
+                  <SelectableProse
+                    text={day.life}
+                    textStyle={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}
+                    onSaveSelection={onSaveLifeSelection}
+                    onPressWhole={markWholeSaint}
+                  />
+                </>
+              ) : (
+                <Pressable onPress={() => router.push(`/saint/${dateKey(today)}`)} hitSlop={6} style={{ marginTop: 10 }}>
+                  <Caps size={9} ls={1.6} color={t.gold}>
+                    {copy.word.openCommemoration}
+                  </Caps>
+                </Pressable>
+              )}
             </View>
           </View>
         ) : null}
