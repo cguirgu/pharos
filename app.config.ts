@@ -22,7 +22,7 @@ const config: ExpoConfig = {
   // Must match the slug of the EAS project referenced by extra.eas.projectId.
   slug: 'pharos-coptic-orthodox-friend',
   scheme: 'pharos',
-  version: '1.1.0',
+  version: '1.2.0',
   // EAS Update: OTA channel + runtime version (tied to `version` above).
   runtimeVersion: { policy: 'appVersion' },
   updates: {

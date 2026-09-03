@@ -47,6 +47,10 @@ npx expo-doctor        # must be 18/18
 npm run typecheck      # clean
 npm test               # green
 ```
+Check what is already live before choosing a version:
+```bash
+npx eas-cli submit:status         # prints the live App Store version + TestFlight uploads
+```
 Bump `version` in `app.config.ts` if the current one is already **released** on
 the App Store — App Store Connect will not take a new TestFlight build under a
 version string that has already shipped. The build *number* auto-increments on
