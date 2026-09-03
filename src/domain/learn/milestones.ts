@@ -13,8 +13,18 @@ export interface LearnMilestone {
   readonly glyph?: string;
 }
 
-/** The four original liturgical-word units; everything else word-kind is extended vocabulary. */
+/** The four original liturgical-word units. */
 const CORE_WORD_UNITS = ['words', 'names', 'liturgy', 'praise'];
+
+/**
+ * The units drawn straight from the prayers the Church prays — the last stretch
+ * of the path, after the vocabulary units. Exported so the course tests and the
+ * milestone grouping stay in one place.
+ */
+export const PRAYER_UNITS = [
+  'lords-prayer', 'trisagion', 'creed', 'offering',
+  'church', 'pascha', 'repentance', 'soul', 'hours',
+];
 
 function unitLessonIds(unitId: string): string[] {
   return LESSONS.filter((l) => l.unitId === unitId).map((l) => l.id);
@@ -34,13 +44,20 @@ export function evaluateMilestones(passed: ReadonlySet<string>): LearnMilestone[
   const sounds = unitLessonIds('sounds');
   const coreWords = lessonIdsForUnits(CORE_WORD_UNITS);
   const newVocab = LESSONS.filter(
-    (l) => l.itemKind === 'word' && !CORE_WORD_UNITS.includes(l.unitId),
+    (l) =>
+      l.itemKind === 'word' &&
+      !CORE_WORD_UNITS.includes(l.unitId) &&
+      !PRAYER_UNITS.includes(l.unitId),
   ).map((l) => l.id);
+  const lordsPrayer = unitLessonIds('lords-prayer');
+  const prayers = lessonIdsForUnits(PRAYER_UNITS);
 
   const alphaDone = countDone(alphabet, passed);
   const soundsDone = countDone(sounds, passed);
   const coreDone = countDone(coreWords, passed);
   const vocabDone = countDone(newVocab, passed);
+  const lordsPrayerDone = countDone(lordsPrayer, passed);
+  const prayersDone = countDone(prayers, passed);
 
   // Ordered as a journey — the array order is the timeline.
   return [
@@ -53,6 +70,9 @@ export function evaluateMilestones(passed: ReadonlySet<string>): LearnMilestone[
     { key: 'words-complete', name: 'The holy words', description: 'Learn every word of the liturgy', earned: coreWords.length > 0 && coreDone === coreWords.length, glyph: 'Ⲇ' },
     { key: 'vocab-grow', name: 'A wider tongue', description: 'Learn half of the extended vocabulary', earned: newVocab.length > 0 && vocabDone >= Math.ceil(newVocab.length / 2), glyph: 'Ⲏ' },
     { key: 'vocab-complete', name: 'Words of the feast', description: 'Learn all the extended vocabulary', earned: newVocab.length > 0 && vocabDone === newVocab.length, glyph: 'Ⲙ' },
+    { key: 'lords-prayer-complete', name: 'The prayer He taught', description: 'Read the words of the Lord’s Prayer', earned: lordsPrayer.length > 0 && lordsPrayerDone === lordsPrayer.length, glyph: 'Ⲛ' },
+    { key: 'prayers-half', name: 'Into the prayers', description: 'Reach the middle of the prayers of the Church', earned: prayers.length > 0 && prayersDone >= Math.ceil(prayers.length / 2), glyph: 'Ⲡ' },
+    { key: 'prayers-complete', name: 'The prayers of the Church', description: 'Learn every word drawn from the prayers of the Church', earned: prayers.length > 0 && prayersDone === prayers.length, glyph: 'Ⲱ' },
     { key: 'course-complete', name: 'A reader of Coptic', description: 'Complete the whole course', earned: passed.size >= LESSONS.length, glyph: '☩' },
   ];
 }

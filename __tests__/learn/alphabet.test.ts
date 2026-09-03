@@ -146,5 +146,68 @@ describe('Coptic words', () => {
     expect(byId['aftonf']).toBe('ⲁϥⲧⲱⲛϥ');
     expect(byId['emmanouil']).toBe('ⲉⲙⲙⲁⲛⲟⲩⲏⲗ');
     expect(byId['piouro']).toBe('ⲡⲓⲟⲩⲣⲟ');
+    // The Lord's Prayer — the words as they stand in ϫⲉ ⲡⲉⲛⲓⲱⲧ ⲉⲧϧⲉⲛ ⲛⲓⲫⲏⲟⲩⲓ
+    expect(byId['peniot']).toBe('ⲡⲉⲛⲓⲱⲧ');
+    expect(byId['nifioui']).toBe('ⲛⲓⲫⲏⲟⲩⲓ');
+    expect(byId['pekran']).toBe('ⲡⲉⲕⲣⲁⲛ');
+    expect(byId['tekmetouro']).toBe('ⲧⲉⲕⲙⲉⲧⲟⲩⲣⲟ');
+    expect(byId['penoik']).toBe('ⲡⲉⲛⲱⲓⲕ');
+    expect(byId['pikahi']).toBe('ⲡⲓⲕⲁϩⲓ');
+    // The Trisagion (Greek sung in Coptic letters; no djinkim in our data)
+    expect(byId['agios-o-theos']).toBe('ⲁⲅⲓⲟⲥ ⲟ ⲑⲉⲟⲥ');
+    expect(byId['agios-ischyros']).toBe('ⲁⲅⲓⲟⲥ ⲓⲥⲭⲩⲣⲟⲥ');
+    expect(byId['agios-athanatos']).toBe('ⲁⲅⲓⲟⲥ ⲁⲑⲁⲛⲁⲧⲟⲥ');
+    // The Creed
+    expect(byId['tennahti']).toBe('ⲧⲉⲛⲛⲁϩϯ');
+    expect(byId['pipantokrator']).toBe('ⲡⲓⲡⲁⲛⲧⲟⲕⲣⲁⲧⲱⲣ');
+    expect(byId['logos']).toBe('ⲗⲟⲅⲟⲥ');
+    // The Holy Offering
+    expect(byId['oik']).toBe('ⲱⲓⲕ');
+    expect(byId['afot']).toBe('ⲁⲫⲟⲧ');
+    expect(byId['esnof']).toBe('ⲥⲛⲟϥ');
+    // In the Church
+    expect(byId['ouib']).toBe('ⲟⲩⲏⲃ');
+    expect(byId['diakon']).toBe('ⲇⲓⲁⲕⲱⲛ');
+    expect(byId['laos']).toBe('ⲗⲁⲟⲥ');
+    // Pascha & Resurrection
+    expect(byId['paskha']).toBe('ⲡⲁⲥⲭⲁ');
+    expect(byId['anastasis']).toBe('ⲁⲛⲁⲥⲧⲁⲥⲓⲥ');
+    expect(byId['shai-feast']).toBe('ϣⲁⲓ');
+    // Prayer & Repentance
+    expect(byId['eshlil']).toBe('ϣⲗⲏⲗ');
+    expect(byId['metania']).toBe('ⲙⲉⲧⲁⲛⲟⲓⲁ');
+    expect(byId['novi']).toBe('ⲛⲟⲃⲓ');
+    // Soul & Body
+    expect(byId['romi']).toBe('ⲣⲱⲙⲓ');
+    expect(byId['psyshi']).toBe('ⲯⲩⲭⲏ');
+    expect(byId['soma']).toBe('ⲥⲱⲙⲁ');
+    // Words of the Hours
+    expect(byId['psalmos']).toBe('ⲯⲁⲗⲙⲟⲥ');
+    expect(byId['tovh']).toBe('ⲧⲱⲃϩ');
+    expect(byId['ounou']).toBe('ⲟⲩⲛⲟⲩ');
+  });
+
+  // Words are written in LOWERCASE Coptic throughout (the lesson player styles
+  // them); an uppercase or Greek lookalike would render wrong and break the
+  // spelling tiles, which are cut from the lowercase alphabet.
+  test('every word is spelled in lowercase Coptic letters (plus spaces)', () => {
+    const lower = new Set<number>();
+    for (let c = 0x2c81; c <= 0x2cb1; c += 2) lower.add(c);
+    for (let c = 0x03e3; c <= 0x03ef; c += 2) lower.add(c);
+    for (const w of WORDS) {
+      for (const ch of w.coptic) {
+        if (ch === ' ') continue;
+        expect({ id: w.id, ch, ok: lower.has(ch.codePointAt(0)!) }).toEqual({ id: w.id, ch, ok: true });
+      }
+    }
+  });
+
+  // Audio clips are keyed by letter id AND word id in one namespace
+  // (src/content/coptic-audio.gen.ts), so the two id sets must never overlap —
+  // e.g. the word ϣⲁⲓ "feast" is `shai-feast`, since `shai` is the letter Ϣ.
+  test('no word id collides with a letter id', () => {
+    const letterIds = new Set(ALPHABET.map((l) => l.id));
+    const collisions = WORDS.map((w) => w.id).filter((id) => letterIds.has(id));
+    expect(collisions).toEqual([]);
   });
 });
