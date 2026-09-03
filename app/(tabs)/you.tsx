@@ -1,12 +1,18 @@
 /**
- * You — streaks, marks, stats, settings, and the account (PRD §5.6).
+ * You — the hub: what you keep, the marks, your voice in the community, then
+ * preferences and the account (PRD §5.6).
+ *
+ * Rule and Saved moved here when Questions took their place in the tab bar, so
+ * this screen had to stop being a settings wall. The ordering is deliberate: the
+ * first thing under your name is what you have MADE (your rule, your marks, your
+ * journal, your questions), each with a live count; preferences sit below.
  */
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LEGAL_META } from '../../src/content/legal';
 import { Page } from '../../src/ui/Page';
-import { Folio, Rubric, Caps, Numeral, Btn, Register, Segmented } from '../../src/ui/components';
+import { Folio, Rubric, Caps, Numeral, Btn, Register, Segmented, Toggle } from '../../src/ui/components';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
@@ -16,6 +22,8 @@ import { useTextScale, type TextSize } from '../../src/state/textScale';
 import { useAuth } from '../../src/state/auth';
 import { useRule } from '../../src/state/rule';
 import { useJournal } from '../../src/state/journal';
+import { useHighlights } from '../../src/state/highlights';
+import { useQuestions } from '../../src/state/questions';
 import { useReading } from '../../src/state/reading';
 import { useOffices } from '../../src/state/offices';
 import { useLearning } from '../../src/state/learning';
@@ -73,6 +81,13 @@ export default function YouScreen() {
   const logs = useRule((s) => s.logs);
   const restDays = useRule((s) => s.restDays);
   const journalCount = useJournal((s) => s.entries.length);
+  const practiceCount = practices.filter((p) => p.state !== 'archived').length;
+  const highlightCount = useHighlights((s) => s.items.length);
+  const myQuestionCount = useQuestions((s) => s.items).filter(
+    (q) => q.author.accountId === account?.id,
+  ).length;
+  const anonymousDefault = useQuestions((s) => s.anonymousDefault);
+  const setAnonymousDefault = useQuestions((s) => s.setAnonymousDefault);
   const planDaysCompleted = useReading((s) => s.totalDaysKept());
   const officeTotal = useOffices((s) => s.total);
 
@@ -109,8 +124,26 @@ export default function YouScreen() {
           <Stat value={`${stats.wedFriPercent}%`} label={copy.you.stats.wedfri} />
         </Pressable>
 
-        {/* marks */}
-        <Rubric num="Ⲕ">{copy.you.marks}</Rubric>
+        {/* Ⲁ — what you keep: the surfaces that left the tab bar, plus the journal */}
+        <Rubric num="Ⲁ">{copy.you.sections.keep}</Rubric>
+        <HubRow
+          title={copy.you.ruleRow}
+          meta={copy.you.practiceCount(practiceCount)}
+          onPress={() => router.push('/rule')}
+        />
+        <HubRow
+          title={copy.you.savedRow}
+          meta={copy.you.markCount(highlightCount)}
+          onPress={() => router.push('/saved')}
+        />
+        <HubRow
+          title={copy.you.journalRow}
+          meta={copy.you.entryCount(journalCount)}
+          onPress={() => router.push('/journal')}
+        />
+
+        {/* Ⲃ — marks */}
+        <Rubric num="Ⲃ">{copy.you.marks}</Rubric>
         <View style={styles.marks}>
           {marks.map((m) => (
             <View key={m.key} style={[styles.mark, !m.earned && { opacity: 0.42 }]}>
@@ -122,8 +155,20 @@ export default function YouScreen() {
           ))}
         </View>
 
-        {/* settings */}
-        <Rubric>{copy.you.settings}</Rubric>
+        {/* Ⲅ — your voice in the community */}
+        <Rubric num="Ⲅ">{copy.you.sections.voice}</Rubric>
+        <HubRow
+          title={copy.questions.yourQuestions}
+          meta={copy.questions.askedCount(myQuestionCount)}
+          onPress={() => router.navigate('/(tabs)/questions?filter=mine' as never)}
+        />
+        <Register>
+          <Text style={styles.rowLabel}>{copy.questions.anonymousDefault}</Text>
+          <Toggle value={anonymousDefault} onChange={(v) => void setAnonymousDefault(v)} />
+        </Register>
+
+        {/* Ⲇ — preferences */}
+        <Rubric num="Ⲇ">{copy.you.sections.prefs}</Rubric>
         <Register onTop>
           <Text style={styles.rowLabel}>{copy.you.theme}</Text>
         </Register>
@@ -146,15 +191,21 @@ export default function YouScreen() {
         </View>
         <SettingRow label={copy.you.reminders} onPress={() => router.push('/you/reminders')} />
         <SettingRow label={copy.you.fastingNuance} />
+
+        {/* Ⲉ — the book */}
+        <Rubric num="Ⲉ">{copy.you.sections.book}</Rubric>
+        <SettingRow label={copy.you.about} onPress={() => router.push('/you/about')} />
+        <SettingRow label={copy.you.contact} onPress={onContact} />
         {SUPPORT_ENABLED ? (
           <SettingRow label={copy.you.support} onPress={() => router.push('/you/support')} />
         ) : null}
-        <SettingRow label={copy.you.about} onPress={() => router.push('/you/about')} />
-        <SettingRow label={copy.you.contact} onPress={onContact} />
         <SettingRow label={copy.you.privacy} onPress={() => router.push('/you/privacy')} />
         <SettingRow label={copy.you.terms} onPress={() => router.push('/you/terms')} />
+
+        {/* Ⲋ — the account */}
         {!isGuest ? (
           <>
+            <Rubric num="Ⲋ">{copy.you.sections.account}</Rubric>
             <SettingRow label={exporting ? copy.you.exportWorking : copy.you.exportData} onPress={onExport} />
             <SettingRow label={copy.you.deleteAccount} onPress={() => router.push('/you/delete-account')} danger />
           </>
@@ -192,6 +243,27 @@ function Stat({ value, label }: { value: string; label: string }) {
       <Numeral size={36} color={t.goldHi}>{value}</Numeral>
       <Caps size={8} ls={1.4} color={t.ink3}>{label}</Caps>
     </View>
+  );
+}
+
+/** A hub destination: display-font title, a right-aligned count, a chevron. */
+function HubRow({ title, meta, onPress }: { title: string; meta?: string; onPress: () => void }) {
+  const styles = useStyles(makeStyles);
+  const t = useThemeColors();
+  return (
+    <Pressable onPress={onPress}>
+      <Register>
+        <Text style={styles.rowLabel}>{title}</Text>
+        {meta ? (
+          <Caps size={8.5} ls={1.4} color={t.ink3}>
+            {meta}
+          </Caps>
+        ) : null}
+        <Caps size={14} color={t.ink3}>
+          ›
+        </Caps>
+      </Register>
+    </Pressable>
   );
 }
 

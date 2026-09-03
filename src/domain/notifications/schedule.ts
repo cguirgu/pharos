@@ -48,6 +48,12 @@ export function nextTriggers(
   return out;
 }
 
+// NOTE: the `questions` channel is deliberately absent from this scheduler.
+// Everything below is DATE-based — it plans the next N days from the calendar —
+// whereas an answer is an EVENT, arriving when someone writes it. Forcing a case
+// in here would mean guessing at a time for something that has not happened.
+// Delivery to the asker needs a server (a push token per device and a trigger on
+// insert); until then src/domain/questions/notify.ts drives an in-app count.
 // --- multi-channel schedule (all configurable notification types) ----------
 
 export interface ScheduleContext {

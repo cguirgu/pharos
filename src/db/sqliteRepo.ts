@@ -12,18 +12,31 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { eq, and } from 'drizzle-orm';
 import * as s from './schema';
 import { CREATE_SQL } from './schema';
-import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter, AccountExport } from './repo';
+import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter, AccountExport, QuestionRepoFilter } from './repo';
 import { normalizeEmail, matchesHighlightFilter } from './repo';
 import { safeJsonParse } from './json';
 import type { OnboardingAnswers } from '../domain/onboarding';
 import type { Practice, PracticeLog, Cadence, Measure, Category, Kind, PracticeState, DayStatus, Reminder } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
 import type { Highlight, HighlightAnchor, HighlightColor, HighlightSource } from '../domain/highlights';
+import type { Citation, CitationSource } from '../domain/citation';
+// `Report` is aliased: the DOM lib declares a global of that name.
+import type {
+  Answer,
+  ModerationState,
+  ModerationStatus,
+  PostKind,
+  Question,
+  QuestionTopic,
+  Report as QuestionReport,
+  ReportReason,
+  Vote,
+} from '../domain/questions';
 
 const SESSION_KEY = 'session_account_id';
 const SCHEMA_KEY = 'schema_version';
 /** Bump whenever the table shapes change (forces a local rebuild). */
-const SCHEMA_VERSION = 6;
+const SCHEMA_VERSION = 7;
 
 function parseDateKey(key: string): CivilDate {
   const [y, m, d] = key.split('-').map(Number);
@@ -120,6 +133,113 @@ function fallbackAnchor(source: string): HighlightAnchor {
     : { source: 'synaxarium', copticMonth: 1, copticDay: 1, startOffset: 0, endOffset: 0 };
 }
 
+
+// --- questions ---------------------------------------------------------------
+// Moderation lives in four flat columns (so `mod_status` is filterable in SQL);
+// these two helpers are the only place that shape is assembled/disassembled.
+
+type QuestionRow = typeof s.questions.$inferSelect;
+type AnswerRow = typeof s.answers.$inferSelect;
+type VoteRow = typeof s.postVotes.$inferSelect;
+type ReportRow = typeof s.postReports.$inferSelect;
+
+function rowToModeration(r: {
+  modStatus: string;
+  modReportCount: number;
+  modReasons: string;
+  modReviewedAt: number | null;
+}): ModerationState {
+  return {
+    status: r.modStatus as ModerationStatus,
+    reportCount: r.modReportCount,
+    reasons: safeJsonParse<ReportReason[]>(r.modReasons, [], 'moderation.reasons'),
+    reviewedAt: r.modReviewedAt ?? null,
+  };
+}
+
+function rowToQuestion(r: QuestionRow): Question {
+  return {
+    id: r.id,
+    author: {
+      accountId: r.authorAccountId,
+      isAnonymous: r.isAnonymous === 1,
+      // Belt and braces: never surface a name on an anonymous row, even if one
+      // somehow got written.
+      displayName: r.isAnonymous === 1 ? null : (r.authorDisplayName ?? null),
+    },
+    title: r.title,
+    body: r.body,
+    citation: r.citation ? safeJsonParse<Citation | null>(r.citation, null, 'question.citation') : null,
+    topics: safeJsonParse<QuestionTopic[]>(r.topics, [], 'question.topics'),
+    bestAnswerId: r.bestAnswerId ?? null,
+    moderation: rowToModeration(r),
+    affirmations: r.affirmations,
+    answerCount: r.answerCount,
+    createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+  };
+}
+
+function questionToRow(q: Question): QuestionRow {
+  return {
+    id: q.id,
+    authorAccountId: q.author.accountId,
+    isAnonymous: q.author.isAnonymous ? 1 : 0,
+    authorDisplayName: q.author.isAnonymous ? null : (q.author.displayName ?? null),
+    title: q.title,
+    body: q.body,
+    topics: JSON.stringify(q.topics),
+    citation: q.citation ? JSON.stringify(q.citation) : null,
+    citationSource: (q.citation?.anchor.source as CitationSource | undefined) ?? null,
+    bestAnswerId: q.bestAnswerId,
+    modStatus: q.moderation.status,
+    modReportCount: q.moderation.reportCount,
+    modReasons: JSON.stringify(q.moderation.reasons),
+    modReviewedAt: q.moderation.reviewedAt,
+    affirmations: q.affirmations,
+    answerCount: q.answerCount,
+    createdAt: q.createdAt,
+    updatedAt: q.updatedAt,
+  };
+}
+
+function rowToAnswer(r: AnswerRow): Answer {
+  return {
+    id: r.id,
+    questionId: r.questionId,
+    parentAnswerId: r.parentAnswerId ?? null,
+    author: {
+      accountId: r.authorAccountId,
+      isAnonymous: r.isAnonymous === 1,
+      displayName: r.isAnonymous === 1 ? null : (r.authorDisplayName ?? null),
+    },
+    body: r.body,
+    affirmations: r.affirmations,
+    moderation: rowToModeration(r),
+    createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+  };
+}
+
+function answerToRow(a: Answer): AnswerRow {
+  return {
+    id: a.id,
+    questionId: a.questionId,
+    parentAnswerId: a.parentAnswerId,
+    authorAccountId: a.author.accountId,
+    isAnonymous: a.author.isAnonymous ? 1 : 0,
+    authorDisplayName: a.author.isAnonymous ? null : (a.author.displayName ?? null),
+    body: a.body,
+    modStatus: a.moderation.status,
+    modReportCount: a.moderation.reportCount,
+    modReasons: JSON.stringify(a.moderation.reasons),
+    modReviewedAt: a.moderation.reviewedAt,
+    affirmations: a.affirmations,
+    createdAt: a.createdAt,
+    updatedAt: a.updatedAt,
+  };
+}
+
 function rowToHighlight(r: HighlightRow): Highlight {
   return {
     id: r.id,
@@ -178,6 +298,10 @@ export class SqliteRepo implements Repo {
         DROP TABLE IF EXISTS reading_progress;
         DROP TABLE IF EXISTS office_logs;
         DROP TABLE IF EXISTS learn_lessons;
+        DROP TABLE IF EXISTS questions;
+        DROP TABLE IF EXISTS answers;
+        DROP TABLE IF EXISTS post_votes;
+        DROP TABLE IF EXISTS post_reports;
         DROP TABLE IF EXISTS onboarding_answers;
       `);
       this.native.execSync(CREATE_SQL);
@@ -506,7 +630,126 @@ export class SqliteRepo implements Repo {
       readingProgress,
       officeLogs,
       learn: await this.listLearn(accountId),
+      questions: await this.listQuestions({ authorAccountId: accountId, includeHidden: true }),
+      answers: await this.listAnswersByAuthor(accountId),
     };
+  }
+
+  // --- questions (cross-account: no accountId key) ---
+  async listQuestions(filter?: QuestionRepoFilter): Promise<Question[]> {
+    const clauses = [];
+    if (filter?.authorAccountId) clauses.push(eq(s.questions.authorAccountId, filter.authorAccountId));
+    if (filter?.citationSource) clauses.push(eq(s.questions.citationSource, filter.citationSource));
+    const where = clauses.length === 0 ? undefined : clauses.length === 1 ? clauses[0] : and(...clauses);
+    const rows = where ? this.db.select().from(s.questions).where(where).all() : this.db.select().from(s.questions).all();
+    return rows
+      .map(rowToQuestion)
+      .filter((q) => (filter?.includeHidden ? true : q.moderation.status !== 'removed'))
+      .sort((a, b) => b.createdAt - a.createdAt);
+  }
+  async getQuestion(id: string): Promise<Question | null> {
+    const row = this.db.select().from(s.questions).where(eq(s.questions.id, id)).get();
+    return row ? rowToQuestion(row) : null;
+  }
+  async upsertQuestion(q: Question): Promise<void> {
+    const row = questionToRow(q);
+    this.db.insert(s.questions).values(row).onConflictDoUpdate({ target: s.questions.id, set: row }).run();
+  }
+  async deleteQuestion(id: string): Promise<void> {
+    this.db.delete(s.answers).where(eq(s.answers.questionId, id)).run();
+    this.db.delete(s.questions).where(eq(s.questions.id, id)).run();
+  }
+
+  async listAnswers(questionId: string): Promise<Answer[]> {
+    return this.db
+      .select()
+      .from(s.answers)
+      .where(eq(s.answers.questionId, questionId))
+      .all()
+      .map(rowToAnswer)
+      .sort((a, b) => a.createdAt - b.createdAt);
+  }
+  async listAnswersByAuthor(authorAccountId: string): Promise<Answer[]> {
+    return this.db
+      .select()
+      .from(s.answers)
+      .where(eq(s.answers.authorAccountId, authorAccountId))
+      .all()
+      .map(rowToAnswer);
+  }
+  async upsertAnswer(a: Answer): Promise<void> {
+    const row = answerToRow(a);
+    this.db.insert(s.answers).values(row).onConflictDoUpdate({ target: s.answers.id, set: row }).run();
+  }
+  async deleteAnswer(id: string): Promise<void> {
+    this.db.delete(s.answers).where(eq(s.answers.id, id)).run();
+  }
+
+  async listVotes(voterAccountId: string): Promise<Vote[]> {
+    return this.db
+      .select()
+      .from(s.postVotes)
+      .where(eq(s.postVotes.voterAccountId, voterAccountId))
+      .all()
+      .map((r: VoteRow) => ({
+        targetType: r.targetType as PostKind,
+        targetId: r.targetId,
+        voterAccountId: r.voterAccountId,
+        createdAt: r.createdAt,
+      }));
+  }
+  async setVote(vote: Vote, on: boolean): Promise<void> {
+    const match = and(
+      eq(s.postVotes.targetType, vote.targetType),
+      eq(s.postVotes.targetId, vote.targetId),
+      eq(s.postVotes.voterAccountId, vote.voterAccountId),
+    );
+    if (!on) {
+      this.db.delete(s.postVotes).where(match).run();
+      return;
+    }
+    this.db
+      .insert(s.postVotes)
+      .values({
+        targetType: vote.targetType,
+        targetId: vote.targetId,
+        voterAccountId: vote.voterAccountId,
+        createdAt: vote.createdAt,
+      })
+      .onConflictDoNothing()
+      .run();
+  }
+
+  async listReports(targetId: string): Promise<QuestionReport[]> {
+    return this.db
+      .select()
+      .from(s.postReports)
+      .where(eq(s.postReports.targetId, targetId))
+      .all()
+      .map((r: ReportRow) => ({
+        id: r.id,
+        targetType: r.targetType as PostKind,
+        targetId: r.targetId,
+        reporterAccountId: r.reporterAccountId,
+        reason: r.reason as ReportReason,
+        note: r.note ?? undefined,
+        createdAt: r.createdAt,
+      }));
+  }
+  async addReport(report: QuestionReport): Promise<void> {
+    this.db
+      .insert(s.postReports)
+      .values({
+        id: report.id,
+        targetType: report.targetType,
+        targetId: report.targetId,
+        reporterAccountId: report.reporterAccountId,
+        reason: report.reason,
+        note: report.note ?? null,
+        createdAt: report.createdAt,
+      })
+      .onConflictDoNothing()
+      .run();
   }
 
   // --- global key/value ---

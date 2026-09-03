@@ -18,6 +18,7 @@ import { useHighlights } from '../../../src/state/highlights';
 import { useTextScale } from '../../../src/state/textScale';
 import { BOOKS, refLabel, type BookId } from '../../../src/domain/content/bible';
 import { scriptureAnchorFromSelection, type RawSelection } from '../../../src/domain/highlights';
+import { citationFromSelection, encodeCitation } from '../../../src/domain/citation';
 import { getScriptureProvider } from '../../../src/state/content';
 
 export default function Reader() {
@@ -52,6 +53,15 @@ export default function Reader() {
     if (!built) return;
     const newId = await saveHighlight({ anchor: built.anchor, textSnapshot: built.snapshot });
     if (newId) router.push(`/highlights/${newId}`);
+  };
+
+  // The same selection, asked of the community instead of kept. Note the object
+  // form of push: a snapshot can contain & or #, which a hand-built query string
+  // would corrupt.
+  const onAskVerseSelection = (n: number, text: string, sel: RawSelection) => {
+    const citation = citationFromSelection({ source: 'scripture', book: bookId, chapter: ch, verse: n }, sel, text);
+    if (!citation) return;
+    router.push({ pathname: '/questions/compose', params: { cite: encodeCitation(citation) } });
   };
 
   const onVerseNumber = async (n: number, text: string) => {
@@ -89,6 +99,7 @@ export default function Reader() {
                     textStyle={[styles.verse, { fontSize: VERSE_FONT * scale, lineHeight: VERSE_LINE * scale }]}
                     washColor={marked ? t.highlightWash[marked.color ?? 'gold'] : undefined}
                     onSaveSelection={(sel) => onSaveVerseSelection(v.n, v.text, sel)}
+                    onAskSelection={(sel) => onAskVerseSelection(v.n, v.text, sel)}
                   />
                 </View>
               </View>

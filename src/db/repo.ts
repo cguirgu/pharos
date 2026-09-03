@@ -20,6 +20,8 @@ import type { CivilDate } from '../domain/coptic';
 import { isScripture, type Highlight, type HighlightSource } from '../domain/highlights';
 import type { BookId } from '../domain/content/bible';
 import type { OnboardingAnswers } from '../domain/onboarding';
+// `Report` is aliased: the DOM lib declares a global of that name.
+import type { Answer, Question, Report as QuestionReport, Vote } from '../domain/questions';
 
 /** Where the user is on the journey (onboarding §1). */
 export type JourneyStage = 'grew-up' | 'returning' | 'exploring';
@@ -81,6 +83,10 @@ export interface AccountExport {
   readingProgress: { planId: string; dayNumber: number; completedOn?: string }[];
   officeLogs: { date: string; officeKey: string }[];
   learn: LearnLessonRecord[];
+  /** Questions this account asked (they are public, but they are still yours). */
+  questions: Question[];
+  /** Answers and replies this account wrote. */
+  answers: Answer[];
 }
 
 /** Optional narrowing for highlight queries (used by the reader overlay). */
@@ -90,6 +96,14 @@ export interface HighlightFilter {
   chapter?: number; // scripture
   copticMonth?: number; // synaxarium
   copticDay?: number; // synaxarium
+}
+
+/** Narrowing for question queries. Note: NOT keyed by a reading account. */
+export interface QuestionRepoFilter {
+  authorAccountId?: string;
+  citationSource?: string;
+  /** Include flagged/hidden/removed rows (own-post and moderation views). */
+  includeHidden?: boolean;
 }
 
 export interface Repo {
@@ -146,6 +160,28 @@ export interface Repo {
   getOnboarding(accountId: string): Promise<OnboardingAnswers | null>;
   saveOnboarding(accountId: string, answers: OnboardingAnswers, completedAt: number): Promise<void>;
 
+  // --- questions (CROSS-ACCOUNT) ---
+  // ⚠️ These deliberately take NO `accountId` first parameter. A question is
+  // written by one account and read by all; the author lives in a column, not in
+  // the key. That asymmetry is what lets the move to a shared backend be an RLS
+  // policy rather than a re-keying of every row.
+  listQuestions(filter?: QuestionRepoFilter): Promise<Question[]>;
+  getQuestion(id: string): Promise<Question | null>;
+  upsertQuestion(q: Question): Promise<void>;
+  deleteQuestion(id: string): Promise<void>;
+
+  listAnswers(questionId: string): Promise<Answer[]>;
+  listAnswersByAuthor(authorAccountId: string): Promise<Answer[]>;
+  upsertAnswer(a: Answer): Promise<void>;
+  deleteAnswer(id: string): Promise<void>;
+
+  /** Everything this account has affirmed — loaded once per session. */
+  listVotes(voterAccountId: string): Promise<Vote[]>;
+  setVote(vote: Vote, on: boolean): Promise<void>;
+
+  listReports(targetId: string): Promise<QuestionReport[]>;
+  addReport(report: QuestionReport): Promise<void>;
+
   // --- global key/value ---
   getSetting(key: string): Promise<string | null>;
   setSetting(key: string, value: string): Promise<void>;
@@ -188,6 +224,12 @@ export class MemoryRepo implements Repo {
   private learn = new Map<string, Map<string, LearnLessonRecord>>(); // account → lesson → record
   private onboarding = new Map<string, OnboardingAnswers>(); // account → answers
   private settingsMap = new Map<string, string>();
+  // Flat, NOT bucketed by account — the visible proof that questions are shared
+  // data rather than one reader's private rows.
+  private questions = new Map<string, Question>();
+  private answers = new Map<string, Answer>();
+  private votes = new Map<string, Vote>(); // `${targetType}|${targetId}|${voter}`
+  private reports = new Map<string, QuestionReport>();
 
   async init(): Promise<void> {}
 
@@ -343,6 +385,12 @@ export class MemoryRepo implements Repo {
     this.offices.delete(accountId);
     this.learn.delete(accountId);
     this.onboarding.delete(accountId);
+    // Public contributions go with the account (see the plan's open decision on
+    // cascade vs. anonymize-in-place).
+    for (const [id, q] of [...this.questions]) if (q.author.accountId === accountId) this.questions.delete(id);
+    for (const [id, a] of [...this.answers]) if (a.author.accountId === accountId) this.answers.delete(id);
+    for (const [k, v] of [...this.votes]) if (v.voterAccountId === accountId) this.votes.delete(k);
+    for (const [id, r] of [...this.reports]) if (r.reporterAccountId === accountId) this.reports.delete(id);
   }
 
   async exportAccountData(accountId: string): Promise<AccountExport> {
@@ -375,7 +423,59 @@ export class MemoryRepo implements Repo {
       readingProgress,
       officeLogs,
       learn: [...this.bucket(this.learn, accountId).values()],
+      questions: [...this.questions.values()].filter((q) => q.author.accountId === accountId),
+      answers: [...this.answers.values()].filter((a) => a.author.accountId === accountId),
     };
+  }
+
+  // questions (cross-account — no accountId key)
+  async listQuestions(filter?: QuestionRepoFilter): Promise<Question[]> {
+    let out = [...this.questions.values()];
+    if (!filter?.includeHidden) out = out.filter((q) => q.moderation.status !== 'removed');
+    if (filter?.authorAccountId) out = out.filter((q) => q.author.accountId === filter.authorAccountId);
+    if (filter?.citationSource) out = out.filter((q) => q.citation?.anchor.source === filter.citationSource);
+    return out.sort((a, b) => b.createdAt - a.createdAt);
+  }
+  async getQuestion(id: string): Promise<Question | null> {
+    return this.questions.get(id) ?? null;
+  }
+  async upsertQuestion(q: Question): Promise<void> {
+    this.questions.set(q.id, q);
+  }
+  async deleteQuestion(id: string): Promise<void> {
+    this.questions.delete(id);
+    for (const [aid, a] of [...this.answers]) if (a.questionId === id) this.answers.delete(aid);
+  }
+
+  async listAnswers(questionId: string): Promise<Answer[]> {
+    return [...this.answers.values()]
+      .filter((a) => a.questionId === questionId)
+      .sort((a, b) => a.createdAt - b.createdAt);
+  }
+  async listAnswersByAuthor(authorAccountId: string): Promise<Answer[]> {
+    return [...this.answers.values()].filter((a) => a.author.accountId === authorAccountId);
+  }
+  async upsertAnswer(a: Answer): Promise<void> {
+    this.answers.set(a.id, a);
+  }
+  async deleteAnswer(id: string): Promise<void> {
+    this.answers.delete(id);
+  }
+
+  async listVotes(voterAccountId: string): Promise<Vote[]> {
+    return [...this.votes.values()].filter((v) => v.voterAccountId === voterAccountId);
+  }
+  async setVote(vote: Vote, on: boolean): Promise<void> {
+    const key = `${vote.targetType}|${vote.targetId}|${vote.voterAccountId}`;
+    if (on) this.votes.set(key, vote);
+    else this.votes.delete(key);
+  }
+
+  async listReports(targetId: string): Promise<QuestionReport[]> {
+    return [...this.reports.values()].filter((r) => r.targetId === targetId);
+  }
+  async addReport(report: QuestionReport): Promise<void> {
+    this.reports.set(report.id, report);
   }
 
   // global key/value

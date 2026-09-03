@@ -33,6 +33,23 @@ export function liturgicalLabel(info: DayInfo): string {
 }
 
 /** Subtitle under a practice name: cadence + measure hint. */
+/**
+ * A quiet, unnumbered sense of when — "today", "yesterday", "3 days ago".
+ * `now` is passed in so it stays testable and the caller owns the clock.
+ */
+export function sinceLabel(createdAt: number, now: number): string {
+  const DAY = 86_400_000;
+  const days = Math.floor(Math.max(0, now - createdAt) / DAY);
+  if (days === 0) return 'today';
+  if (days === 1) return 'yesterday';
+  if (days < 7) return `${days} days ago`;
+  if (days < 14) return 'last week';
+  if (days < 31) return `${Math.floor(days / 7)} weeks ago`;
+  if (days < 62) return 'last month';
+  if (days < 365) return `${Math.floor(days / 30)} months ago`;
+  return days < 730 ? 'last year' : `${Math.floor(days / 365)} years ago`;
+}
+
 export function practiceSubtitle(p: Practice): string {
   const cad = cadenceSummary(p.cadence);
   switch (p.measure) {

@@ -1,6 +1,10 @@
 /**
  * Tabs layout. The native tab bar is hidden; we render our own typographic
- * NavLedger (DESIGN-SPEC §4). Tabs: Today · Word · Learn · Rule · Saved · You.
+ * NavLedger (DESIGN-SPEC §4). Tabs: Today · Word · Learn · Ask · You.
+ *
+ * Rule and Saved moved out of the bar and under You: both are places you shape
+ * or review what you have made, rather than daily surfaces (the day's practices
+ * are kept from Today). That freed the column "Ask" now occupies.
  * (Hours is hidden for now — its route stays registered for easy re-enable.)
  */
 import React from 'react';
@@ -15,8 +19,7 @@ const TABS: readonly NavTab[] = [
   { key: 'today', label: copy.tabs.today },
   { key: 'word', label: copy.tabs.word },
   { key: 'learn', label: copy.tabs.learn },
-  { key: 'rule', label: copy.tabs.rule },
-  { key: 'saved', label: copy.tabs.saved },
+  { key: 'questions', label: copy.tabs.questions },
   { key: 'you', label: copy.tabs.you },
 ];
 
@@ -36,14 +39,16 @@ export default function TabsLayout() {
         <Tabs.Screen name="hours" />
         <Tabs.Screen name="learn" />
         <Tabs.Screen name="word" />
-        <Tabs.Screen name="rule" />
-        <Tabs.Screen name="saved" />
+        <Tabs.Screen name="questions" />
         <Tabs.Screen name="you" />
       </Tabs>
       <View style={{ paddingBottom: insets.bottom, backgroundColor: t.bg }}>
         <NavLedger
           tabs={TABS}
-          active={TABS.some((t) => t.key === active) ? active : 'today'}
+          // A registered-but-hidden route (hours) is on no column, so light
+          // none rather than falsely marking Today. NavLedger already renders an
+          // unmatched key with no filled lozenge.
+          active={TABS.some((x) => x.key === active) ? active : active === '(tabs)' ? 'today' : ''}
           onPress={(key) => router.navigate(`/(tabs)/${key}` as never)}
         />
       </View>

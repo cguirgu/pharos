@@ -12,7 +12,8 @@ export type NotificationChannel =
   | 'reading' // the day's reading, when following a plan
   | 'learn' // a little Coptic each day
   | 'fast' // gentle note on fast days
-  | 'feast'; // a feast of the Lord
+  | 'feast' // a feast of the Lord
+  | 'questions'; // an answer to a question you asked
 
 export interface ChannelConfig {
   readonly enabled: boolean;
@@ -39,6 +40,11 @@ export const CHANNELS: readonly ChannelMeta[] = [
   { id: 'learn', title: 'Learn Coptic', description: 'A small lesson to keep the streak.', hasTime: true },
   { id: 'fast', title: 'The fast', description: 'A gentle note on the fasting days.', hasTime: true },
   { id: 'feast', title: 'Feasts', description: 'A word of joy on the feasts of the Lord.', hasTime: true },
+  // Event-driven, not daily: it fires when someone answers, so it carries no
+  // time of day. Cross-device delivery needs a server, so this channel is off by
+  // default and unscheduled until then — see src/domain/questions/notify.ts for
+  // the in-app count that works today.
+  { id: 'questions', title: 'Your questions', description: 'When someone answers what you asked.', hasTime: false },
 ];
 
 /** Title + body text for a channel (commemoration fills in the saint name). */
@@ -50,6 +56,8 @@ export const CHANNEL_TEXT: Record<NotificationChannel, { title: string; body: st
   learn: { title: 'Learn Coptic', body: 'A few minutes keeps the tongue alive.' },
   fast: { title: 'A fast day', body: 'Keep the fast in gladness.' },
   feast: { title: 'A feast of the Lord', body: 'Rejoice — today is a feast.' },
+  // Body is the question's title, filled in at send time.
+  questions: { title: 'An answer to your question', body: '' },
 };
 
 /** Sensible defaults: only practice reminders on by default; the rest opt-in. */
@@ -61,6 +69,7 @@ export const DEFAULT_CONFIG: NotificationConfig = {
   learn: { enabled: false, time: '19:00' },
   fast: { enabled: false, time: '07:00' },
   feast: { enabled: false, time: '08:00' },
+  questions: { enabled: false, time: '09:00' },
 };
 
 /** Merge a stored (possibly partial/old) config onto the defaults. */
