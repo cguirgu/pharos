@@ -183,6 +183,12 @@ export const copy = {
       { key: 'system', label: 'System' },
     ] as const,
     marks: 'The marks',
+    invite: 'Invite a friend',
+    /** Mail/subject line when the share target has one (iOS Mail, Gmail). */
+    inviteSubject: 'Coptic Daily Companion',
+    /** The body of the invite; the App Store link is attached beside it. */
+    inviteMessage:
+      'I keep my rule of life with Coptic Daily Companion — prayer, the fast, and the Word, one day at a time. Come and see.',
     about: 'About & attributions',
     contact: 'Help & contact',
     privacy: 'Privacy policy',

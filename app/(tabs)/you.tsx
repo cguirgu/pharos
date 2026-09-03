@@ -27,6 +27,7 @@ import { faithRankFor } from '../../src/domain/faith/ranks';
 import { useClock } from '../../src/state/clock';
 import { getRepo, GUEST_ACCOUNT_ID } from '../../src/db/repo';
 import { exportAndShare } from '../../src/platform/exportData';
+import { inviteAFriend } from '../../src/platform/invite';
 import { dateKey } from '../../src/domain/rule';
 import { youStats } from '../../src/domain/stats';
 import { evaluateMarks } from '../../src/domain/marks';
@@ -157,6 +158,7 @@ export default function YouScreen() {
         {SUPPORT_ENABLED ? (
           <SettingRow label={copy.you.support} onPress={() => router.push('/you/support')} />
         ) : null}
+        <SettingRow label={copy.you.invite} onPress={() => void inviteAFriend()} />
         <SettingRow label={copy.you.about} onPress={() => router.push('/you/about')} />
         <SettingRow label={copy.you.contact} onPress={onContact} />
         <SettingRow label={copy.you.privacy} onPress={() => router.push('/you/privacy')} />
