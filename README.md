@@ -39,7 +39,7 @@ npm run web        # Expo web preview in a browser
 | Coptic calendar engine (`src/domain/coptic`) | ✅ built + tested |
 | Rule / streak engine (`src/domain/rule`) | ✅ built + tested |
 | Design system + app shell (tab nav ledger, fonts, theme) | ✅ built |
-| **Today · Rule · Hours · Word · Learn · Saved · You** tabs | ✅ built |
+| **Today · Rule · Hours · Word · Coptic · Faith · Saved · You** tabs | ✅ built |
 | Onboarding, journal, highlights, ordo, office reader | ✅ built |
 | Accounts + sync (Supabase, Sign in with Apple) | ✅ built — optional; the app runs local-only without keys |
 | Verified liturgical content (Agpeya litanies, Synaxarium) | ⬜ partly draft — see [`CONTENT-LICENSE.md`](./CONTENT-LICENSE.md) |

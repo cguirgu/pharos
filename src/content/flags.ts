@@ -33,3 +33,16 @@ export const SUPPORT_ENABLED = false;
  * SUPPORT_ENABLED. (Has no effect unless SUPPORT_ENABLED is also true.)
  */
 export const SUPPORT_SUBSCRIPTION_ENABLED = false;
+
+/**
+ * The Faith course (theology). Every card in `src/domain/faith/units/*` ships
+ * `reviewed: false` until the project owner (Coptic Orthodox) signs it off —
+ * this is doctrinal content, held to the same bar as the Agpeya text above.
+ * While this flag is false, unreviewed cards are hidden from the player and a
+ * lesson with nothing reviewed reads as "awaiting review" rather than empty.
+ *
+ * Set to `true` in development to author and see the whole course; flip the
+ * cards' own `reviewed` fields to `true` as they are approved, and the course
+ * opens up for real users without touching this flag.
+ */
+export const FAITH_SHOW_UNREVIEWED = true;

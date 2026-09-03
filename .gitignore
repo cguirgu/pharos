@@ -17,3 +17,7 @@ expo-env.d.ts
 
 # Local tool settings
 .claude/settings.local.json
+
+# Apple signing material — App Store Connect API keys. Never commit.
+*.p8
+AuthKey_*.p8

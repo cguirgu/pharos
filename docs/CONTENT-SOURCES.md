@@ -255,3 +255,107 @@ Sources for this pass: [WikiTranslate — Lord's Prayer/Coptic](https://wikitran
 [Wiktionary Coptic entries](https://en.wiktionary.org/wiki/Category:Coptic_lemmas) ·
 [Wikipedia — Coptic calendar](https://en.wikipedia.org/wiki/Coptic_calendar) (months, not adopted) ·
 [tasbeha.org — Coptic month pronunciation thread](https://tasbeha.org/community/discussion/12394/coptic-month-pronunciation) (months, not adopted)
+
+---
+
+## Faith — the theology course (`src/domain/faith`)
+
+The **Faith** tab is a second, separate course: not the Coptic *tongue* (that is the
+**Coptic** tab) but Coptic *theology* — where the Church began, what it confesses, how it
+differs from the Eastern Orthodox, who its fathers are, and what it deliberately leaves
+undefined.
+
+### Why it is held to a stricter bar than the Coptic course
+Letter forms and phonetic values are **structural linguistic facts** — safe to encode, like
+book names or chapter counts. Doctrine is not. Nothing in this course may be written from
+memory or paraphrased from a general web search. Accordingly:
+
+- **Every teaching card and every question cites a source.** Citations are ids into
+  `src/domain/faith/sources.ts`, and `__tests__/faith/sources.test.ts` **fails CI** if any
+  card has no source, cites an unknown id, or if a registered source is never cited.
+- **Sources are host-restricted.** The same test enforces an allow-list: `lacopts.org`,
+  `suscopts.org`, `copticchurch.net`, `copticorthodox.church`, `st-takla.org`,
+  `coptic-treasures.com`, and `ecupatria.org` (for the signed 1990 agreed statement). A blog
+  or an encyclopaedia cannot be made the authority for a doctrinal claim.
+- **Sources are tiered** (`official` · `synaxarium` · `patristic` · `reference`) so that
+  when two disagree, the weight is recorded rather than guessed.
+- **The player shows the citation.** Every card in the app displays its sources, tappable.
+  This is the only course in the app where the citation is part of the teaching.
+
+### Review gate (owner action required)
+Every card ships **`reviewed: false`**. `FAITH_SHOW_UNREVIEWED` in `src/content/flags.ts`
+is currently **`true`** so the whole course is visible in development.
+
+> ⚠️ **Before release:** the project owner (Coptic Orthodox) must review the cards and flip
+> their `reviewed` fields to `true`, **or** set `FAITH_SHOW_UNREVIEWED = false`, which
+> withholds every unreviewed card from users. Shipping with the flag `true` and the cards
+> unreviewed would put unvetted doctrinal text in front of users.
+
+Review priority: **Unit IV (Chalcedon)** and **Unit IX (What We Hold in Silence)** first.
+Unit IV is the most contested material in the app; Unit IX makes claims about what the
+Church has *not* defined, which is as much a doctrinal claim as any other and just as easy
+to get wrong.
+
+### Curriculum (9 units, 33 lessons, 158 cards and questions)
+| # | Unit | Covers |
+|---|---|---|
+| I | Where We Come From | Holy Family in Egypt · St. Mark and the see · what "Copt" means · School of Alexandria |
+| II | The Church of the Martyrs | Era of the Martyrs (AM 1 = 284 AD) · Nayrouz · the Synaxarium · the 21 of Libya |
+| III | The Three Councils | Nicaea 325 · Constantinople 381 (and the Filioque) · Ephesus 431 |
+| IV | Chalcedon and the Two Families | 451 and Pope Dioscorus · miaphysite vs monophysite · the two families · the 1989/1990 statements · one will or two |
+| V | What We Believe | Incarnation · salvation · the saints · the seven mysteries · Eucharist and the departed |
+| VI | How We Pray | The three liturgies · the seven hours · why we fast |
+| VII | Our Fathers | Athanasius · Cyril · Anthony and Pachomius |
+| VIII | The Church Now | The altar lot · Kyrillos VI and Zeitoun · Shenouda III · Tawadros II |
+| IX | What We Hold in Silence | Defined vs mystery vs disputed · where our own sources differ · what is still open |
+
+### Gamification
+Mirrors the Coptic course (level · XP · 90% to unlock · 100% for the mark) so the two feel
+like one app, and adds two things of its own:
+
+- **The Creed seal** (`src/domain/faith/creed.ts`). Each unit unseals one clause of the
+  Nicene Creed; by the end the learner has assembled the whole confession, having earned
+  each line by learning what stands behind it. Unit III unseals the Son because Unit III is
+  Nicaea; Unit IV unseals the Incarnation because Unit IV is Chalcedon.
+- **The `standing` question kind.** Given a real question, the learner sorts it into
+  **Defined**, **Held in mystery**, or **Still disputed**. This is what makes the honesty of
+  Unit IX a mechanic rather than a disclaimer.
+
+Ranks are a **game ladder only** (Inquirer → Hearer → Catechumen → Illumined → Among the
+Faithful → Keeper of the Faith). They loosely echo the ancient catechumenate; they are not
+offices and must never be presented as a standing in the Church.
+
+### The Creed text — deliberately not a liturgical translation
+`creed.ts` stores a short **clause name** and a plain-English **`gist` written for this
+app**. It is *not* a reproduction of any published liturgical translation, which would be a
+licensing question exactly like the Agpeya text above. If the owner supplies the house
+English Creed, add it as a `text` field on each clause and render it in place of `gist`;
+nothing else changes. The Creed screen says as much to the user.
+
+### Known disagreements between our own sources (taught, not hidden)
+These are surfaced to the learner in Unit IX rather than silently resolved:
+- **St. Mark's arrival in Alexandria** — c. 43 AD (lacopts *History*), c. 55 AD (lacopts
+  *Establishment*), c. 48 AD, and c. 60–61 AD (suscopts) are all in print on Coptic sites.
+- **St. Anthony's departure** — 355 and age 105 (Synaxarium, Tobe 22) vs c. 254–356
+  (lacopts *Coptic Monasticism*).
+- **St. Pachomius' departure** — 348 (Synaxarium, Bashans 14) vs c. 292–346 (lacopts).
+
+### Persistence
+Faith lessons share the existing **`learn_lessons`** table under a `faith:` id prefix — no
+schema change, no migration, and account scoping, export, deletion and Supabase sync all
+come for free. `src/state/learning.ts` and `src/state/faith.ts` each filter the shared list
+to their own keys; **those two filters must stay in step**, or one course's progress will
+inflate the other's level, XP and rank.
+
+### Sources
+- Diocese of Los Angeles: https://www.lacopts.org/orthodoxy/coptic-orthodox-church/ ·
+  *Two Families of Orthodox*: https://www.lacopts.org/orthodoxy/orthodox-life/two-families-of-orthodox/
+- Metropolis/Diocese of the Southern US: https://suscopts.org/coptic-orthodox/church/ ·
+  Servants Prep PDFs: https://cdn.suscopts.org/files/servantsprep/
+- CopticChurch.net (incl. Fr. Tadros Y. Malaty's patrology): https://www.copticchurch.net/
+- The Coptic Orthodox Church (Papal Residence, Cairo): https://copticorthodox.church/en/
+- Coptic Synaxarium: https://www.copticchurch.net/synaxarium/ · https://st-takla.org/books/en/church/synaxarium/
+- H.H. Pope Shenouda III, *The Nature of Christ* and *Comparative Theology*: https://st-takla.org/books/en/pope-shenouda-iii/
+- St. Athanasius, *On the Incarnation*: https://ml.coptic-treasures.com/book/on-the-incarnation-saint-athanasius/
+- Second Agreed Statement, Joint Commission of the Orthodox and Oriental Orthodox Churches
+  (Chambésy, 23–28 September 1990): https://www.ecupatria.org/documents/second-agreed-statement-1990/

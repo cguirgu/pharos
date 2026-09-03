@@ -58,7 +58,7 @@ export default function LessonPlayer() {
   if (!lesson || total === 0) {
     return (
       <Page>
-        <SheetBar left="Learn" onBack={() => router.back()} />
+        <SheetBar left="Coptic" onBack={() => router.back()} />
       </Page>
     );
   }
@@ -145,7 +145,7 @@ export default function LessonPlayer() {
 
   return (
     <Page>
-      <SheetBar left="Learn" title={lesson.title} onBack={() => router.back()} />
+      <SheetBar left="Coptic" title={lesson.title} onBack={() => router.back()} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         <View style={styles.progress}>
           <Tally total={total} filled={clearedCount} />

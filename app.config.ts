@@ -11,8 +11,10 @@ import type { ExpoConfig } from 'expo/config';
  * the App Store marketing icon; Expo derives every smaller size from it. The
  * splash (assets/splash.png) recomposites that same emblem onto oxford ink so
  * the launch screen fades seamlessly into the app background.
- * TODO(fonts): bundle Noto Sans Coptic .ttf for the ornament glyphs; the two
- * Latin families load at runtime via @expo-google-fonts.
+ * Fonts: all three families ship as bundled assets via @expo-google-fonts
+ * (noto-sans-coptic, cormorant-garamond, spectral) and are loaded with
+ * `useFonts` in app/_layout.tsx — nothing is fetched at runtime, so the Coptic
+ * ornament glyphs render offline and in a store build.
  */
 const config: ExpoConfig = {
   // Home-screen label; the App Store listing carries the full "Coptic Daily Companion".
@@ -20,7 +22,7 @@ const config: ExpoConfig = {
   // Must match the slug of the EAS project referenced by extra.eas.projectId.
   slug: 'pharos-coptic-orthodox-friend',
   scheme: 'pharos',
-  version: '1.0.0',
+  version: '1.2.0',
   // EAS Update: OTA channel + runtime version (tied to `version` above).
   runtimeVersion: { policy: 'appVersion' },
   updates: {

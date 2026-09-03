@@ -1,51 +1,66 @@
 /**
- * Learn store — per-account lesson completion + derived level/XP. Mirrors the
- * reading store; progress math lives in the (tested) domain `course` engine.
+ * Faith store — per-account lesson completion for the theology course.
+ *
+ * Shares the `learn_lessons` table with the Coptic course rather than adding a
+ * second one: the row is keyed by a free-form `lessonId`, so namespacing Faith
+ * ids with `faith:` gives the new course persistence, account scoping, export,
+ * deletion, and Supabase sync with no schema change and no migration. The two
+ * stores each filter the shared list to their own keys — see the matching
+ * filter in `learning.ts`, which must stay in step with this one.
  */
 import { create } from 'zustand';
 import { getRepo } from '../db/repo';
 import type { CivilDate } from '../domain/coptic';
 import { dateKey } from '../domain/rule';
-import { courseLevel, xpFor, isLessonPassed, isLessonPerfect, type LessonResult } from '../domain/learn/course';
-import { isFaithKey } from '../domain/faith/course';
+import {
+  courseLevel,
+  isFaithKey,
+  isLessonPassed,
+  isLessonPerfect,
+  lessonIdFromKey,
+  storageKey,
+  xpFor,
+  type LessonResult,
+} from '../domain/faith/course';
 
-export interface LessonRecord {
+export interface FaithLessonRecord {
   completedOn: string;
   correct: number;
   total: number;
 }
 
-interface LearnState {
+interface FaithState {
   accountId: string | null;
-  /** Completed lessons, keyed by lessonId (best score kept). */
-  lessons: Record<string, LessonRecord>;
+  /** Completed lessons, keyed by the UNPREFIXED lessonId (best score kept). */
+  lessons: Record<string, FaithLessonRecord>;
 
   load: (accountId: string) => Promise<void>;
   clear: () => void;
   completeLesson: (lessonId: string, correct: number, total: number, today: CivilDate) => Promise<void>;
   /** Lessons attempted at least once. */
   completedIds: () => Set<string>;
-  /** Lessons passed (≥90%) — unlocks the next level; drives ranks + milestones. */
+  /** Lessons passed (≥90%) — unlocks the next, unseals the Creed, drives ranks. */
   passedIds: () => Set<string>;
-  /** Lessons scored 100% (a flawless run) — earns the bonus crown. */
+  /** Lessons scored 100% — earns the lamp. */
   perfectedIds: () => Set<string>;
   level: () => number;
   totalXp: () => number;
 }
 
-export const useLearning = create<LearnState>((set, get) => ({
+export const useFaith = create<FaithState>((set, get) => ({
   accountId: null,
   lessons: {},
 
   load: async (accountId) => {
     const records = await getRepo(accountId).listLearn(accountId);
-    const lessons: Record<string, LessonRecord> = {};
+    const lessons: Record<string, FaithLessonRecord> = {};
     for (const r of records) {
-      // The Faith (theology) course shares this table under a `faith:` prefix;
-      // skip its rows or they would inflate this course's level, XP and rank.
-      // Keep in step with the matching filter in `src/state/faith.ts`.
-      if (isFaithKey(r.lessonId)) continue;
-      lessons[r.lessonId] = { completedOn: r.completedOn, correct: r.correct, total: r.total };
+      if (!isFaithKey(r.lessonId)) continue;
+      lessons[lessonIdFromKey(r.lessonId)] = {
+        completedOn: r.completedOn,
+        correct: r.correct,
+        total: r.total,
+      };
     }
     set({ accountId, lessons });
   },
@@ -57,7 +72,7 @@ export const useLearning = create<LearnState>((set, get) => ({
     if (!accountId) return;
     const best = Math.max(correct, get().lessons[lessonId]?.correct ?? 0);
     const on = dateKey(today);
-    await getRepo(accountId).completeLesson(accountId, lessonId, correct, total, on);
+    await getRepo(accountId).completeLesson(accountId, storageKey(lessonId), correct, total, on);
     set((st) => ({ lessons: { ...st.lessons, [lessonId]: { completedOn: on, correct: best, total } } }));
   },
 

@@ -3,7 +3,7 @@
  * (CLAUDE.md "Voice": warm, literary, liturgical; never gamified or guilt-driven).
  */
 export const copy = {
-  tabs: { today: 'Today', hours: 'Hours', word: 'Word', learn: 'Learn', rule: 'Rule', you: 'You', saved: 'Saved' },
+  tabs: { today: 'Today', hours: 'Hours', word: 'Word', coptic: 'Coptic', faith: 'Faith', rule: 'Rule', you: 'You', saved: 'Saved' },
 
   errorBoundary: {
     title: 'A moment of stillness',
@@ -211,7 +211,7 @@ export const copy = {
     deleteScreen: {
       title: 'Delete account',
       heading: 'Delete your account?',
-      body: 'This permanently removes your account and all of its data — your rule, prayer logs, journal, highlights, reading progress, and Coptic learning. This cannot be undone.',
+      body: 'This permanently removes your account and all of its data — your rule, prayer logs, journal, highlights, reading progress, and both Coptic and Faith course progress. This cannot be undone.',
       hint: 'Consider exporting your data first.',
       confirmLabel: 'Type DELETE to confirm',
       confirmWord: 'DELETE',
@@ -386,6 +386,73 @@ export const copy = {
     tryAgain: 'Try again',
     done: 'Done',
     // milestones timeline screen
+    milestonesHead: 'Milestones on the way',
+    milestonesTitle: 'Milestones',
+    nextToUnlock: 'Next to unlock',
+    earnedLabel: 'Earned',
+    lockedLabel: 'Locked',
+    milestonesProgress: (a: number, b: number) => `${a} of ${b} reached`,
+  },
+
+  faith: {
+    head: 'Know the faith',
+    title: 'The Coptic faith',
+    subtitle: 'Where the Church began, what it confesses, and what it leaves unsaid.',
+    level: 'level',
+    xp: 'XP',
+    lampsLabel: 'lamps',
+    creedLabel: 'creed',
+    milestonesLabel: 'milestones',
+    locked: 'Locked',
+    begin: 'Begin',
+    continueLesson: 'Continue',
+    of: (a: number, b: number) => `${a} of ${b}`,
+    // step prompts
+    prompts: {
+      teach: '',
+      choice: 'Choose one',
+      truefalse: 'True, or not?',
+      order: 'Tap them in order',
+      standing: 'Where does this stand?',
+    } as Record<string, string>,
+    gotIt: 'Go on \u2192',
+    correct: 'Correct',
+    wrong: 'Not quite',
+    why: 'Why',
+    sourceLabel: 'Source',
+    sourcesLabel: 'Sources',
+    unreviewed: 'Awaiting review',
+    unreviewedNote: 'This card has not yet been reviewed by the project owner. It is visible in development builds only.',
+    check: 'Check',
+    clear: 'Clear',
+    // ranks
+    rankLabel: 'Your standing',
+    toNextRank: (n: number, rank: string) => `${n} more to ${rank}`,
+    // lesson states
+    lampHint: 'Score 100% for the lamp',
+    needNinety: 'Score 90% to unlock the next lesson',
+    // completion
+    complete: 'Lesson complete',
+    perfect: 'Perfect!',
+    lampEarned: '\u2739 Lamp earned',
+    unlocked: 'Next lesson unlocked!',
+    score: (correct: number, total: number) => `${correct} / ${total} correct`,
+    earned: (n: number) => `+${n} XP`,
+    milestoneEarned: 'Milestone earned',
+    clauseUnsealed: 'Clause of the Creed unsealed',
+    tryAgain: 'Try again',
+    done: 'Done',
+    // the creed seal
+    creedHead: 'The Creed, clause by clause',
+    creedTitle: 'The Creed',
+    creedIntro:
+      'Each unit you finish unseals one clause of the Creed \u2014 earned by learning what stands behind it.',
+    creedProgress: (a: number, b: number) => `${a} of ${b} unsealed`,
+    creedSealed: 'Sealed',
+    creedUnsealBy: (unit: string) => `Unsealed by ${unit}`,
+    creedNote:
+      'The wording here is a plain description written for this app, not a liturgical translation. Pray the Creed from your own church\u2019s book.',
+    // milestones
     milestonesHead: 'Milestones on the way',
     milestonesTitle: 'Milestones',
     nextToUnlock: 'Next to unlock',

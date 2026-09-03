@@ -1,0 +1,177 @@
+/**
+ * Unit VIII — The Church Now.
+ *
+ * How a Pope of Alexandria is actually chosen, and the three papacies that made
+ * the modern Coptic Church: Kyrillos VI, Shenouda III, Tawadros II.
+ */
+import type { FaithUnit } from '../types';
+
+export const TODAY: FaithUnit = {
+  id: 'today',
+  numeral: 'VIII',
+  title: 'The Church Now',
+  subtitle: 'How a Pope is chosen, and the three who shaped the century.',
+  glyph: 'Ⲧ',
+  creedClauseId: 'spirit',
+  lessons: [
+    {
+      id: 'today-1',
+      unitId: 'today',
+      title: 'The Altar Lot',
+      cards: [
+        {
+          id: 'today-1-c1',
+          heading: 'The last step is not a vote',
+          body:
+            'The Coptic Church narrows its candidates for the papacy by election — and then stops choosing. The three final names are placed in a chalice, sealed on the altar during the Divine Liturgy, and a blindfolded child draws one. The Church\'s position is that the last word belongs to God, and the mechanism is built so that no one can claim it belonged to them.',
+          pull: 'Sealed on the altar. Drawn by a blindfolded child.',
+          glyph: 'Ⲡ',
+          sources: ['copticorthodox-tawadros', 'lacopts-tawadros'],
+          reviewed: false,
+        },
+        {
+          id: 'today-1-c2',
+          heading: 'Pope Tawadros II',
+          body:
+            'On 4 November 2012 — his sixtieth birthday — his name was drawn from the chalice by a blindfolded boy, at a liturgy led by Metropolitan Pachomios, locum tenens of the see. He was enthroned on 18 November 2012 as the 118th Pope of Alexandria and successor of St. Mark.',
+          pull: '118th Pope · drawn 4 November 2012 · enthroned 18 November 2012.',
+          sources: ['copticorthodox-tawadros', 'lacopts-tawadros'],
+          reviewed: false,
+        },
+      ],
+      questions: [
+        {
+          id: 'today-1-q1',
+          kind: 'choice',
+          prompt: 'How is the final choice of a Pope of Alexandria made?',
+          answer: 'By lot — a blindfolded child draws a name from a chalice on the altar',
+          options: [
+            'By lot — a blindfolded child draws a name from a chalice on the altar',
+            'By a majority vote of the Holy Synod',
+            'By the outgoing Pope naming a successor',
+            'By seniority among the metropolitans',
+          ],
+          explain:
+            'Election narrows the field to three; the altar lot decides among them. The Church deliberately removes the last decision from human hands.',
+          sources: ['copticorthodox-tawadros'],
+          reviewed: false,
+        },
+        {
+          id: 'today-1-q2',
+          kind: 'choice',
+          prompt: 'Pope Tawadros II is which successor of St. Mark?',
+          answer: 'The 118th',
+          options: ['The 118th', 'The 116th', 'The 117th', 'The 120th'],
+          explain:
+            'Kyrillos VI was the 116th and Shenouda III the 117th. Tawadros II was enthroned in November 2012.',
+          sources: ['copticorthodox-tawadros', 'lacopts-tawadros'],
+          reviewed: false,
+        },
+      ],
+    },
+    {
+      id: 'today-2',
+      unitId: 'today',
+      title: 'Kyrillos VI and Zeitoun',
+      cards: [
+        {
+          id: 'today-2-c1',
+          heading: 'The 116th Pope',
+          body:
+            'Pope Kyrillos VI led the Church from 1959 to 1971 — a monk and a hermit before he was a patriarch, and remembered as both practical and mystical. His papacy is the hinge on which the modern revival of Coptic monasticism turns.',
+          pull: 'Pope Kyrillos VI, 116th Pope, 1959–1971.',
+          glyph: 'Ⲕ',
+          sources: ['lacopts-kyrillos'],
+          reviewed: false,
+        },
+        {
+          id: 'today-2-c2',
+          heading: 'Zeitoun, 1968',
+          body:
+            'On 2 April 1968, during his papacy, luminous appearances of the Virgin began over the domes of her church at Zeitoun, a suburb of Cairo. They continued on following nights for hours at a time, before crowds of every race and religion — a Muslim mechanic was among the first to see. It came a year after the country\'s defeat in the 1967 war, and the Church entered it into the Synaxarium on 24 Baramhat.',
+          pull: 'Zeitoun, from 2 April 1968 · commemorated 24 Baramhat.',
+          sources: ['synax-zeitoun', 'lacopts-kyrillos'],
+          reviewed: false,
+        },
+      ],
+      questions: [
+        {
+          id: 'today-2-q1',
+          kind: 'choice',
+          prompt: 'The apparitions at Zeitoun began in:',
+          answer: '1968',
+          options: ['1968', '1948', '1981', '2011'],
+          explain:
+            'From 2 April 1968, over the domes of the Church of the Virgin at Zeitoun in Cairo, during the papacy of Kyrillos VI.',
+          sources: ['synax-zeitoun'],
+          reviewed: false,
+        },
+        {
+          id: 'today-2-q2',
+          kind: 'truefalse',
+          prompt: 'Only Coptic Christians reported seeing the apparitions at Zeitoun.',
+          answer: 'False',
+          options: [],
+          explain:
+            'They were witnessed by crowds of every race and religion; a Muslim mechanic was among the first to report them.',
+          sources: ['synax-zeitoun', 'lacopts-kyrillos'],
+          reviewed: false,
+        },
+      ],
+    },
+    {
+      id: 'today-3',
+      unitId: 'today',
+      title: 'Pope Shenouda III',
+      cards: [
+        {
+          id: 'today-3-c1',
+          heading: 'The teaching papacy',
+          body:
+            'Pope Shenouda III succeeded Kyrillos VI in 1971 as the 117th Pope. His papacy is the one this course quotes most: *The Nature of Christ*, *Comparative Theology*, and the christological work behind the agreed statements of 1988–1990. Much of what an English-speaking Copt today knows about their own doctrine, they know in his words.',
+          pull: '117th Pope, from 1971. The Church’s most-published teacher.',
+          glyph: 'Ϣ',
+          sources: ['shenouda-nature-of-christ', 'shenouda-comparative-theology', 'lacopts-kyrillos'],
+          reviewed: false,
+        },
+        {
+          id: 'today-3-c2',
+          heading: 'And a Church that had to travel',
+          body:
+            'The same century scattered the Coptic Church across the world — dioceses in North America, Europe, Australia, and Africa, where none had existed. The diocesan sites this course cites are themselves a product of that: Los Angeles and the Southern United States teaching Coptic doctrine in English, because that is now a language the Church has to teach it in.',
+          sources: ['lacopts-history', 'copticorthodox-what-is-coc'],
+          reviewed: false,
+        },
+      ],
+      questions: [
+        {
+          id: 'today-3-q1',
+          kind: 'order',
+          prompt: 'Put these three Popes of Alexandria in order.',
+          answer: 'Kyrillos VI → Shenouda III → Tawadros II',
+          options: ['Kyrillos VI', 'Shenouda III', 'Tawadros II'],
+          explain:
+            'The 116th, 117th and 118th successors of St. Mark: 1959–1971, from 1971, and from 2012.',
+          sources: ['lacopts-kyrillos', 'copticorthodox-tawadros'],
+          reviewed: false,
+        },
+        {
+          id: 'today-3-q2',
+          kind: 'choice',
+          prompt: 'Which book of Pope Shenouda III sets out the Coptic teaching on Christ’s nature?',
+          answer: 'The Nature of Christ',
+          options: [
+            'The Nature of Christ',
+            'On the Incarnation',
+            'The Life of Antony',
+            'The Koinonia',
+          ],
+          explain:
+            '*On the Incarnation* is St. Athanasius; *The Life of Antony* is also attributed to him. *The Nature of Christ* is Pope Shenouda’s.',
+          sources: ['shenouda-nature-of-christ'],
+          reviewed: false,
+        },
+      ],
+    },
+  ],
+};
