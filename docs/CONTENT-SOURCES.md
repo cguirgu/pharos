@@ -203,3 +203,55 @@ tasbeha.org, st-takla, liturgy texts, coptic.academy). Corrections applied: the 
 to the strong ⲡⲓ- forms. Exact spellings are locked in `__tests__/learn/alphabet.test.ts`.
 UI feedback sounds (`assets/audio/ui/correct.wav`, `wrong.wav`) are generic synthesized tones
 (scripts/gen-sfx.mjs), NOT liturgical audio.
+
+### Learn — the prayers of the Church (10 new levels · 9 units · 27 words)
+The course now ends with units taken from the texts the Church actually prays, rather than
+from a vocabulary list. Levels 29–38: **The Lord's Prayer** (2 levels), **The Trisagion**,
+**The Creed**, **The Holy Offering**, **In the Church**, **Pascha & Resurrection**,
+**Prayer & Repentance**, **Soul & Body**, **Words of the Hours**.
+
+**Verification rule applied to every word — two independent witnesses:**
+1. an **attestation** that the word stands in the prayer/liturgical text as spelled, and
+2. the **Bohairic dictionary entry** for the word (dialect + gloss), so the gloss is not a guess.
+
+| Unit | Words | Attestation | Lemma check |
+|---|---|---|---|
+| The Lord's Prayer | ⲡⲉⲛⲓⲱⲧ · ⲛⲓⲫⲏⲟⲩⲓ · ⲡⲉⲕⲣⲁⲛ · ⲧⲉⲕⲙⲉⲧⲟⲩⲣⲟ · ⲡⲉⲛⲱⲓⲕ · ⲡⲓⲕⲁϩⲓ | Bohairic Lord's Prayer, in Coptic script (WikiTranslate) **and** independently in the CS-font text quoted from Wikisource — the two agree letter for letter | Wiktionary Bohairic ⲓⲱⲧ "father", ⲣⲁⲛ (in ⲡⲉⲕⲣⲁⲛ), ⲱⲓⲕ "bread", ⲕⲁϩⲓ "earth, land" |
+| The Trisagion | ⲁⲅⲓⲟⲥ ⲟ ⲑⲉⲟⲥ · ⲁⲅⲓⲟⲥ ⲓⲥⲭⲩⲣⲟⲥ · ⲁⲅⲓⲟⲥ ⲁⲑⲁⲛⲁⲧⲟⲥ | tasbeha.org hymn library (Ⲁ̀ⲅⲓⲟⲥ ⲟ̀ Ⲑⲉⲟⲥ), which also gives Ⲓⲥⲭⲩⲣⲟⲥ and Ⲁ̀ⲑⲁⲛⲁⲧⲟⲥ | Greek ἅγιος / ἰσχυρός / ἀθάνατος sung in Coptic letters |
+| The Creed | ⲧⲉⲛⲛⲁϩϯ · ⲡⲓⲡⲁⲛⲧⲟⲕⲣⲁⲧⲱⲣ · ⲗⲟⲅⲟⲥ | tasbeha.org Orthodox Creed — it opens **Ⲧⲉⲛⲛⲁϩϯ ⲉ̀Ⲟⲩⲛⲟⲩϯ** ("*We* believe", not "I believe") and spells Ⲡⲓⲡⲁⲛⲧⲟⲕⲣⲁⲧⲱⲣ | Wiktionary Bohairic ⲛⲁϩϯ "to believe / faith"; ⲗⲟⲅⲟⲥ "the Word" (B/S/A) |
+| The Holy Offering | ⲱⲓⲕ · ⲁⲫⲟⲧ · ⲥⲛⲟϥ | the bread, the cup and the blood of the Liturgy | Wiktionary Bohairic ⲱⲓⲕ "bread"; ⲁⲫⲟⲧ "cup" (Sahidic ⲁⲡⲟⲧ); ⲥⲛⲟϥ "blood" |
+| In the Church | ⲟⲩⲏⲃ · ⲇⲓⲁⲕⲱⲛ · ⲗⲁⲟⲥ | the three who stand in every liturgy | Wiktionary Bohairic ⲟⲩⲏⲃ "priest"; ⲇⲓⲁⲕⲱⲛ "deacon, servant" (m.); ⲗⲁⲟⲥ "people" |
+| Pascha & Resurrection | ⲡⲁⲥⲭⲁ · ⲁⲛⲁⲥⲧⲁⲥⲓⲥ · ϣⲁⲓ | the Pascha, the Resurrection, the feast | Wiktionary ⲡⲁⲥⲭⲁ "Pascha/Passover"; ⲁⲛⲁⲥⲧⲁⲥⲓⲥ "resurrection" (f., Bohairic); ϣⲁⲓ "feast" (Bohairic) |
+| Prayer & Repentance | ϣⲗⲏⲗ · ⲙⲉⲧⲁⲛⲟⲓⲁ · ⲛⲟⲃⲓ | ϣⲗⲏⲗ is the deacon's call to pray ("Eshlil") in the Liturgy of St Basil | Wiktionary ϣⲗⲏⲗ "to pray"; ⲙⲉⲧⲁⲛⲟⲓⲁ "repentance, contrition" (f.); ⲛⲟⲃⲓ "sin" (Bohairic, /ˈnɔvi/) |
+| Soul & Body | ⲣⲱⲙⲓ · ⲯⲩⲭⲏ · ⲥⲱⲙⲁ | soul and body as named in the prayers | Wiktionary Bohairic ⲣⲱⲙⲓ "man, human"; ⲯⲩⲭⲏ "soul"; ⲥⲱⲙⲁ "body" (m.) |
+| Words of the Hours | ⲯⲁⲗⲙⲟⲥ · ⲧⲱⲃϩ · ⲟⲩⲛⲟⲩ | the vocabulary of the Agpeya; ⲧⲱⲃϩ is the liturgical "Tovh em-Ep̀chois" ("Pray to the Lord") | Wiktionary ⲯⲁⲗⲙⲟⲥ "psalm" (m.); Bohairic ⲧⲱⲃϩ "to pray, entreat"; ⲟⲩⲛⲟⲩ "hour" (f.) |
+
+**Deliberately NOT added, and why:**
+- **The Coptic month names.** The Bohairic tradition is genuinely split — Baramhat is given both
+  as Ⲡⲁⲣⲉⲙϩⲁⲧ (Wikipedia's Bohairic column) and as ⲫⲁⲙⲉⲛⲱⲑ "Phamenoth" in Church usage, and
+  Parmoute likewise (Ⲫⲁⲣⲙⲟⲩⲑⲓ / ⲫⲁⲣⲙⲟⲑⲓ). Encoding one form would teach a spelling the learner's
+  own parish may not use. Revisit once the owner picks the house forms.
+- **ⲛⲏⲥⲧⲓⲁ "fast"** and **ⲡⲣⲟⲥⲉⲩⲭⲏ "prayer"** — no dictionary entry found to serve as the second
+  witness, so ϣⲗⲏⲗ / ⲧⲱⲃϩ are taught for "pray" instead.
+- **ⲟⲩⲱⲧ "one, only"** (from the Creed's "one God") — no dictionary entry found; dropped.
+
+**Notes on the data:** words are stored WITHOUT the djinkim (◌̀ U+0300), matching the existing
+dataset — the published Trisagion is written Ⲁ̀ⲅⲓⲟⲥ ⲟ̀ Ⲑⲉⲟⲥ, and the mark is omitted here on
+purpose so the spelling tiles stay one-glyph-per-tile. The word ϣⲁⲓ "feast" is keyed
+`shai-feast`, because audio clips are keyed by letter id **and** word id in one namespace and
+`shai` is the letter Ϣ (a regression test now guards that). Pronunciations follow the
+Greco-Bohairic rules already encoded in `alphabet.ts` / `combinations.ts` — so ⲙⲉⲧⲁⲛⲟⲓⲁ is
+"me-TA-nee-a" (Greek-loan ⲟⲓ = "ee"), ⲛⲟⲃⲓ is "NO-vi" (Ⲃ = v), ⲟⲩⲏⲃ is "oo-EEB" (Ⲃ = b closing
+a syllable), and ⲓⲥⲭⲩⲣⲟⲥ is "ees-SHEE-ros" (Ⲭ = "sh" before ⲩ).
+
+**TODO(verify-content):** owner (Coptic Orthodox) review of the 27 glosses + pronunciations.
+Exact spellings are locked in `__tests__/learn/alphabet.test.ts`, so any correction is a single
+guarded edit.
+
+Sources for this pass: [WikiTranslate — Lord's Prayer/Coptic](https://wikitranslate.org/wiki/Lord's_Prayer/Coptic) ·
+[tasbeha.org hymn library — Trisagion](https://tasbeha.org/hymn_library/view/1836) ·
+[tasbeha.org hymn library — The Orthodox Creed](https://tasbeha.org/hymn_library/view/32) ·
+[Liturgy of St Basil (CopticChurch.net)](https://www.copticchurch.net/pdf/liturgy/liturgy_of_st_basil.pdf) ·
+[Wiktionary Coptic entries](https://en.wiktionary.org/wiki/Category:Coptic_lemmas) ·
+[Wikipedia — Coptic calendar](https://en.wikipedia.org/wiki/Coptic_calendar) (months, not adopted) ·
+[tasbeha.org — Coptic month pronunciation thread](https://tasbeha.org/community/discussion/12394/coptic-month-pronunciation) (months, not adopted)

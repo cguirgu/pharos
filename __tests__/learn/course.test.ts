@@ -16,6 +16,7 @@ import {
 } from '../../src/domain/learn/course';
 import { ALPHABET } from '../../src/domain/learn/alphabet';
 import { WORDS } from '../../src/domain/learn/words';
+import { PRAYER_UNITS } from '../../src/domain/learn/milestones';
 
 describe('course structure', () => {
   test('alphabet unit + sounds bridge + word units; alphabet covers all 32 letters; word lessons cover all words', () => {
@@ -23,6 +24,8 @@ describe('course structure', () => {
     expect(UNITS.map((u) => u.id)).toEqual([
       'alphabet', 'sounds', 'words', 'names', 'liturgy', 'praise',
       'faith', 'light', 'saints', 'kingdom', 'praises2', 'responses', 'feasts',
+      'lords-prayer', 'trisagion', 'creed', 'offering', 'church', 'pascha',
+      'repentance', 'soul', 'hours',
     ]);
     const alphaIds = LESSONS.filter((l) => l.unitId === 'alphabet').flatMap((l) => l.itemIds);
     expect(alphaIds).toEqual(ALPHABET.map((l) => l.id));
@@ -38,6 +41,25 @@ describe('course structure', () => {
     expect(LESSONS.filter((l) => l.unitId === 'sounds')).toHaveLength(3);
     const newVocab = ['faith', 'light', 'saints', 'kingdom', 'praises2', 'responses', 'feasts'];
     expect(LESSONS.filter((l) => newVocab.includes(l.unitId))).toHaveLength(7);
+  });
+
+  test('the prayer-text units come last and add 10 levels', () => {
+    const ids = UNITS.map((u) => u.id);
+    // Vocabulary first, then the units drawn from the prayers themselves.
+    expect(ids.indexOf('feasts')).toBeLessThan(ids.indexOf('lords-prayer'));
+    // The Lord's Prayer is 6 words = 2 levels; the other 8 units are 1 each.
+    expect(LESSONS.filter((l) => l.unitId === 'lords-prayer')).toHaveLength(2);
+    const prayerUnits = PRAYER_UNITS.filter((u) => u !== 'lords-prayer');
+    expect(LESSONS.filter((l) => prayerUnits.includes(l.unitId))).toHaveLength(8);
+    expect(LESSONS.filter((l) => PRAYER_UNITS.includes(l.unitId))).toHaveLength(10);
+  });
+
+  test('the Trisagion is multi-word, so it is read and translated — never spelled', () => {
+    const trisagion = LESSONS.filter((l) => l.unitId === 'trisagion').flatMap(lessonExercises);
+    expect(trisagion.length).toBeGreaterThan(0);
+    expect(trisagion.some((e) => e.kind === 'word-spell')).toBe(false);
+    expect(trisagion.some((e) => e.kind === 'word-read')).toBe(true);
+    expect(trisagion.some((e) => e.kind === 'word-meaning')).toBe(true);
   });
 
   test('every unit declares a glyph and its lessons exist', () => {

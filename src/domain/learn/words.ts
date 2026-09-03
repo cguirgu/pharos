@@ -169,6 +169,124 @@ export const WORD_UNITS: readonly WordUnit[] = [
       { id: 'piouro', coptic: 'ⲡⲓⲟⲩⲣⲟ', translit: 'piouro', sound: 'pi-OO-ro', english: 'the King' },
     ],
   },
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // The prayers of the Church (9 units · 27 words). Every word below is taken
+  // from a text the Church actually prays — the Lord's Prayer, the Trisagion,
+  // the Creed, the Liturgy — or is the plain Bohairic lemma for a word of the
+  // faith. Each spelling was cross-checked against BOTH an independent
+  // Coptic-script witness of the prayer text AND the Bohairic dictionary entry
+  // for the word (see docs/CONTENT-SOURCES.md).
+  // TODO(verify-content): owner (Coptic Orthodox) review of glosses + sounds.
+  // ───────────────────────────────────────────────────────────────────────────
+  {
+    id: 'lords-prayer',
+    title: 'The Lord’s Prayer',
+    subtitle: 'The words the Lord Himself taught us to pray.',
+    glyph: 'Ⲛ',
+    // Straight from ⲡⲉⲛⲓⲱⲧ ⲉⲧϧⲉⲛ ⲛⲓⲫⲏⲟⲩⲓ — “Our Father who art in the heavens”.
+    // ⲧⲉⲕⲙⲉⲧⲟⲩⲣⲟ and ⲡⲉⲛⲱⲓⲕ re-use ⲙⲉⲧⲟⲩⲣⲟ / ⲱⲓⲕ from the other levels.
+    words: [
+      { id: 'peniot', coptic: 'ⲡⲉⲛⲓⲱⲧ', translit: 'peniōt', sound: 'pen-YOHT', english: 'Our Father' },
+      { id: 'nifioui', coptic: 'ⲛⲓⲫⲏⲟⲩⲓ', translit: 'nifēoui', sound: 'ni-FEE-oo-i', english: 'the heavens' },
+      { id: 'pekran', coptic: 'ⲡⲉⲕⲣⲁⲛ', translit: 'pekran', sound: 'pek-RAN', english: 'Your name' },
+      { id: 'tekmetouro', coptic: 'ⲧⲉⲕⲙⲉⲧⲟⲩⲣⲟ', translit: 'tekmetouro', sound: 'tek-met-OO-ro', english: 'Your kingdom' },
+      { id: 'penoik', coptic: 'ⲡⲉⲛⲱⲓⲕ', translit: 'penōik', sound: 'pen-OH-ik', english: 'our bread' },
+      { id: 'pikahi', coptic: 'ⲡⲓⲕⲁϩⲓ', translit: 'pikahi', sound: 'pi-KA-hi', english: 'the earth' },
+    ],
+  },
+  {
+    id: 'trisagion',
+    title: 'The Trisagion',
+    subtitle: 'The three holies — sung at every prayer of the Church.',
+    glyph: 'Ⲝ',
+    // Greek sung in Coptic letters. Multi-word, so these are read and
+    // translated rather than spelled from tiles.
+    words: [
+      { id: 'agios-o-theos', coptic: 'ⲁⲅⲓⲟⲥ ⲟ ⲑⲉⲟⲥ', translit: 'agios o theos', sound: 'a-GHEE-os o THE-os', english: 'Holy God' },
+      { id: 'agios-ischyros', coptic: 'ⲁⲅⲓⲟⲥ ⲓⲥⲭⲩⲣⲟⲥ', translit: 'agios ischyros', sound: 'a-GHEE-os ees-SHEE-ros', english: 'Holy Mighty' },
+      { id: 'agios-athanatos', coptic: 'ⲁⲅⲓⲟⲥ ⲁⲑⲁⲛⲁⲧⲟⲥ', translit: 'agios athanatos', sound: 'a-GHEE-os a-tha-NA-tos', english: 'Holy Immortal' },
+    ],
+  },
+  {
+    id: 'creed',
+    title: 'The Creed',
+    subtitle: 'What the Church confesses together.',
+    glyph: 'Ⲟ',
+    words: [
+      { id: 'tennahti', coptic: 'ⲧⲉⲛⲛⲁϩϯ', translit: 'tennahti', sound: 'ten-NAH-ti', english: 'We believe' },
+      { id: 'pipantokrator', coptic: 'ⲡⲓⲡⲁⲛⲧⲟⲕⲣⲁⲧⲱⲣ', translit: 'pipantokratōr', sound: 'pi-pan-to-KRA-tor', english: 'the Almighty' },
+      { id: 'logos', coptic: 'ⲗⲟⲅⲟⲥ', translit: 'logos', sound: 'LO-ghos', english: 'the Word' },
+    ],
+  },
+  {
+    id: 'offering',
+    title: 'The Holy Offering',
+    subtitle: 'What is set upon the altar.',
+    glyph: 'Ⲡ',
+    words: [
+      { id: 'oik', coptic: 'ⲱⲓⲕ', translit: 'ōik', sound: 'OH-ik', english: 'bread' },
+      { id: 'afot', coptic: 'ⲁⲫⲟⲧ', translit: 'afot', sound: 'A-fot', english: 'cup' },
+      { id: 'esnof', coptic: 'ⲥⲛⲟϥ', translit: 'esnof', sound: 'es-NOF', english: 'blood' },
+    ],
+  },
+  {
+    id: 'church',
+    title: 'In the Church',
+    subtitle: 'Those who stand and serve before the Lord.',
+    glyph: 'Ⲣ',
+    words: [
+      { id: 'ouib', coptic: 'ⲟⲩⲏⲃ', translit: 'ouēb', sound: 'oo-EEB', english: 'priest' },
+      { id: 'diakon', coptic: 'ⲇⲓⲁⲕⲱⲛ', translit: 'diakōn', sound: 'di-a-KOHN', english: 'deacon / servant' },
+      { id: 'laos', coptic: 'ⲗⲁⲟⲥ', translit: 'laos', sound: 'LA-os', english: 'people' },
+    ],
+  },
+  {
+    id: 'pascha',
+    title: 'Pascha & Resurrection',
+    subtitle: 'The passing-over and the rising of the Lord.',
+    glyph: 'Ⲥ',
+    words: [
+      { id: 'paskha', coptic: 'ⲡⲁⲥⲭⲁ', translit: 'paskha', sound: 'PAS-kha', english: 'Pascha — the Passover' },
+      { id: 'anastasis', coptic: 'ⲁⲛⲁⲥⲧⲁⲥⲓⲥ', translit: 'anastasis', sound: 'a-NA-sta-sis', english: 'resurrection' },
+      // NB: id is `shai-feast`, not `shai` — that key belongs to the LETTER Ϣ
+      // (audio clips are keyed by letter/word id in the same namespace).
+      { id: 'shai-feast', coptic: 'ϣⲁⲓ', translit: 'shai', sound: 'SHA-i', english: 'feast' },
+    ],
+  },
+  {
+    id: 'repentance',
+    title: 'Prayer & Repentance',
+    subtitle: 'The turning back of the heart.',
+    glyph: 'Ⲧ',
+    words: [
+      { id: 'eshlil', coptic: 'ϣⲗⲏⲗ', translit: 'eshlēl', sound: 'esh-LEEL', english: 'to pray' },
+      { id: 'metania', coptic: 'ⲙⲉⲧⲁⲛⲟⲓⲁ', translit: 'metanoia', sound: 'me-TA-nee-a', english: 'repentance' },
+      { id: 'novi', coptic: 'ⲛⲟⲃⲓ', translit: 'nobi', sound: 'NO-vi', english: 'sin' },
+    ],
+  },
+  {
+    id: 'soul',
+    title: 'Soul & Body',
+    subtitle: 'What the Lord made, and what He saves.',
+    glyph: 'Ⲫ',
+    words: [
+      { id: 'romi', coptic: 'ⲣⲱⲙⲓ', translit: 'rōmi', sound: 'ROH-mi', english: 'man / human being' },
+      { id: 'psyshi', coptic: 'ⲯⲩⲭⲏ', translit: 'psychē', sound: 'psee-SHEE', english: 'soul' },
+      { id: 'soma', coptic: 'ⲥⲱⲙⲁ', translit: 'sōma', sound: 'SOH-ma', english: 'body' },
+    ],
+  },
+  {
+    id: 'hours',
+    title: 'Words of the Hours',
+    subtitle: 'The vocabulary of the Agpeya.',
+    glyph: 'Ⲱ',
+    words: [
+      { id: 'psalmos', coptic: 'ⲯⲁⲗⲙⲟⲥ', translit: 'psalmos', sound: 'PSAL-mos', english: 'psalm' },
+      { id: 'tovh', coptic: 'ⲧⲱⲃϩ', translit: 'tōbh', sound: 'TOHVH', english: 'to entreat / pray to' },
+      { id: 'ounou', coptic: 'ⲟⲩⲛⲟⲩ', translit: 'ounou', sound: 'oo-NOO', english: 'hour' },
+    ],
+  },
 ];
 
 /** Flat list of every word, across all units. */
