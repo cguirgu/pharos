@@ -40,17 +40,75 @@ eas build -p ios --profile development   # install the resulting build on your d
 ```
 
 ## Production build → TestFlight → App Store
+
+### 0. Before every build
 ```bash
-eas build -p ios --profile production    # cloud build; EAS manages certs/signing
-eas submit -p ios --latest               # upload to App Store Connect
+npx expo-doctor        # must be 18/18
+npm run typecheck      # clean
+npm test               # green
 ```
-Then in App Store Connect: distribute to **TestFlight** (beta), and when ready,
-**submit for review**.
+Bump `version` in `app.config.ts` if the current one is already **released** on
+the App Store — App Store Connect will not take a new TestFlight build under a
+version string that has already shipped. The build *number* auto-increments on
+its own (`eas.json` → `appVersionSource: "remote"` + `autoIncrement: true`), so
+only the marketing version is a manual decision.
+
+### 1. Authenticate
+```bash
+npx eas-cli login                        # or export EXPO_TOKEN=…
+npx eas-cli whoami                       # confirm
+```
+
+### 2. Apple credentials — App Store Connect API key (preferred)
+Create in App Store Connect → **Users and Access → Integrations → App Store
+Connect API**, role **App Manager**. The `.p8` downloads **once**.
+
+Upload it to EAS so it is stored server-side and neither the file nor its ids
+ever live in this repo:
+```bash
+npx eas-cli credentials -p ios           # → App Store Connect API Key → set up
+```
+`.gitignore` blocks `*.p8` / `AuthKey_*.p8` as a backstop. **Never commit the key.**
+
+### 3. Build and submit
+```bash
+npx eas-cli build -p ios --profile production      # cloud build, EAS signs it
+npx eas-cli submit -p ios --latest                 # upload to App Store Connect
+```
+Processing on Apple's side takes ~5–20 min. Then in App Store Connect →
+**TestFlight**: answer the export-compliance question (the answer is **no**, see
+`ITSAppUsesNonExemptEncryption` in `app.config.ts`), add testers, and distribute.
+
+### Useful while waiting
+```bash
+npx eas-cli build:list --platform ios --limit 5
+npx eas-cli build:view <build-id>
+npx eas-cli env:list                     # what secrets the build will bake in
+```
+
+---
+
+## ⚠️ Release gate — the Faith course
+
+`FAITH_SHOW_UNREVIEWED` in `src/content/flags.ts` is currently **`true`**.
+
+That is correct for **TestFlight**: every card in the theology course ships
+`reviewed: false`, and the point of the beta is for the project owner to read
+the content in situ and sign it off. It is **not** correct for the App Store.
+
+**Before submitting for App Store review**, either:
+- flip each approved card to `reviewed: true` in `src/domain/faith/units/*.ts`, or
+- set `FAITH_SHOW_UNREVIEWED = false`, which withholds every unreviewed card.
+
+Shipping to the public with the flag `true` and cards unreviewed would put
+unvetted doctrinal text in front of users. See `docs/CONTENT-SOURCES.md` →
+*Faith — the theology course*. Review **Unit IV (Chalcedon)** and **Unit IX
+(What We Hold in Silence)** first.
 
 ## Store assets / checklist (before review)
 - [ ] Final `ios.bundleIdentifier`, app name, `version`.
 - [ ] App icon + splash (generate from `PharosSeal`, gold beacon on `#0C1020`).
-- [ ] Bundle **Noto Sans Coptic** `.ttf` (ornament glyphs).
+- [x] Bundle **Noto Sans Coptic** `.ttf` — ships via `@expo-google-fonts/noto-sans-coptic`, loaded in `app/_layout.tsx`.
 - [ ] Screenshots (6.7"/6.5"/5.5" or current required sizes).
 - [ ] Description, keywords, support URL, **privacy policy URL**.
 - [ ] App Privacy: no tracking and no analytics SDK. The app is local-first, but it
