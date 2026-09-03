@@ -15,6 +15,11 @@ export const FATHERS: FaithUnit = {
   title: 'Our Fathers',
   subtitle: 'The men the whole Church inherited from Egypt.',
   glyph: 'Ⲫ',
+  essentials: [
+    'Say what St. Athanasius and St. Cyril each defended, and why the Creed carries Alexandria’s fingerprints.',
+    'Explain the difference between what St. Anthony began and what St. Pachomius began.',
+    'Recognise that monasticism is Egypt’s gift to the whole Church, not an import.',
+  ],
   creedClauseId: 'coming',
   lessons: [
     {
@@ -45,6 +50,7 @@ export const FATHERS: FaithUnit = {
         {
           id: 'fathers-1-q1',
           kind: 'choice',
+          tier: 'support',
           prompt: 'How many times was St. Athanasius exiled?',
           answer: 'Five',
           options: ['Five', 'Twice', 'Once', 'Nine'],
@@ -56,6 +62,7 @@ export const FATHERS: FaithUnit = {
         {
           id: 'fathers-1-q2',
           kind: 'truefalse',
+          tier: 'support',
           prompt: 'St. Athanasius was the twentieth Pope of Alexandria.',
           answer: 'True',
           options: [],
@@ -86,6 +93,7 @@ export const FATHERS: FaithUnit = {
         {
           id: 'fathers-2-q1',
           kind: 'choice',
+          tier: 'core',
           prompt: 'St. Cyril of Alexandria is chiefly remembered for defending:',
           answer: 'The unity of Christ, and the title Theotokos',
           options: [
@@ -139,6 +147,7 @@ export const FATHERS: FaithUnit = {
         {
           id: 'fathers-3-q1',
           kind: 'choice',
+          tier: 'core',
           prompt: 'What distinguishes St. Pachomius from St. Anthony?',
           answer: 'He founded monasticism lived in community, under a written rule',
           options: [
@@ -153,19 +162,9 @@ export const FATHERS: FaithUnit = {
           reviewed: false,
         },
         {
-          id: 'fathers-3-q2',
-          kind: 'choice',
-          prompt: 'Which monastic settlement did Abba Macarius the Egyptian establish?',
-          answer: 'Scetis',
-          options: ['Scetis', 'Nitria', 'Tabennesi', 'Kellia'],
-          explain:
-            'Macarius established Scetis; Abba Amoun founded Nitria and Kellia; Pachomius founded Tabennesi.',
-          sources: ['lacopts-monasticism'],
-          reviewed: false,
-        },
-        {
           id: 'fathers-3-q3',
           kind: 'standing',
+          tier: 'core',
           prompt: 'The year St. Anthony the Great departed.',
           answer: 'Still disputed',
           explain:
@@ -176,6 +175,7 @@ export const FATHERS: FaithUnit = {
         {
           id: 'fathers-3-q4',
           kind: 'truefalse',
+          tier: 'core',
           prompt: 'Christian monasticism began in Egypt.',
           answer: 'True',
           options: [],

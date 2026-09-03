@@ -12,6 +12,10 @@ export const TODAY: FaithUnit = {
   title: 'The Church Now',
   subtitle: 'How a Pope is chosen, and the three who shaped the century.',
   glyph: 'Ⲧ',
+  essentials: [
+    'Explain how a Pope of Alexandria is chosen, and what the method is meant to say.',
+    'Recognise that the Church’s life did not stop with the fathers — it continues in living memory.',
+  ],
   creedClauseId: 'spirit',
   lessons: [
     {
@@ -43,6 +47,7 @@ export const TODAY: FaithUnit = {
         {
           id: 'today-1-q1',
           kind: 'choice',
+          tier: 'core',
           prompt: 'How is the final choice of a Pope of Alexandria made?',
           answer: 'By lot — a blindfolded child draws a name from a chalice on the altar',
           options: [
@@ -59,11 +64,17 @@ export const TODAY: FaithUnit = {
         {
           id: 'today-1-q2',
           kind: 'choice',
-          prompt: 'Pope Tawadros II is which successor of St. Mark?',
-          answer: 'The 118th',
-          options: ['The 118th', 'The 116th', 'The 117th', 'The 120th'],
+          tier: 'core',
+          prompt: 'Pope Tawadros II is counted the 118th Pope of Alexandria. What does that number actually assert?',
+          answer: 'That the line of laying-on of hands from St. Mark has never been broken',
+          options: [
+            'That the line of laying-on of hands from St. Mark has never been broken',
+            'That 118 popes have been canonised as saints',
+            'That the Church has existed for 118 generations',
+            'That 118 councils have been held at Alexandria',
+          ],
           explain:
-            'Kyrillos VI was the 116th and Shenouda III the 117th. Tawadros II was enthroned in November 2012.',
+            'This is Unit I\'s claim about apostolicity, still being counted. The Church numbers its popes because the number is the claim: one continuous succession of hands from the evangelist who founded the see to the man who holds it now.',
           sources: ['copticorthodox-tawadros', 'lacopts-tawadros'],
           reviewed: false,
         },
@@ -96,19 +107,9 @@ export const TODAY: FaithUnit = {
       ],
       questions: [
         {
-          id: 'today-2-q1',
-          kind: 'choice',
-          prompt: 'The apparitions at Zeitoun began in:',
-          answer: '1968',
-          options: ['1968', '1948', '1981', '2011'],
-          explain:
-            'From 2 April 1968, over the domes of the Church of the Virgin at Zeitoun in Cairo, during the papacy of Kyrillos VI.',
-          sources: ['synax-zeitoun'],
-          reviewed: false,
-        },
-        {
           id: 'today-2-q2',
           kind: 'truefalse',
+          tier: 'core',
           prompt: 'Only Coptic Christians reported seeing the apparitions at Zeitoun.',
           answer: 'False',
           options: [],
@@ -147,28 +148,13 @@ export const TODAY: FaithUnit = {
         {
           id: 'today-3-q1',
           kind: 'order',
+          tier: 'support',
           prompt: 'Put these three Popes of Alexandria in order.',
           answer: 'Kyrillos VI → Shenouda III → Tawadros II',
           options: ['Kyrillos VI', 'Shenouda III', 'Tawadros II'],
           explain:
             'The 116th, 117th and 118th successors of St. Mark: 1959–1971, from 1971, and from 2012.',
           sources: ['lacopts-kyrillos', 'copticorthodox-tawadros'],
-          reviewed: false,
-        },
-        {
-          id: 'today-3-q2',
-          kind: 'choice',
-          prompt: 'Which book of Pope Shenouda III sets out the Coptic teaching on Christ’s nature?',
-          answer: 'The Nature of Christ',
-          options: [
-            'The Nature of Christ',
-            'On the Incarnation',
-            'The Life of Antony',
-            'The Koinonia',
-          ],
-          explain:
-            '*On the Incarnation* is St. Athanasius; *The Life of Antony* is also attributed to him. *The Nature of Christ* is Pope Shenouda’s.',
-          sources: ['shenouda-nature-of-christ'],
           reviewed: false,
         },
       ],

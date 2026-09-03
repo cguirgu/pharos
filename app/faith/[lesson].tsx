@@ -33,6 +33,7 @@ import {
 import { faithMilestonesEarnedBy, type FaithMilestone } from '../../src/domain/faith/milestones';
 import { clausesUnsealedBy, type SealedClause } from '../../src/domain/faith/creed';
 import { citations } from '../../src/domain/faith/sources';
+import { isReviewLesson } from '../../src/domain/faith/review';
 import { correctFeedback, wrongFeedback } from '../../src/platform/haptics';
 import { playCorrectSound, playWrongSound, playCompleteSound, playCrownSound } from '../../src/platform/sound';
 
@@ -80,6 +81,7 @@ export default function FaithLessonPlayer() {
 
   const current = queueRef.current[pos]!;
   const isTeach = current.kind === 'teach';
+  const isReview = isReviewLesson(lesson.id);
   const isOrder = current.kind === 'order';
   const answered = outcome !== null;
 
@@ -162,6 +164,10 @@ export default function FaithLessonPlayer() {
           <Tally total={total} filled={clearedCount} />
           <Caps size={9} ls={1.4} color={t.ink3}>{copy.faith.of(clearedCount, total)}</Caps>
         </View>
+
+        {isReview && clearedCount === 0 ? (
+          <Text style={styles.reviewIntro}>{copy.faith.reviewIntro}</Text>
+        ) : null}
 
         {isTeach ? (
           <>
@@ -432,6 +438,7 @@ const makeStyles = (t: Palette) => StyleSheet.create({
     marginTop: 18,
   },
   pullText: { fontFamily: font.bodyItalic, fontSize: 16, lineHeight: 24, color: t.goldHi },
+  reviewIntro: { fontFamily: font.bodyItalic, fontSize: 14, lineHeight: 21, color: t.ink2, marginTop: 14 },
   // question
   stage: { marginTop: 26 },
   questionText: { fontFamily: font.display, fontSize: 26, lineHeight: 34, color: t.parch, textAlign: 'center' },

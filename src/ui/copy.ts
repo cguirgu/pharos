@@ -448,6 +448,11 @@ export const copy = {
     clauseUnsealed: 'Clause of the Creed unsealed',
     tryAgain: 'Try again',
     done: 'Done',
+    // teaching design
+    essentialsLabel: 'By the end of this unit you can',
+    reviewLabel: 'Recollection',
+    reviewIntro:
+      'No new material. These are the things worth keeping, asked again now that time has passed \u2014 recalling them is what makes them stay.',
     // the creed seal
     creedHead: 'The Creed, clause by clause',
     creedTitle: 'The Creed',

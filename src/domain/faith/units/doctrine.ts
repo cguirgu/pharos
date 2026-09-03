@@ -15,6 +15,12 @@ export const DOCTRINE: FaithUnit = {
   title: 'What We Believe',
   subtitle: 'The Incarnation, salvation, the saints, and the seven mysteries.',
   glyph: 'Ⲑ',
+  essentials: [
+    'Give the reason the Word became flesh, in the shape St. Athanasius argues it.',
+    'Say what we inherit from Adam in Orthodox teaching — and what we do not.',
+    'Distinguish asking a saint to pray from what Christ alone does.',
+    'Name what the Church affirms about the Eucharist and the departed, and where it deliberately stops.',
+  ],
   creedClauseId: 'crucified',
   lessons: [
     {
@@ -45,6 +51,7 @@ export const DOCTRINE: FaithUnit = {
         {
           id: 'doctrine-1-q1',
           kind: 'choice',
+          tier: 'support',
           prompt: 'Who wrote *On the Incarnation*?',
           answer: 'St. Athanasius the Apostolic',
           options: [
@@ -61,6 +68,7 @@ export const DOCTRINE: FaithUnit = {
         {
           id: 'doctrine-1-q2',
           kind: 'truefalse',
+          tier: 'core',
           prompt: 'Coptic teaching holds that the Word took a body in order to destroy death from within it.',
           answer: 'True',
           options: [],
@@ -99,6 +107,7 @@ export const DOCTRINE: FaithUnit = {
         {
           id: 'doctrine-2-q1',
           kind: 'choice',
+          tier: 'core',
           prompt: 'What does Coptic Orthodox teaching say we inherit from Adam?',
           answer: 'Corruption — mortality and a nature inclined to sin',
           options: [
@@ -115,6 +124,7 @@ export const DOCTRINE: FaithUnit = {
         {
           id: 'doctrine-2-q2',
           kind: 'truefalse',
+          tier: 'core',
           prompt: 'In Coptic teaching, a person is saved by their parents’ faith and baptism.',
           answer: 'False',
           options: [],
@@ -153,6 +163,7 @@ export const DOCTRINE: FaithUnit = {
         {
           id: 'doctrine-3-q1',
           kind: 'choice',
+          tier: 'core',
           prompt: 'The Coptic Church distinguishes the saints’ intercession from Christ’s advocacy. The saints’ is:',
           answer: 'Supplicatory — prayer offered on our behalf',
           options: [
@@ -169,6 +180,7 @@ export const DOCTRINE: FaithUnit = {
         {
           id: 'doctrine-3-q2',
           kind: 'truefalse',
+          tier: 'core',
           prompt: 'Asking St. Mary to intercede is, in Coptic teaching, a form of worship offered to her.',
           answer: 'False',
           options: [],
@@ -207,6 +219,7 @@ export const DOCTRINE: FaithUnit = {
         {
           id: 'doctrine-4-q1',
           kind: 'choice',
+          tier: 'support',
           prompt: 'Which of these is NOT one of the seven mysteries?',
           answer: 'Pilgrimage',
           options: ['Pilgrimage', 'Chrismation', 'Anointing of the Sick', 'Priesthood'],
@@ -218,6 +231,7 @@ export const DOCTRINE: FaithUnit = {
         {
           id: 'doctrine-4-q2',
           kind: 'choice',
+          tier: 'core',
           prompt: 'Why does the Church prefer the word “mystery” to “sacrament”?',
           answer: 'Because an invisible grace is really given, not merely signified',
           options: [
@@ -262,6 +276,7 @@ export const DOCTRINE: FaithUnit = {
         {
           id: 'doctrine-5-q1',
           kind: 'standing',
+          tier: 'core',
           prompt: 'How the bread and wine become the Body and Blood.',
           answer: 'Held in mystery',
           explain:
@@ -272,6 +287,7 @@ export const DOCTRINE: FaithUnit = {
         {
           id: 'doctrine-5-q2',
           kind: 'choice',
+          tier: 'core',
           prompt: 'The Coptic Church’s position on purgatory is that:',
           answer: 'It rejects it — purging happens through repentance in this life',
           options: [
@@ -288,6 +304,7 @@ export const DOCTRINE: FaithUnit = {
         {
           id: 'doctrine-5-q3',
           kind: 'truefalse',
+          tier: 'core',
           prompt: 'Because it rejects purgatory, the Coptic Church does not pray for the dead.',
           answer: 'False',
           options: [],

@@ -16,6 +16,11 @@ export const MARTYRS: FaithUnit = {
   title: 'The Church of the Martyrs',
   subtitle: 'A calendar that counts from a catastrophe, and never stopped counting.',
   glyph: 'Ⲧ',
+  essentials: [
+    'Explain why the Coptic calendar begins at a catastrophe, and what that choice says about the Church.',
+    'Say how the Church keeps the martyrs present — not as history, but as the shape of every year.',
+    'Recognise that the record of martyrs is still open in our own lifetime.',
+  ],
   creedClauseId: 'unseen',
   lessons: [
     {
@@ -47,22 +52,24 @@ export const MARTYRS: FaithUnit = {
         {
           id: 'martyrs-1-q1',
           kind: 'choice',
-          prompt: 'The Coptic calendar counts its years from 284 AD because that year:',
-          answer: 'Diocletian became emperor and began his persecution',
+          tier: 'core',
+          prompt: 'Most calendars count from something good. The Coptic calendar counts from the accession of Diocletian — the emperor who persecuted it hardest. What does that choice say?',
+          answer: 'That the Church refuses to forget the year that nearly ended it, and measures everything from it',
           options: [
-            'Diocletian became emperor and began his persecution',
-            'St. Mark was martyred in Alexandria',
-            'The Council of Nicaea was convened',
-            'The School of Alexandria was founded',
+            'That the Church refuses to forget the year that nearly ended it, and measures everything from it',
+            'That the Church had no calendar of its own before 284',
+            'That Diocletian was later honoured by the Church',
+            'That the persecution ended in that year',
           ],
           explain:
-            'The Church took the year of its deepest suffering as year one — Anno Martyrum, the Era of the Martyrs.',
+            'Year one is the worst year. The Church calls it the Era of the Martyrs — *Anno Martyrum* — and rather than bury the memory it made it the thing every other date is counted from. This is the single most revealing fact about how the Coptic Church holds its own history.',
           sources: ['copticchurch-calendar'],
           reviewed: false,
         },
         {
           id: 'martyrs-1-q2',
           kind: 'choice',
+          tier: 'support',
           prompt: 'What is the first month of the Coptic year called, and roughly when does it begin?',
           answer: 'Thout, around 11 September',
           options: [
@@ -79,6 +86,7 @@ export const MARTYRS: FaithUnit = {
         {
           id: 'martyrs-1-q3',
           kind: 'truefalse',
+          tier: 'support',
           prompt: 'The abbreviation AM after a Coptic year stands for Anno Martyrum — the Year of the Martyrs.',
           answer: 'True',
           options: [],
@@ -115,6 +123,7 @@ export const MARTYRS: FaithUnit = {
         {
           id: 'martyrs-2-q1',
           kind: 'choice',
+          tier: 'core',
           prompt: 'The Synaxarium is:',
           answer: 'The Church’s book of the saints, read day by day through the year',
           options: [
@@ -159,6 +168,7 @@ export const MARTYRS: FaithUnit = {
         {
           id: 'martyrs-3-q1',
           kind: 'choice',
+          tier: 'core',
           prompt: 'What was distinctive about the twenty-first martyr of Libya?',
           answer: 'He was Ghanaian, and chose to stand with the Copts',
           options: [
@@ -175,6 +185,7 @@ export const MARTYRS: FaithUnit = {
         {
           id: 'martyrs-3-q2',
           kind: 'truefalse',
+          tier: 'core',
           prompt: 'The Coptic Synaxarium is closed — no new saints have been added in modern times.',
           answer: 'False',
           options: [],

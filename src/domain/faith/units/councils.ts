@@ -14,6 +14,11 @@ export const COUNCILS: FaithUnit = {
   title: 'The Three Councils',
   subtitle: 'Nicaea, Constantinople, Ephesus — and the Creed they left behind.',
   glyph: 'Ⲅ',
+  essentials: [
+    'Say what question each of the three councils answered, and what was at stake if it had gone the other way.',
+    'Explain why the Coptic Church receives three ecumenical councils and no more.',
+    'Say what *Theotokos* guards — and why the argument over St. Mary’s title is really an argument about Christ.',
+  ],
   creedClauseId: 'son',
   lessons: [
     {
@@ -53,6 +58,7 @@ export const COUNCILS: FaithUnit = {
         {
           id: 'councils-1-q1',
           kind: 'choice',
+          tier: 'core',
           prompt: 'What did Arius teach that the Council of Nicaea condemned?',
           answer: 'That the Son is a creature, made rather than begotten',
           options: [
@@ -67,19 +73,9 @@ export const COUNCILS: FaithUnit = {
           reviewed: false,
         },
         {
-          id: 'councils-1-q2',
-          kind: 'choice',
-          prompt: 'How many bishops does tradition count at Nicaea?',
-          answer: '318',
-          options: ['318', '150', '200', '630'],
-          explain:
-            '318 at Nicaea, 150 at Constantinople, about 200 at Ephesus — three numbers worth keeping straight.',
-          sources: ['lacopts-brief-history'],
-          reviewed: false,
-        },
-        {
           id: 'councils-1-q3',
           kind: 'truefalse',
+          tier: 'support',
           prompt: 'St. Athanasius was already Pope of Alexandria when he attended the Council of Nicaea.',
           answer: 'False',
           options: [],
@@ -127,6 +123,7 @@ export const COUNCILS: FaithUnit = {
         {
           id: 'councils-2-q1',
           kind: 'choice',
+          tier: 'core',
           prompt: 'The Council of Constantinople (381) was called mainly to answer which error?',
           answer: 'That the Holy Spirit is created',
           options: [
@@ -143,6 +140,7 @@ export const COUNCILS: FaithUnit = {
         {
           id: 'councils-2-q2',
           kind: 'choice',
+          tier: 'core',
           prompt: 'The Coptic Church rejects the Filioque. What does that word add to the Creed?',
           answer: '“and the Son” — to the Spirit’s procession',
           options: [
@@ -159,6 +157,7 @@ export const COUNCILS: FaithUnit = {
         {
           id: 'councils-2-q3',
           kind: 'truefalse',
+          tier: 'support',
           prompt: 'A Pope of Alexandria helped write the Creed’s clause on the Holy Spirit.',
           answer: 'True',
           options: [],
@@ -207,22 +206,24 @@ export const COUNCILS: FaithUnit = {
         {
           id: 'councils-3-q1',
           kind: 'choice',
-          prompt: 'Theotokos means:',
-          answer: 'The one who gave birth to God',
+          tier: 'core',
+          prompt: 'Nestorius refused to call St. Mary *Theotokos* — the one who gave birth to God. Why did the Church treat that as an attack on Christ rather than on His mother?',
+          answer: 'Because splitting her titles splits Him — one born of Mary, another not',
           options: [
-            'The one who gave birth to God',
-            'The ever-virgin',
-            'The handmaid of the Lord',
-            'The queen of heaven',
+            'Because splitting her titles splits Him — one born of Mary, another not',
+            'Because it denied that she remained a virgin',
+            'Because it lowered her below the apostles',
+            'Because it questioned whether she was present at the Cross',
           ],
           explain:
-            'The title guards the unity of Christ: the child she bore was God the Word incarnate, not a man later joined to God.',
+            'This is the hinge of Unit III, and Unit IV will turn on it again. The objection sounds like it is about her. It is about Him: if the one she bore is not God the Word incarnate, then there are two Christs — and only one of them saves. Guarding her title is how the Church guards His unity.',
           sources: ['lacopts-ephesus'],
           reviewed: false,
         },
         {
           id: 'councils-3-q2',
           kind: 'order',
+          tier: 'core',
           prompt: 'Put the three councils the Coptic Church receives in order.',
           answer: 'Nicaea 325 → Constantinople 381 → Ephesus 431',
           options: ['Nicaea 325', 'Constantinople 381', 'Ephesus 431'],
@@ -234,6 +235,7 @@ export const COUNCILS: FaithUnit = {
         {
           id: 'councils-3-q3',
           kind: 'choice',
+          tier: 'core',
           prompt: 'How many ecumenical councils does the Coptic Orthodox Church receive?',
           answer: 'Three',
           options: ['Three', 'Four', 'Seven', 'Twenty-one'],
@@ -245,6 +247,7 @@ export const COUNCILS: FaithUnit = {
         {
           id: 'councils-3-q4',
           kind: 'truefalse',
+          tier: 'support',
           prompt: 'St. Cyril of Alexandria presided at the Council of Ephesus.',
           answer: 'True',
           options: [],

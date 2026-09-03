@@ -22,6 +22,11 @@ export const MYSTERY: FaithUnit = {
   title: 'What We Hold in Silence',
   subtitle: 'What is defined, what is left as mystery, and what is genuinely still open.',
   glyph: 'Ⲱ',
+  essentials: [
+    'Sort a real question into defined, held in mystery, or still disputed — and say why the three differ.',
+    'Recognise that an undefined question is not an unimportant one.',
+    'Hold the Church’s certainties and its open questions without confusing either for the other.',
+  ],
   creedClauseId: 'resurrection',
   lessons: [
     {
@@ -52,6 +57,7 @@ export const MYSTERY: FaithUnit = {
         {
           id: 'mystery-1-q1',
           kind: 'standing',
+          tier: 'core',
           prompt: 'That St. Mary is rightly called Theotokos.',
           answer: 'Defined',
           explain: 'Defined at Ephesus in 431 — one of the three councils the Coptic Church receives.',
@@ -61,6 +67,7 @@ export const MYSTERY: FaithUnit = {
         {
           id: 'mystery-1-q2',
           kind: 'standing',
+          tier: 'core',
           prompt: 'How the bread and wine become the Body and Blood of Christ.',
           answer: 'Held in mystery',
           explain:
@@ -71,6 +78,7 @@ export const MYSTERY: FaithUnit = {
         {
           id: 'mystery-1-q3',
           kind: 'standing',
+          tier: 'core',
           prompt: 'That the Son is of one essence with the Father.',
           answer: 'Defined',
           explain: 'Nicaea, 325. The council was convened precisely because Arius had denied it.',
@@ -107,6 +115,7 @@ export const MYSTERY: FaithUnit = {
         {
           id: 'mystery-2-q1',
           kind: 'standing',
+          tier: 'support',
           prompt: 'The year St. Pachomius departed.',
           answer: 'Still disputed',
           explain:
@@ -117,6 +126,7 @@ export const MYSTERY: FaithUnit = {
         {
           id: 'mystery-2-q2',
           kind: 'truefalse',
+          tier: 'core',
           prompt: 'Coptic sources agree on a single year for St. Mark’s arrival in Alexandria.',
           answer: 'False',
           options: [],
@@ -155,6 +165,7 @@ export const MYSTERY: FaithUnit = {
         {
           id: 'mystery-3-q1',
           kind: 'standing',
+          tier: 'core',
           prompt: 'Whether the Eastern and Oriental Orthodox are in full communion.',
           answer: 'Still disputed',
           explain:
@@ -165,6 +176,7 @@ export const MYSTERY: FaithUnit = {
         {
           id: 'mystery-3-q2',
           kind: 'standing',
+          tier: 'core',
           prompt: 'That the natures of Christ are united without confusion, change, division, or separation.',
           answer: 'Defined',
           explain:
@@ -175,6 +187,7 @@ export const MYSTERY: FaithUnit = {
         {
           id: 'mystery-3-q3',
           kind: 'standing',
+          tier: 'core',
           prompt: 'Whether Christ has one will or two.',
           answer: 'Still disputed',
           explain:
@@ -212,6 +225,7 @@ export const MYSTERY: FaithUnit = {
         {
           id: 'mystery-4-q1',
           kind: 'choice',
+          tier: 'core',
           prompt: 'Which best describes the Coptic Orthodox approach to questions it has not defined?',
           answer: 'It affirms what is revealed and declines to speculate beyond it',
           options: [
@@ -228,6 +242,7 @@ export const MYSTERY: FaithUnit = {
         {
           id: 'mystery-4-q2',
           kind: 'truefalse',
+          tier: 'core',
           prompt: 'A question the Church has left undefined is a question the Church considers unimportant.',
           answer: 'False',
           options: [],
