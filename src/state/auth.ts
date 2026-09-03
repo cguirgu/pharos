@@ -19,6 +19,7 @@ import { useReading } from './reading';
 import { useOffices } from './offices';
 import { useHighlights } from './highlights';
 import { useLearning } from './learning';
+import { useFaith } from './faith';
 import { useOnboarding } from './onboarding';
 import { useClock } from './clock';
 import type { OnboardingAnswers } from '../domain/onboarding';
@@ -47,6 +48,7 @@ async function loadAccountData(accountId: string): Promise<void> {
   await safe('offices', () => useOffices.getState().load(accountId));
   await safe('highlights', () => useHighlights.getState().load(accountId));
   await safe('learn', () => useLearning.getState().load(accountId));
+  await safe('faith', () => useFaith.getState().load(accountId));
   await safe('onboarding', () => useOnboarding.getState().load(accountId));
 }
 
@@ -58,6 +60,7 @@ function clearAccountData(): void {
   useOffices.getState().clear();
   useHighlights.getState().clear();
   useLearning.getState().clear();
+  useFaith.getState().clear();
   useOnboarding.getState().clear();
 }
 

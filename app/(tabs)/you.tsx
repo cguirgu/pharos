@@ -19,8 +19,11 @@ import { useJournal } from '../../src/state/journal';
 import { useReading } from '../../src/state/reading';
 import { useOffices } from '../../src/state/offices';
 import { useLearning } from '../../src/state/learning';
+import { useFaith } from '../../src/state/faith';
 import { isLessonPassed } from '../../src/domain/learn/course';
 import { proficiencyFor } from '../../src/domain/learn/proficiency';
+import { isLessonPassed as isFaithLessonPassed } from '../../src/domain/faith/course';
+import { faithRankFor } from '../../src/domain/faith/ranks';
 import { useClock } from '../../src/state/clock';
 import { getRepo, GUEST_ACCOUNT_ID } from '../../src/db/repo';
 import { exportAndShare } from '../../src/platform/exportData';
@@ -87,6 +90,8 @@ export default function YouScreen() {
   // Subscribe to the stable `lessons` record (not a Set-returning selector — that loops).
   const learnLessons = useLearning((s) => s.lessons);
   const copticRank = proficiencyFor(Object.values(learnLessons).filter(isLessonPassed).length);
+  const faithLessons = useFaith((s) => s.lessons);
+  const faithRank = faithRankFor(Object.values(faithLessons).filter(isFaithLessonPassed).length);
 
   return (
     <Page>
@@ -99,6 +104,9 @@ export default function YouScreen() {
           </Caps>
           <Caps size={9} ls={1.4} color={t.gold} style={{ marginTop: 4 }}>
             ☩ {copticRank.rank.title}
+          </Caps>
+          <Caps size={9} ls={1.4} color={t.gold} style={{ marginTop: 2 }}>
+            ☩ {faithRank.rank.title}
           </Caps>
         </View>
 

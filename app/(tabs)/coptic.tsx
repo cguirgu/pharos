@@ -61,7 +61,7 @@ export default function LearnScreen() {
           <Stat value={String(level)} label={copy.learn.level} />
           <Stat value={String(xp)} label={copy.learn.xp} />
           <Stat value={`☩${crowns.size}`} label={copy.learn.crownsLabel} />
-          <Stat value={String(milestonesEarned)} label={copy.learn.milestonesLabel} onPress={() => router.push('/learn/milestones')} />
+          <Stat value={String(milestonesEarned)} label={copy.learn.milestonesLabel} onPress={() => router.push('/coptic/milestones')} />
         </View>
 
         {/* the path */}
@@ -92,7 +92,7 @@ export default function LearnScreen() {
                   <Pressable
                     key={lesson.id}
                     disabled={!unlocked}
-                    onPress={() => router.push(`/learn/${lesson.id}`)}
+                    onPress={() => router.push(`/coptic/${lesson.id}`)}
                     style={[styles.row, !unlocked && { opacity: 0.4 }]}
                   >
                     <Mark state={markState} />
