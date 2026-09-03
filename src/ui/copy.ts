@@ -3,7 +3,11 @@
  * (CLAUDE.md "Voice": warm, literary, liturgical; never gamified or guilt-driven).
  */
 export const copy = {
-  tabs: { today: 'Today', hours: 'Hours', word: 'Word', learn: 'Learn', rule: 'Rule', you: 'You', saved: 'Saved' },
+  // `questions` is labelled "Ask": the NavLedger gives every tab an equal
+  // column and Caps does not truncate, so a nine-letter label would collide with
+  // the divider on a small screen. "Ask" also echoes the "Ask others" action on
+  // a selected passage, which is where most questions will begin.
+  tabs: { today: 'Today', hours: 'Hours', word: 'Word', learn: 'Learn', rule: 'Rule', you: 'You', saved: 'Saved', questions: 'Ask' },
 
   errorBoundary: {
     title: 'A moment of stillness',
@@ -169,6 +173,21 @@ export const copy = {
 
   you: {
     head: 'You',
+    // The You tab is a hub, not a settings wall: the first thing under your name
+    // is what you have made, and preferences sit below it.
+    sections: {
+      keep: 'What you keep',
+      voice: 'Your voice',
+      prefs: 'Preferences',
+      book: 'The book',
+      account: 'Your account',
+    },
+    practiceCount: (n: number) => `${n} ${n === 1 ? 'practice' : 'practices'}`,
+    entryCount: (n: number) => `${n} ${n === 1 ? 'entry' : 'entries'}`,
+    markCount: (n: number) => `${n} ${n === 1 ? 'mark' : 'marks'}`,
+    ruleRow: 'Your rule of life',
+    journalRow: 'The journal',
+    savedRow: 'Saved',
     guestLabel: 'Guest',
     guestHint: 'Your rule, journal, and progress stay on this device only. An account begins its own rule, kept in sync across devices; what you tend as a guest remains here.',
     guestCta: 'Create an account',
@@ -412,5 +431,129 @@ export const copy = {
     bodyPlaceholder: 'One ruled line is enough…',
     empty: 'No entries yet.',
     words: (n: number) => `${n} ${n === 1 ? 'word' : 'words'}`,
+  },
+
+  questions: {
+    head: 'Asked and answered',
+    title: 'Questions',
+    threadTitle: 'The question',
+    missing: 'That question is no longer here.',
+
+    kicker: 'Bring your question',
+    prompt: 'No question is too small for the household of faith.',
+    ask: 'Ask the others →',
+    count: (n: number) => `${n} ${n === 1 ? 'question' : 'questions'}`,
+    askedCount: (n: number) => `${n} asked`,
+
+    filters: [
+      { key: 'unanswered', label: 'Unanswered' },
+      { key: 'recent', label: 'Recent' },
+      { key: 'mine', label: 'Yours' },
+    ],
+
+    asked: 'Asked',
+    replies: (n: number) => (n === 1 ? 'reply' : 'replies'),
+    answers: (n: number) => `${n} ${n === 1 ? 'answer' : 'answers'}`,
+    noAnswers: 'No one has answered yet. Yours could be the first.',
+    empty: {
+      all: 'Nothing has been asked yet. Open the conversation.',
+      unanswered: 'Every question here has met with an answer.',
+      recent: 'Nothing has been asked yet.',
+      mine: 'You have not asked anything yet. A question is a good beginning.',
+    },
+
+    // authorship
+    anonymous: 'Anonymous',
+    askAnonymously: 'Ask without my name',
+    postingAs: (name: string) => `This will be signed ${name}.`,
+    postingAnonymously: 'This will be signed Anonymous. Your name is not stored with it.',
+    anonymousLocked: 'How this was signed cannot be changed once it is asked.',
+
+    // composer
+    cancel: 'Cancel',
+    composeTitle: 'A question',
+    composeCitedTitle: 'Ask about this passage',
+    titlePlaceholder: 'What would you like to ask?',
+    bodySection: 'In your own words',
+    bodyPlaceholder: 'Say a little more, if it helps…',
+    topicsSection: 'What is it about',
+    appearance: 'How it will appear',
+    post: 'Ask it',
+    tooShort: 'A few more words, so others can answer well.',
+
+    // citation
+    removeCitation: 'Ask without the passage',
+    openSource: 'Read it in place →',
+
+    // answering
+    answerPlaceholder: 'Answer in a line or two…',
+    postAnswer: 'Give an answer',
+    reply: 'Reply',
+    replyPlaceholder: 'A word in reply…',
+    postReply: 'Add the reply',
+    replyingTo: 'Replying',
+    cancelReply: 'Never mind',
+
+    // affirmations — the lozenge, not a like
+    affirm: 'Affirm',
+    affirmed: 'Affirmed',
+
+    // best answer
+    best: 'Marked best',
+    markBest: 'Mark as best',
+    unmarkBest: 'Unmark best',
+
+    // report + moderation
+    report: 'Report',
+    reportTitle: 'Report this?',
+    reportBody: 'A steward will read it. Nothing is removed before then.',
+    reportConfirm: 'Report it',
+    reportCancel: 'Never mind',
+    underReview: 'Under review — only you can see this.',
+
+    // share
+    share: 'Share',
+    shareSubject: 'A question worth asking',
+    shareMessage: (title: string, url: string) => `“${title}”\n\nAsked on Coptic Daily. Open it here:\n${url}`,
+
+    // the selection tooltip
+    askSelection: 'Ask others',
+    saveSelection: 'Save',
+
+    // notices
+    newAnswers: (n: number) => `${n} new ${n === 1 ? 'answer' : 'answers'} to what you asked`,
+
+    // guests
+    guestHint: 'Sign in to ask a question or answer one. Reading is open to everyone.',
+    guestCta: 'Create an account',
+
+    // the local-only phase, stated plainly rather than implied
+    localNotice:
+      'These questions live on this device for now, alongside sample conversations. The wider circle opens when accounts are joined.',
+
+    // rows on the You hub
+    yourQuestions: 'Your questions',
+    anonymousDefault: 'Ask without my name by default',
+
+    topics: {
+      scripture: 'Scripture',
+      liturgy: 'Liturgy',
+      prayer: 'Prayer',
+      fasting: 'Fasting',
+      saints: 'Saints',
+      doctrine: 'Doctrine',
+      sacraments: 'Sacraments',
+      'church-life': 'Church life',
+      practical: 'Practical',
+    },
+
+    reasons: {
+      'off-topic': 'Off topic',
+      disrespectful: 'Disrespectful',
+      'doctrinal-error': 'Doctrinal error',
+      spam: 'Spam',
+      'private-info': 'Private information',
+      other: 'Something else',
+    },
   },
 } as const;

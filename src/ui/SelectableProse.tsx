@@ -1,6 +1,8 @@
 /**
- * SelectableProse — renders prose as selectable text and floats a small
- * "Save selection" tooltip over the passage while a range is selected.
+ * SelectableProse — renders prose as selectable text and floats a small tooltip
+ * over the passage while a range is selected: "Save" it as a mark, and (where a
+ * caller offers it) "Ask others" about it, which carries the selection into the
+ * Questions composer as a citation.
  *
  * Capture technique: a read-only multiline <TextInput>. Unlike <Text selectable>,
  * a TextInput exposes the live selection to JS via onSelectionChange
@@ -33,7 +35,7 @@ import { font, type Palette } from './theme';
 import { useStyles, useThemeColors } from './useStyles';
 import { Btn, Caps } from './components';
 import { copy } from './copy';
-import { keptFeedback } from '../platform/haptics';
+import { keptFeedback, tapFeedback } from '../platform/haptics';
 import type { RawSelection } from '../domain/highlights';
 import { isEmptySelection } from '../domain/highlights';
 
@@ -41,17 +43,30 @@ export function SelectableProse({
   text,
   textStyle,
   onSaveSelection,
+  onAskSelection,
   onPressWhole,
-  saveLabel = copy.highlights.saveSelection,
+  saveLabel,
+  askLabel = copy.questions.askSelection,
   washColor,
 }: {
   text: string;
   textStyle?: StyleProp<TextStyle>;
-  /** Called with the raw {start, end} when the reader taps the tooltip. */
-  onSaveSelection: (sel: RawSelection) => void;
+  /**
+   * Save the selection as a mark. Optional because not every corpus can be
+   * marked — the Agpeya has no highlight anchor yet, so its reader offers only
+   * "Ask others" and the pill renders a single cell.
+   */
+  onSaveSelection?: (sel: RawSelection) => void;
+  /**
+   * Optional second action. When given, the pill splits into two cells; when
+   * omitted the tooltip is exactly what it always was, so existing callers are
+   * untouched.
+   */
+  onAskSelection?: (sel: RawSelection) => void;
   /** Optional whole-unit fallback (e.g. save the entire verse/life). */
   onPressWhole?: () => void;
   saveLabel?: string;
+  askLabel?: string;
   /** Wash behind the text when this unit already carries a highlight. */
   washColor?: string;
 }) {
@@ -82,25 +97,53 @@ export function SelectableProse({
     blurTimer.current = setTimeout(() => setActive(false), 150);
   };
 
-  const handleSave = () => {
+  // Both actions go through one runner so the blur-grace timer and the
+  // empty-selection guard can never drift apart between them.
+  const run = (fire: (sel: RawSelection) => void, haptic: () => void) => {
     cancelClear();
     const sel = selRef.current;
     setActive(false);
     if (!isEmptySelection(sel)) {
-      keptFeedback(); // a passage saved — the same finite pulse
-      onSaveSelection(sel);
+      haptic();
+      fire(sel);
     }
   };
 
+  // A passage saved — the same finite pulse as keeping a practice.
+  const handleSave = () => {
+    if (onSaveSelection) run(onSaveSelection, keptFeedback);
+  };
+  // Asking keeps nothing yet, it opens a screen — so a lighter tick.
+  const handleAsk = () => {
+    if (onAskSelection) run(onAskSelection, tapFeedback);
+  };
+
+  // "Save selection" is too wide once the pill carries two cells.
+  const save = saveLabel ?? (onAskSelection ? copy.questions.saveSelection : copy.highlights.saveSelection);
+
   return (
     <View style={washColor ? { backgroundColor: washColor } : undefined}>
-      {active ? (
+      {active && (onSaveSelection || onAskSelection) ? (
         <View style={styles.tipLayer} pointerEvents="box-none">
-          <Pressable style={styles.tip} onPress={handleSave} hitSlop={8}>
-            <Caps size={9} ls={1.6} color={t.onGold}>
-              {saveLabel}
-            </Caps>
-          </Pressable>
+          <View style={styles.tip}>
+            {onSaveSelection ? (
+              <Pressable style={styles.tipCell} onPress={handleSave} hitSlop={8}>
+                <Caps size={9} ls={1.6} color={t.onGold}>
+                  {save}
+                </Caps>
+              </Pressable>
+            ) : null}
+            {onAskSelection ? (
+              <>
+                {onSaveSelection ? <View style={styles.tipDivide} /> : null}
+                <Pressable style={styles.tipCell} onPress={handleAsk} hitSlop={8}>
+                  <Caps size={9} ls={1.6} color={t.onGold}>
+                    {askLabel}
+                  </Caps>
+                </Pressable>
+              </>
+            ) : null}
+          </View>
           <View style={styles.tipCaret} />
         </View>
       ) : null}
@@ -133,7 +176,11 @@ const makeStyles = (t: Palette) => StyleSheet.create({
   save: { marginTop: 10 },
   // Floating tooltip pill, centred just above the passage.
   tipLayer: { position: 'absolute', top: -36, left: 0, right: 0, alignItems: 'center', zIndex: 20 },
-  tip: { backgroundColor: t.gold, borderWidth: 1, borderColor: t.goldHi, paddingVertical: 7, paddingHorizontal: 14 },
+  // A ruled division on a gold field — the same engraved logic as Segmented's
+  // divided bar. Padding sits on each cell so the divider runs full height.
+  tip: { flexDirection: 'row', alignItems: 'stretch', backgroundColor: t.gold, borderWidth: 1, borderColor: t.goldHi },
+  tipCell: { paddingVertical: 7, paddingHorizontal: 14, alignItems: 'center', justifyContent: 'center' },
+  tipDivide: { width: 1, backgroundColor: t.onGold, opacity: 0.35 },
   tipCaret: {
     width: 10,
     height: 10,

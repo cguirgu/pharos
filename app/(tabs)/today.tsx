@@ -187,6 +187,11 @@ export default function TodayScreen() {
                 </Pressable>
               );
             })}
+            <Pressable style={styles.ruleLink} onPress={() => router.push('/rule')} hitSlop={6}>
+              <Caps size={9} ls={1.6} color={t.ink3}>
+                {copy.today.toRule} →
+              </Caps>
+            </Pressable>
           </>
         ) : active.length === 0 ? (
           <View style={styles.empty}>
@@ -194,7 +199,7 @@ export default function TodayScreen() {
             <Caps color={t.ink3} size={11} ls={1.4} style={{ textAlign: 'center', marginVertical: 14 }}>
               {copy.today.emptyBody}
             </Caps>
-            <Btn kind="solid" onPress={() => router.navigate('/(tabs)/rule' as never)}>
+            <Btn kind="solid" onPress={() => router.push('/rule')}>
               {copy.today.toRule}
             </Btn>
           </View>
@@ -245,6 +250,7 @@ const makeStyles = (t: Palette) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
   rowName: { fontFamily: font.display, fontSize: 21, color: t.parch },
   empty: { alignItems: 'center', paddingVertical: 40, paddingHorizontal: 10 },
+  ruleLink: { paddingTop: 14, paddingBottom: 4, alignItems: 'flex-end' },
   emptyTitle: { fontFamily: font.displayItalic, fontSize: 26, color: t.ink2, textAlign: 'center' },
   resting: { marginTop: 30, opacity: 0.6 },
   restingRule: { height: 1, backgroundColor: t.ruleDim, marginVertical: 8 },

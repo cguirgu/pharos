@@ -12,7 +12,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getSupabase } from '../lib/supabase';
 import { matchesHighlightFilter } from './repo';
 import { safeJsonParse } from './json';
-import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter, AccountExport } from './repo';
+import type { Repo, Account, JourneyStage, JournalEntry, ReadingEnrollment, LearnLessonRecord, HighlightFilter, AccountExport, QuestionRepoFilter } from './repo';
+// `Report` is aliased: the DOM lib declares a global of that name.
+import type { Answer, Question, Report as QuestionReport, Vote } from '../domain/questions';
 import type { Practice, PracticeLog } from '../domain/rule';
 import type { CivilDate } from '../domain/coptic';
 import type { Highlight } from '../domain/highlights';
@@ -341,6 +343,67 @@ export class SupabaseRepo implements Repo {
     unwrap(await this.sb.from('profiles').delete().eq('id', accountId));
   }
 
+  // --- questions ---
+  // Deliberately NOT implemented in this phase. Questions are the app's first
+  // cross-account data and need tables, a public-read RLS policy, and a public
+  // identity surface that do not exist in Postgres yet.
+  //
+  // Reads degrade quietly to empty (the feed shows its empty state); writes
+  // THROW. That split is intentional — a silent no-op write would make a lost
+  // question look like a posted one.
+  private warnedQuestions = false;
+  private questionsUnavailable(): void {
+    if (this.warnedQuestions) return;
+    this.warnedQuestions = true;
+    console.warn('[questions] not backed by Supabase yet — running local-only. See docs/BACKEND-SETUP.md.');
+  }
+  private questionsWriteUnsupported(): never {
+    throw new Error('[questions] cannot be saved to the backend yet (local-only phase).');
+  }
+
+  async listQuestions(_filter?: QuestionRepoFilter): Promise<Question[]> {
+    this.questionsUnavailable();
+    return [];
+  }
+  async getQuestion(_id: string): Promise<Question | null> {
+    this.questionsUnavailable();
+    return null;
+  }
+  async upsertQuestion(_q: Question): Promise<void> {
+    this.questionsWriteUnsupported();
+  }
+  async deleteQuestion(_id: string): Promise<void> {
+    this.questionsWriteUnsupported();
+  }
+  async listAnswers(_questionId: string): Promise<Answer[]> {
+    this.questionsUnavailable();
+    return [];
+  }
+  async listAnswersByAuthor(_authorAccountId: string): Promise<Answer[]> {
+    this.questionsUnavailable();
+    return [];
+  }
+  async upsertAnswer(_a: Answer): Promise<void> {
+    this.questionsWriteUnsupported();
+  }
+  async deleteAnswer(_id: string): Promise<void> {
+    this.questionsWriteUnsupported();
+  }
+  async listVotes(_voterAccountId: string): Promise<Vote[]> {
+    this.questionsUnavailable();
+    return [];
+  }
+  async setVote(_vote: Vote, _on: boolean): Promise<void> {
+    this.questionsWriteUnsupported();
+  }
+  async listReports(_targetId: string): Promise<QuestionReport[]> {
+    this.questionsUnavailable();
+    return [];
+  }
+  async addReport(_report: QuestionReport): Promise<void> {
+    this.questionsWriteUnsupported();
+  }
+
   async exportAccountData(accountId: string): Promise<AccountExport> {
     const acc = await this.getAccount(accountId);
     const readingPlans = (unwrap(await this.sb.from('reading_plans').select('*').eq('account_id', accountId)) ?? []).map(
@@ -372,6 +435,9 @@ export class SupabaseRepo implements Repo {
       readingProgress,
       officeLogs,
       learn: await this.listLearn(accountId),
+      // Not yet backed here — see the questions section below.
+      questions: [],
+      answers: [],
     };
   }
 

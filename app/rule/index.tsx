@@ -1,12 +1,16 @@
 /**
  * Rule — the rule of life (from RuleOverview3). Practices grouped by category
  * with rubricated headers; add a practice; lighten the rule.
+ *
+ * Reached from the You hub and from Today, rather than from the tab bar: the
+ * daily gesture is keeping the practices (that lives on Today), while this is
+ * where the rule is shaped, which is an occasional visit.
  */
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
-import { Folio, Rubric, Caps, Btn } from '../../src/ui/components';
+import { SheetBar, Rubric, Caps, Btn } from '../../src/ui/components';
 import { LightenSheet } from '../../src/ui/LightenSheet';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
@@ -32,7 +36,16 @@ export default function RuleScreen() {
 
   return (
     <Page>
-      <Folio left={copy.rule.head} right={`${active.length} practices`} glyph="ⲣ" />
+      <SheetBar
+        left={copy.tabs.you}
+        title={copy.rule.head}
+        onBack={() => router.back()}
+        right={
+          <Caps size={8.5} ls={1.4} color={t.ink3}>
+            {copy.you.practiceCount(active.length)}
+          </Caps>
+        }
+      />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
         <Rubric>{copy.rule.head}</Rubric>
         <Text style={styles.title}>{copy.rule.title}</Text>

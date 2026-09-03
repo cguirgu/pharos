@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Page } from '../../src/ui/Page';
-import { Folio, Rubric, Caps, Chip } from '../../src/ui/components';
+import { SheetBar, Rubric, Caps, Chip } from '../../src/ui/components';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
@@ -31,7 +31,16 @@ export default function SavedScreen() {
 
   return (
     <Page>
-      <Folio left={copy.highlights.head} right={copy.highlights.count(total)} glyph="Ⲋ" />
+      <SheetBar
+        left={copy.tabs.you}
+        title={copy.highlights.title}
+        onBack={() => router.back()}
+        right={
+          <Caps size={8.5} ls={1.4} color={t.ink3}>
+            {copy.highlights.count(total)}
+          </Caps>
+        }
+      />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
         <TextInput
           value={query}

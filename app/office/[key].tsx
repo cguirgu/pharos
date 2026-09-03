@@ -2,6 +2,10 @@
  * Office reader — the full Agpeya hour (from coptic.io, used with permission).
  * Sections can be expanded/minimised, and a side drawer jumps to any section.
  * "Mark this hour kept" records the office prayed.
+ *
+ * Prose blocks are selectable, so a line of the hour can be asked about: the
+ * Agpeya is where most questions about praying actually arise. Its citation is
+ * an OfficeAnchor (hour → section → block → offsets) from @domain/citation.
  */
 import React, { useMemo, useRef, useState } from 'react';
 import { View, Text, ScrollView, Pressable, Modal, StyleSheet } from 'react-native';
@@ -15,6 +19,9 @@ import { useClock } from '../../src/state/clock';
 import { useOffices } from '../../src/state/offices';
 import { keptFeedback } from '../../src/platform/haptics';
 import { getAgpeyaHour, officeByKey, type OfficeKey, type AgpeyaBlock } from '../../src/domain/content/agpeya';
+import { SelectableProse } from '../../src/ui/SelectableProse';
+import { citationFromSelection, encodeCitation } from '../../src/domain/citation';
+import type { RawSelection } from '../../src/domain/highlights';
 
 export default function OfficeReader() {
   const router = useRouter();
@@ -35,6 +42,18 @@ export default function OfficeReader() {
   const [drawer, setDrawer] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const yPos = useRef<Record<string, number>>({});
+
+  // A selected line of the hour → the Questions composer, cited.
+  const onAskBlock = (sectionId: string, sectionTitle: string, blockIndex: number, text: string, sel: RawSelection) => {
+    const citation = citationFromSelection(
+      { source: 'office', officeKey, sectionId, blockIndex },
+      sel,
+      text,
+      { officeName: office?.name, sectionTitle },
+    );
+    if (!citation) return;
+    router.push({ pathname: '/questions/compose', params: { cite: encodeCitation(citation) } });
+  };
 
   const allOpen = useMemo(() => sections.every((s) => expanded[s.id]), [sections, expanded]);
 
@@ -80,7 +99,13 @@ export default function OfficeReader() {
               <View style={styles.leader} />
               <Text style={styles.chevron}>{expanded[s.id] ? '▾' : '▸'}</Text>
             </Pressable>
-            {expanded[s.id] ? <View style={{ paddingBottom: 6 }}>{s.blocks.map((b, i) => <Block key={i} block={b} />)}</View> : null}
+            {expanded[s.id] ? <View style={{ paddingBottom: 6 }}>{s.blocks.map((b, i) => (
+                  <Block
+                    key={i}
+                    block={b}
+                    onAsk={(text, sel) => onAskBlock(s.id, s.title, i, text, sel)}
+                  />
+                ))}</View> : null}
           </View>
         ))}
 
@@ -121,13 +146,26 @@ export default function OfficeReader() {
   );
 }
 
-function Block({ block }: { block: AgpeyaBlock }) {
+function Block({
+  block,
+  onAsk,
+}: {
+  block: AgpeyaBlock;
+  onAsk: (text: string, sel: RawSelection) => void;
+}) {
   const styles = useStyles(makeStyles);
   const t = useThemeColors();
+
+  // Rubrics are stage directions, not prayer — nothing to ask about, so they
+  // stay plain text.
   if (block.type === 'rubric') {
     return <Text style={styles.rubric}>{block.text}</Text>;
   }
+
   if (block.type === 'verses') {
+    // Verses are joined for selection so a span can cross verse boundaries, the
+    // way it reads when prayed. The numbers stay visible above.
+    const joined = block.verses.map((v) => `${v.n} ${v.text}`).join('\n');
     return (
       <View style={{ marginVertical: 6 }}>
         {block.reference ? (
@@ -135,16 +173,16 @@ function Block({ block }: { block: AgpeyaBlock }) {
             {block.reference}
           </Caps>
         ) : null}
-        {block.verses.map((v) => (
-          <Text key={v.n} style={styles.verse}>
-            <Text style={styles.vnum}>{v.n} </Text>
-            {v.text}
-          </Text>
-        ))}
+        {/* Ask only: the Agpeya has no highlight anchor, so there is nothing
+            honest for "Save" to do here yet. */}
+        <SelectableProse text={joined} textStyle={styles.verse} onAskSelection={(sel) => onAsk(joined, sel)} />
       </View>
     );
   }
-  return <Text style={styles.text}>{block.text}</Text>;
+
+  return (
+    <SelectableProse text={block.text} textStyle={styles.text} onAskSelection={(sel) => onAsk(block.text, sel)} />
+  );
 }
 
 const makeStyles = (t: Palette) => StyleSheet.create({

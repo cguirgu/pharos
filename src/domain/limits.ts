@@ -17,6 +17,16 @@ export const LIMITS = {
   highlightNote: 2_000,
   /** Highlight user tag/label. */
   highlightLabel: 60,
+  /** Question title — one line, the thing being asked. */
+  questionTitle: 140,
+  /** Question body — the fuller wording. */
+  questionBody: 4_000,
+  /** An answer or a reply. */
+  answerBody: 4_000,
+  /** The passage text carried into a question as its citation. */
+  citationSnapshot: 600,
+  /** Optional note attached to a report. */
+  reportNote: 500,
 } as const;
 
 /** Trim to `max` characters (no-op for shorter strings; tolerant of undefined). */

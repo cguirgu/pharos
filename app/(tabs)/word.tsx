@@ -24,6 +24,7 @@ import { readingsOn, readingLabel } from '../../src/domain/content';
 import { BOOKS, type BookId } from '../../src/domain/content/bible';
 import { primarySaint } from '../../src/domain/content/synaxarium';
 import { synaxariumAnchorFromSelection, type RawSelection } from '../../src/domain/highlights';
+import { citationFromSelection, encodeCitation } from '../../src/domain/citation';
 import { fetchTodaysReadings } from '../../src/platform/katameros';
 
 // Base reading-prose metrics; the user's text-size setting scales these.
@@ -85,6 +86,20 @@ export default function WordScreen() {
 
   // Drag-select within the life → save just that span. The whole-life save is
   // kept as a secondary fallback (onPressWhole) when nothing is selected.
+  const onAskLifeSelection = (sel: RawSelection) => {
+    if (!saint?.life) return;
+    const citation = citationFromSelection(
+      { source: 'synaxarium', copticMonth: info.coptic.month, copticDay: info.coptic.day },
+      sel,
+      saint.life,
+      { saintName: saint.name },
+    );
+    if (!citation) return;
+    // The label the screen already builds is richer than the domain's default.
+    const cite = { ...citation, referenceLabel: refLabelFor(saint.name) };
+    router.push({ pathname: '/questions/compose', params: { cite: encodeCitation(cite) } });
+  };
+
   const onSaveLifeSelection = async (sel: RawSelection) => {
     if (!saint) return;
     const built = synaxariumAnchorFromSelection(
@@ -243,6 +258,7 @@ export default function WordScreen() {
                 text={saint.life}
                 textStyle={[styles.saintLife, { fontSize: LIFE_FONT * scale, lineHeight: LIFE_LINE * scale }]}
                 onSaveSelection={onSaveLifeSelection}
+                onAskSelection={onAskLifeSelection}
                 onPressWhole={markWholeSaint}
               />
             </View>

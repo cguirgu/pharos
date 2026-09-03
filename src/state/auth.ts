@@ -18,6 +18,8 @@ import { useJournal } from './journal';
 import { useReading } from './reading';
 import { useOffices } from './offices';
 import { useHighlights } from './highlights';
+import { useQuestions } from './questions';
+import { useQuestionThread } from './questionThread';
 import { useLearning } from './learning';
 import { useOnboarding } from './onboarding';
 import { useClock } from './clock';
@@ -47,6 +49,12 @@ async function loadAccountData(accountId: string): Promise<void> {
   await safe('offices', () => useOffices.getState().load(accountId));
   await safe('highlights', () => useHighlights.getState().load(accountId));
   await safe('learn', () => useLearning.getState().load(accountId));
+  await safe('questions', async () => {
+    // The reader's name is attached to what they post, so resolve it here
+    // rather than trusting whatever the caller happened to have in hand.
+    const acc = await getRepo(accountId).getAccount(accountId);
+    await useQuestions.getState().load(accountId, acc?.displayName ?? null);
+  });
   await safe('onboarding', () => useOnboarding.getState().load(accountId));
 }
 
@@ -57,6 +65,8 @@ function clearAccountData(): void {
   useReading.getState().clear();
   useOffices.getState().clear();
   useHighlights.getState().clear();
+  useQuestions.getState().clear();
+  useQuestionThread.getState().clear();
   useLearning.getState().clear();
   useOnboarding.getState().clear();
 }

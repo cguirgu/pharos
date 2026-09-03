@@ -19,7 +19,10 @@ const config: ExpoConfig = {
   name: 'Coptic Daily',
   // Must match the slug of the EAS project referenced by extra.eas.projectId.
   slug: 'pharos-coptic-orthodox-friend',
-  scheme: 'pharos',
+  // Shared question links carry the first scheme, so it says the app's name
+  // rather than the old working title. `pharos` is kept as a legacy alias so any
+  // link already in the wild still opens. (ExpoConfig.scheme accepts an array.)
+  scheme: ['copticcompanion', 'pharos'],
   version: '1.0.0',
   // EAS Update: OTA channel + runtime version (tied to `version` above).
   runtimeVersion: { policy: 'appVersion' },

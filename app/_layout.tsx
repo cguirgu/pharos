@@ -89,6 +89,10 @@ export default function RootLayout() {
             <Stack.Screen name="auth" />
             <Stack.Screen name="onboarding" />
             <Stack.Screen name="practice" options={{ presentation: 'card' }} />
+            {/* Registered so a shared `copticcompanion://questions/<id>` link
+                resolves on a cold start. expo-router matches the path from the
+                file tree — no Linking listener is needed. */}
+            <Stack.Screen name="questions" />
           </Stack>
         </ErrorBoundary>
       </SafeAreaProvider>
