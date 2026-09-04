@@ -123,7 +123,7 @@ export const ORIGINS: FaithUnit = {
           id: 'origins-2-q1',
           kind: 'choice',
           tier: 'core',
-          prompt: 'The Coptic Church calls itself *apostolic*. In the strict sense the Church means, that claims:',
+          prompt: 'When the Coptic Church calls itself *apostolic* in the strict sense, what does it claim?',
           answer: 'An apostle founded it, and the laying-on of hands has continued unbroken since',
           options: [
             'An apostle founded it, and the laying-on of hands has continued unbroken since',

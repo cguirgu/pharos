@@ -233,9 +233,26 @@ export const COUNCILS: FaithUnit = {
           reviewed: true,
         },
         {
-          id: 'councils-3-q3',
+          id: 'councils-3-q3b',
           kind: 'choice',
           tier: 'core',
+          prompt: 'Why does the Coptic Church receive three ecumenical councils and no more?',
+          answer: 'Because it did not accept the fourth, Chalcedon — so the first three are where the whole Church still stands together',
+          options: [
+            'Because it did not accept the fourth, Chalcedon — so the first three are where the whole Church still stands together',
+            'Because no council after 431 was ever convened',
+            'Because later councils dealt only with discipline, not doctrine',
+            'Because Alexandria was not invited to any later council',
+          ],
+          explain:
+            'This is the join between Unit III and Unit IV. Three is not a preference for round numbers — it is the point at which the Coptic Church parted from the councils of the wider Church. The 1990 agreed statement records both Orthodox families naming these same three as their common heritage.',
+          sources: ['chambesy-1990', 'lacopts-brief-history'],
+          reviewed: true,
+        },
+        {
+          id: 'councils-3-q3',
+          kind: 'choice',
+          tier: 'support',
           prompt: 'How many ecumenical councils does the Coptic Orthodox Church receive?',
           answer: 'Three',
           options: ['Three', 'Four', 'Seven', 'Twenty-one'],

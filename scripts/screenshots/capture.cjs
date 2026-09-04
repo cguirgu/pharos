@@ -1,5 +1,14 @@
+/**
+ * Capture the running app at App Store size.
+ *
+ * Usage: node scripts/screenshots/capture.cjs [outDir]
+ * Expects the web export to be served on :8099 (see serve.cjs).
+ */
 const { chromium } = require('playwright');
-const OUT = process.env.CLAUDE_JOB_DIR + '/tmp/shots2';
+// Output dir: first argument, else a repo-local default. This previously read
+// an environment variable that only exists inside one particular sandbox, so
+// `npm run screenshots` wrote to "undefined/tmp/..." anywhere else.
+const OUT = process.argv[2] || require('path').join(process.cwd(), '.screenshots', 'captures');
 require('fs').mkdirSync(OUT, { recursive: true });
 // App Store 6.9" (iPhone 16 Pro Max) is 1320x2868 -> 440x956 CSS at DPR 3.
 const VIEW = { width: 440, height: 956 };

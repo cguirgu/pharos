@@ -77,10 +77,12 @@ const page = (dataUri, caption, sub) => `<!doctype html><html><head><meta charse
 </body></html>`;
 
 (async () => {
-  const inDir = process.argv[2];
-  const outDir = process.argv[3];
-  if (!inDir || !outDir) {
-    console.error('usage: node compose.cjs <capturesDir> <outDir>');
+  // Defaults match capture.cjs, so `npm run screenshots` works with no args.
+  const base = path.join(process.cwd(), '.screenshots');
+  const inDir = process.argv[2] || path.join(base, 'captures');
+  const outDir = process.argv[3] || path.join(base, 'appstore');
+  if (!fs.existsSync(inDir)) {
+    console.error(`no captures in ${inDir} — run capture.cjs first`);
     process.exit(1);
   }
   fs.mkdirSync(outDir, { recursive: true });

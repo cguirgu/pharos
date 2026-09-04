@@ -181,7 +181,11 @@ export const FATHERS: FaithUnit = {
         {
           id: 'fathers-3-q3',
           kind: 'standing',
-          tier: 'core',
+          // Support, not core: this unit's essentials are about what the
+          // fathers did, and the card itself tells the learner to hold the
+          // dates loosely. The *concept* of a disputed date is drilled in Unit
+          // IX, which is where it belongs.
+          tier: 'support',
           prompt: 'The year St. Anthony the Great departed.',
           answer: 'Still disputed',
           explain:

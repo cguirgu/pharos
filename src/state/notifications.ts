@@ -29,6 +29,22 @@ import {
 const KEY = 'notifications.config';
 const ANNOUNCE_KEY = 'notifications.announcements';
 
+/**
+ * Guards the announcement opt-in against its own latency.
+ *
+ * Registering takes a permission prompt, a round trip to Expo for a token, and
+ * a write to Supabase. A user can easily toggle off inside that window — and
+ * without this counter, the in-flight registration would then resolve and set
+ * `enabled: true` back over their opt-out, having ALSO created a remote row
+ * that the opt-out could not delete (it only knew the previous token). The
+ * result was a device that had opted out and still received pushes, which is
+ * exactly what guideline 4.5.4 forbids.
+ *
+ * Every mutation bumps this. After each await, a task that finds the value
+ * changed abandons its result — and deletes any token it managed to create.
+ */
+let announceGeneration = 0;
+
 interface NotifState {
   config: NotificationConfig;
   /** Release announcements — the one REMOTE channel. Off until opted in. */
@@ -85,8 +101,14 @@ export const useNotifications = create<NotifState>((set, get) => ({
     // without this, an opted-in device would quietly stop being reachable, or
     // keep being told about a version it already has. Never blocks startup.
     if (shouldRegister(announcements)) {
+      const generation = announceGeneration;
       void (async () => {
         const token = await registerPushToken(null);
+        if (generation !== announceGeneration) {
+          // Opted out while this was in flight — undo whatever it registered.
+          await unregisterPushToken(token);
+          return;
+        }
         if (token && needsSync(announcements, token)) {
           const next = { enabled: true, token };
           set({ announcements: next });
@@ -101,6 +123,7 @@ export const useNotifications = create<NotifState>((set, get) => ({
   },
 
   setAnnouncements: async (enabled, accountId) => {
+    const generation = ++announceGeneration;
     const previous = get().announcements;
     if (!enabled) {
       // Opt out first, locally, so the switch responds even if the network does
@@ -115,10 +138,18 @@ export const useNotifications = create<NotifState>((set, get) => ({
       await unregisterPushToken(previous.token);
       return false;
     }
+    // From here on the user has asked to opt IN. Any later toggle bumps the
+    // generation and invalidates this attempt.
     // Opting in: permission and a token are both required. If either is
     // unavailable the switch stays off rather than claiming a subscription
     // that would never deliver.
     const token = await registerPushToken(accountId);
+    if (generation !== announceGeneration) {
+      // Superseded — the user toggled again while this was registering. Leave
+      // the newer decision alone and remove the row this attempt created.
+      await unregisterPushToken(token);
+      return get().announcements.enabled;
+    }
     const next = normalizeAnnouncements({ enabled: token !== null, token });
     set({ announcements: next });
     try {

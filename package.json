@@ -14,7 +14,10 @@
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",
     "announce": "node scripts/announce.mjs",
-    "screenshots": "node scripts/screenshots/capture.cjs && node scripts/screenshots/compose.cjs"
+    "screenshots": "npm run screenshots:export && npm run screenshots:capture && npm run screenshots:compose",
+    "screenshots:export": "expo export --platform web --output-dir .screenshots/web",
+    "screenshots:capture": "node scripts/screenshots/serve.cjs .screenshots/web & sleep 2 && node scripts/screenshots/capture.cjs .screenshots/captures; kill %1 2>/dev/null || true",
+    "screenshots:compose": "node scripts/screenshots/compose.cjs .screenshots/captures .screenshots/appstore"
   },
   "devDependencies": {
     "@testing-library/react-native": "^14.0.0",
