@@ -5,6 +5,13 @@
 export const copy = {
   tabs: { today: 'Today', hours: 'Hours', word: 'Word', coptic: 'Coptic', faith: 'Faith', rule: 'Rule', you: 'You', saved: 'Saved' },
 
+  whatsNew: {
+    eyebrow: 'New in this version',
+    title: 'What\u2019s new',
+    dismiss: 'Got it',
+    laterHint: 'You can find all of this again from the You screen.',
+  },
+
   errorBoundary: {
     title: 'A moment of stillness',
     body: 'Something interrupted the page. Your saved rule and data are safe. Take a breath and try again.',

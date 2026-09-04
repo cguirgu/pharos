@@ -35,7 +35,7 @@ export const FATHERS: FaithUnit = {
           pull: '20th Pope of Alexandria, 328–373. Exiled five times.',
           glyph: 'Ⲁ',
           sources: ['synax-athanasius', 'lacopts-brief-history'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'fathers-1-c2',
@@ -43,7 +43,7 @@ export const FATHERS: FaithUnit = {
           body:
             'Not because he invented anything, but because he refused to let a single word be softened. The whole content of Nicaea — that the Son is God in the full sense, not a superior creature — reached the rest of the Church through his stubbornness. The Coptic Church gives him the title *the Apostolic*.',
           sources: ['lacopts-history', 'synax-athanasius'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -57,7 +57,7 @@ export const FATHERS: FaithUnit = {
           explain:
             'Five exiles across a papacy of forty-five years. “Athanasius against the world” is not a flourish; it is a summary.',
           sources: ['synax-athanasius'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'fathers-1-q2',
@@ -69,7 +69,7 @@ export const FATHERS: FaithUnit = {
           explain:
             'From 328 to 373 — and the man who, as a young deacon, had already argued the Son’s divinity at Nicaea in 325.',
           sources: ['synax-athanasius'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -86,7 +86,7 @@ export const FATHERS: FaithUnit = {
           pull: '24th Pope of Alexandria · presided at Ephesus 431 · departed 444.',
           glyph: 'Ⲕ',
           sources: ['synax-cyril', 'lacopts-ephesus'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -105,7 +105,7 @@ export const FATHERS: FaithUnit = {
           explain:
             'Arius was Athanasius’ fight a century earlier. Cyril’s was Nestorius, and the question of whether Christ is one.',
           sources: ['lacopts-ephesus', 'synax-cyril'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -122,7 +122,7 @@ export const FATHERS: FaithUnit = {
           pull: 'Born c. 251 · heard the Gospel at twenty · father of all monks.',
           glyph: 'Ⲁ',
           sources: ['synax-anthony', 'lacopts-monasticism'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'fathers-3-c2',
@@ -131,7 +131,7 @@ export const FATHERS: FaithUnit = {
             'Anthony went alone. Pachomius did the opposite: he founded the first *cenobitic* — community — monastery at Tabennesi and wrote a rule for it, the Koinonia. By his departure the federation held nine monasteries for men and two for women. Every rule-governed religious community in Christendom descends from that experiment.',
           pull: 'Anthony: the hermit. Pachomius: the community, and the rule.',
           sources: ['lacopts-monasticism', 'synax-pachomius'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'fathers-3-c3',
@@ -140,7 +140,7 @@ export const FATHERS: FaithUnit = {
             'The Synaxarium records St. Anthony departing in 355 at the age of 105; the Diocese of Los Angeles gives about 254–356. For St. Pachomius the Synaxarium says 348; the diocesan history says about 292–346. Also named in that history: Abba Macarius the Egyptian, who established Scetis, and Abba Amoun, who founded Nitria and Kellia. Hold the names firmly and the years loosely.',
           pull: 'Anthony: 355 or 356. Pachomius: 348 or 346. Both are our own sources.',
           sources: ['synax-anthony', 'synax-pachomius', 'lacopts-monasticism'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -159,7 +159,7 @@ export const FATHERS: FaithUnit = {
           explain:
             'Anthony is the father of solitary monasticism; Pachomius established the first cenobitic monastery at Tabennesi and the Koinonia rule.',
           sources: ['lacopts-monasticism'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'fathers-3-q3',
@@ -170,7 +170,7 @@ export const FATHERS: FaithUnit = {
           explain:
             'The Synaxarium says 355; the diocesan history says 356. Neither is careless — ancient dates simply reach us through more than one reckoning.',
           sources: ['synax-anthony', 'lacopts-monasticism'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'fathers-3-q4',
@@ -182,7 +182,7 @@ export const FATHERS: FaithUnit = {
           explain:
             'It began in the third century in Egypt and flourished in the fourth. Anthony was the first to go out into the wilderness for it.',
           sources: ['lacopts-monasticism'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },

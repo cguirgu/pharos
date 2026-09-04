@@ -35,7 +35,7 @@ export const WORSHIP: FaithUnit = {
           pull: 'St. Basil most of the year · St. Gregory on feasts · St. Cyril in part.',
           glyph: 'Ⲅ',
           sources: ['lacopts-liturgies'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-1-c2',
@@ -43,7 +43,7 @@ export const WORSHIP: FaithUnit = {
           body:
             'This is the detail worth carrying: the Liturgy of St. Basil is addressed to God the Father. The Liturgy of St. Gregory is addressed to the Son — it dwells on the Incarnation, the Passion, the Resurrection and the Ascension, speaking to Christ directly. St. Cyril\'s, like St. Mark\'s before it, is again addressed to the Father. The Church prays the Trinity by praying to the Persons in turn.',
           sources: ['lacopts-liturgies'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -62,7 +62,7 @@ export const WORSHIP: FaithUnit = {
           explain:
             'St. Gregory speaks to Christ directly, dwelling on His Incarnation, Passion, Resurrection and Ascension. St. Basil’s and St. Cyril’s are addressed to the Father. The Church does not use one prayer for all occasions — it turns to different Persons of the Trinity by name.',
           sources: ['lacopts-liturgies'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-1-q2',
@@ -74,7 +74,7 @@ export const WORSHIP: FaithUnit = {
           explain:
             'St. Gregory is kept for feasts and special occasions; only portions of St. Cyril are used today.',
           sources: ['lacopts-liturgies'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-1-q3',
@@ -86,7 +86,7 @@ export const WORSHIP: FaithUnit = {
           explain:
             'St. Cyril rearranged the rites of St. Mark’s liturgy and added litanies to it — which is why the oldest liturgy in the Church carries the later name.',
           sources: ['lacopts-liturgies'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -103,7 +103,7 @@ export const WORSHIP: FaithUnit = {
           pull: 'Midnight · Prime · Terce · Sext · None · Vespers · Compline.',
           glyph: 'Ⲍ',
           sources: ['copticorthodox-what-is-coc'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-2-c2',
@@ -111,7 +111,7 @@ export const WORSHIP: FaithUnit = {
           body:
             'The Midnight prayer is not one prayer but three watches, prayed in succession — the tradition of keeping vigil against the parable of the bridegroom who comes at an unknown hour. It is the longest of the hours, and it is the one that shapes monastic life most directly.',
           sources: ['copticorthodox-what-is-coc'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -125,7 +125,7 @@ export const WORSHIP: FaithUnit = {
           explain:
             'Midnight, Prime, Terce, Sext, None, Vespers, and Compline — the same seven the Hours screen of this app carries.',
           sources: ['copticorthodox-what-is-coc'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-2-q2',
@@ -137,7 +137,7 @@ export const WORSHIP: FaithUnit = {
           explain:
             'Three successive watches — the vigil kept for a bridegroom whose hour is not announced.',
           sources: ['copticorthodox-what-is-coc'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -154,7 +154,7 @@ export const WORSHIP: FaithUnit = {
           pull: 'Over 210 fasting days in a 365-day year.',
           glyph: 'Ⲛ',
           sources: ['st-takla-fasting', 'lacopts-lent'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-3-c2',
@@ -163,7 +163,7 @@ export const WORSHIP: FaithUnit = {
             'Not endurance, and not a diet. The purpose given is to give up a measure of dependence on the material world in order to feel, personally, one\'s hunger for God. And the Church insists the days are not gloomy: they are described as days of repentance and contrition that are at the same time periods of joy, because something is being won rather than merely given up.',
           pull: 'Days of repentance that are also days of joy.',
           sources: ['lacopts-lent', 'st-takla-fasting'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-3-c3',
@@ -172,7 +172,7 @@ export const WORSHIP: FaithUnit = {
             'Because the Lord fasted it Himself — forty days and forty nights, on our behalf. The Coptic Great Lent is 55 days: the forty, with a preparatory week before and Holy Week after, all kept as one continuous fast.',
           pull: 'Great Lent: 55 days.',
           sources: ['lacopts-lent'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -191,7 +191,7 @@ export const WORSHIP: FaithUnit = {
           explain:
             'More than half the year: the Nativity fast (43 days), Great Lent (55), the Apostles’ fast, St. Mary’s fast (14), Nineveh, and most Wednesdays and Fridays. A Copt is not someone who fasts occasionally — fasting is the default state of the calendar.',
           sources: ['st-takla-fasting'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-3-q2',
@@ -208,7 +208,7 @@ export const WORSHIP: FaithUnit = {
           explain:
             'Named for Jonah’s preaching to Nineveh, and kept as three days of repentance in preparation for the Great Fast.',
           sources: ['st-takla-fasting'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-3-q3',
@@ -225,7 +225,7 @@ export const WORSHIP: FaithUnit = {
           explain:
             'The Church describes the fast as freeing, not punitive — days of contrition that are also days of joy.',
           sources: ['lacopts-lent'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },

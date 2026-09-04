@@ -34,7 +34,7 @@ export const COUNCILS: FaithUnit = {
           pull: '325 AD · traditionally 318 bishops.',
           glyph: 'Ⲛ',
           sources: ['lacopts-brief-history', 'lacopts-history'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-1-c2',
@@ -43,7 +43,7 @@ export const COUNCILS: FaithUnit = {
             'St. Athanasius came to Nicaea as a young deacon in the party of Pope Alexander of Alexandria, and argued the Son\'s full divinity so forcefully that the fight became his life. He would later be the twentieth Pope of Alexandria and be exiled five times over it. The phrase remembered from that struggle is *Athanasius contra mundum* — Athanasius against the world.',
           pull: 'St. Athanasius: 20th Pope of Alexandria, 328–373. Exiled five times.',
           sources: ['lacopts-brief-history', 'synax-athanasius'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-1-c3',
@@ -51,7 +51,7 @@ export const COUNCILS: FaithUnit = {
           body:
             'The council condemned Arianism and confessed the Son to be of one essence with the Father — not made, but begotten. It also gave the Church the first part of the Creed still said at every Coptic liturgy, and its canons name Alexandria among the ancient apostolic sees.',
           sources: ['lacopts-brief-history', 'suscopts-creed-facts'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -70,7 +70,7 @@ export const COUNCILS: FaithUnit = {
           explain:
             'Arianism denied the Son’s full divinity. Nicaea answered that He is of one essence with the Father — begotten, not made.',
           sources: ['lacopts-brief-history'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-1-q3',
@@ -82,7 +82,7 @@ export const COUNCILS: FaithUnit = {
           explain:
             'He came as a young deacon with Pope Alexander. He became the twentieth Pope in 328, three years after the council.',
           sources: ['lacopts-brief-history', 'synax-athanasius'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -99,7 +99,7 @@ export const COUNCILS: FaithUnit = {
           pull: '381 AD · 150 bishops · the Spirit confessed as Lord and Giver of Life.',
           glyph: 'Ⲕ',
           sources: ['lacopts-brief-history', 'suscopts-creed-facts'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-2-c2',
@@ -107,7 +107,7 @@ export const COUNCILS: FaithUnit = {
           body:
             'St. Timothy, the twenty-second Pope of Alexandria, was instrumental in composing the portion of the Creed about the Holy Spirit. Alexandria had now shaped both halves of the Creed the whole Church says.',
           sources: ['suscopts-creed-facts'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-2-c3',
@@ -116,7 +116,7 @@ export const COUNCILS: FaithUnit = {
             'Centuries later the Latin West added *filioque* — "and the Son" — to the clause on the Spirit\'s procession. The Coptic Church, with the rest of Orthodoxy, has never accepted it: partly because it seemed to set two ultimate sources in the Godhead, and partly on the plain ground that a Creed agreed by an ecumenical council is not one church\'s to edit.',
           pull: 'The Spirit proceeds from the Father. The Creed is not amended.',
           sources: ['suscopts-filioque'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -135,7 +135,7 @@ export const COUNCILS: FaithUnit = {
           explain:
             'Macedonianism. The council confessed the Spirit as the Lord and Giver of Life, proceeding from the Father.',
           sources: ['lacopts-brief-history'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-2-q2',
@@ -152,7 +152,7 @@ export const COUNCILS: FaithUnit = {
           explain:
             'The Church holds that the Spirit proceeds from the Father, as Constantinople confessed — and that no single church may amend a conciliar Creed.',
           sources: ['suscopts-filioque'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-2-q3',
@@ -164,7 +164,7 @@ export const COUNCILS: FaithUnit = {
           explain:
             'St. Timothy, twenty-second Pope of Alexandria, was instrumental in that portion at Constantinople in 381.',
           sources: ['suscopts-creed-facts'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -181,7 +181,7 @@ export const COUNCILS: FaithUnit = {
           pull: 'The argument over her name is an argument about His unity.',
           glyph: 'Ⲉ',
           sources: ['lacopts-ephesus', 'synax-ephesus'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-3-c2',
@@ -190,7 +190,7 @@ export const COUNCILS: FaithUnit = {
             'The third ecumenical council met at Ephesus in 431 AD with about 200 bishops, who elected St. Cyril of Alexandria — the twenty-fourth Pope — to preside. The council confirmed that the Virgin St. Mary gave birth to God the Word incarnate, and deposed Nestorius from his chair.',
           pull: '431 AD · about 200 bishops · St. Cyril of Alexandria presiding.',
           sources: ['lacopts-ephesus', 'synax-ephesus', 'synax-cyril'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-3-c3',
@@ -199,7 +199,7 @@ export const COUNCILS: FaithUnit = {
             'Nicaea, Constantinople, Ephesus. These are the three ecumenical councils the Coptic Orthodox Church receives — and in the 1990 agreed statement both Orthodox families named them expressly as their common heritage. What happened at the fourth council is the whole of the next unit.',
           pull: 'The Coptic Church receives three ecumenical councils.',
           sources: ['chambesy-1990', 'lacopts-two-families'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -218,7 +218,7 @@ export const COUNCILS: FaithUnit = {
           explain:
             'This is the hinge of Unit III, and Unit IV will turn on it again. The objection sounds like it is about her. It is about Him: if the one she bore is not God the Word incarnate, then there are two Christs — and only one of them saves. Guarding her title is how the Church guards His unity.',
           sources: ['lacopts-ephesus'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-3-q2',
@@ -230,7 +230,7 @@ export const COUNCILS: FaithUnit = {
           explain:
             'The Son at Nicaea, the Spirit at Constantinople, the unity of Christ at Ephesus. Three councils, three questions, one Creed.',
           sources: ['lacopts-brief-history', 'chambesy-1990'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-3-q3',
@@ -242,7 +242,7 @@ export const COUNCILS: FaithUnit = {
           explain:
             'Three. The 1990 agreed statement records both Orthodox families accepting these three as their common heritage — the parting comes at the fourth.',
           sources: ['chambesy-1990'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'councils-3-q4',
@@ -254,7 +254,7 @@ export const COUNCILS: FaithUnit = {
           explain:
             'The assembled bishops elected him to preside. He was the twenty-fourth Pope of Alexandria.',
           sources: ['lacopts-ephesus', 'synax-cyril'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },

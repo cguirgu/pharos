@@ -29,6 +29,9 @@ import { useTextScale } from '../src/state/textScale';
 import { useNotifications } from '../src/state/notifications';
 import { initContent } from '../src/state/content';
 import { ErrorBoundary } from '../src/ui/ErrorBoundary';
+import { WhatsNewSheet } from '../src/ui/WhatsNewSheet';
+import { useWhatsNew } from '../src/state/whatsNew';
+import { APP_VERSION } from '../src/lib/config';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -61,6 +64,13 @@ export default function RootLayout() {
     });
   }, [loadAuth]);
 
+  // Decide whether this launch is the first after an update. Runs once; the
+  // store writes the seen-marker on a first install so a new user never meets
+  // a changelog for an app they have not used.
+  useEffect(() => {
+    void useWhatsNew.getState().check(APP_VERSION);
+  }, []);
+
   const [fontsLoaded] = useFonts({
     CormorantGaramond_500Medium,
     CormorantGaramond_600SemiBold,
@@ -90,6 +100,7 @@ export default function RootLayout() {
             <Stack.Screen name="onboarding" />
             <Stack.Screen name="practice" options={{ presentation: 'card' }} />
           </Stack>
+          <WhatsNewSheet />
         </ErrorBoundary>
       </SafeAreaProvider>
     </GestureHandlerRootView>

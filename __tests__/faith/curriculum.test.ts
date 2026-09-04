@@ -10,7 +10,7 @@
  */
 import { UNITS, LESSONS } from '../../src/domain/faith/units';
 import { isReviewLesson, REVIEW_LESSON_IDS } from '../../src/domain/faith/review';
-import { READY_LESSONS, isLessonUnlocked } from '../../src/domain/faith/course';
+import { READY_LESSONS, isLessonUnlocked, isLessonReady } from '../../src/domain/faith/course';
 
 const authoredQuestions = LESSONS.filter((l) => !isReviewLesson(l.id)).flatMap((l) =>
   l.questions.map((q) => [`${l.id}:${q.id}`, q] as const),
@@ -139,5 +139,28 @@ describe('the trivia that prompted this redesign is gone', () => {
   ];
   it.each(banned)('no longer asks: %s', (fragment) => {
     expect(prompts.some((p) => p.includes(fragment))).toBe(false);
+  });
+});
+
+describe('the shipped course is never empty', () => {
+  // The failure this guards against, measured once and never again: with the
+  // review gate closed and no card approved, the course yielded 0 ready lessons
+  // and 0 of 9 units with content — the Faith tab rendered as an empty screen,
+  // which is an App Review guideline 2.1 (App Completeness) risk.
+  //
+  // This asserts the course AS CONFIGURED, so it fails either way round: if the
+  // bypass is off and content is unreviewed, or if a unit is ever emptied. It
+  // will also fail while authoring a new unreviewed card with the bypass off —
+  // which is the correct signal, not a nuisance: it means content exists that
+  // users cannot see.
+  it('renders at least one lesson in every unit', () => {
+    for (const unit of UNITS) {
+      const ready = unit.lessons.filter(isLessonReady).length;
+      expect(`${unit.id}: ${ready} ready`).toBe(`${unit.id}: ${Math.max(ready, 1)} ready`);
+    }
+  });
+
+  it('leaves no lesson unreachable', () => {
+    expect(READY_LESSONS.length).toBe(LESSONS.length);
   });
 });

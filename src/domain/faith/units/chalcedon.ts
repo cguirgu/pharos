@@ -39,7 +39,7 @@ export const CHALCEDON: FaithUnit = {
           pull: 'Pope Dioscorus, 25th of Alexandria, from 444 AD.',
           glyph: 'Ⲇ',
           sources: ['copticorthodox-dioscorus', 'suscopts-post-chalcedon'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-1-c2',
@@ -48,7 +48,7 @@ export const CHALCEDON: FaithUnit = {
             'Chalcedon, in 451 AD, adopted the two-natures formula and deposed Dioscorus. He was exiled to Gangra, an island off Paphlagonia on the coast of Asia Minor, and stayed there five years until his departure in 454. The Coptic Church has never recognised the deposition: it commemorates him as a saint and calls him a champion of orthodoxy.',
           pull: 'Exiled to Gangra · departed 454 · commemorated as a saint.',
           sources: ['copticorthodox-dioscorus', 'synax-dioscorus'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-1-c3',
@@ -57,7 +57,7 @@ export const CHALCEDON: FaithUnit = {
             'The Diocese of Los Angeles puts the line plainly: Nestorius\'s refusal of "Mother of God" "led to the inference of the dual nature of the Lord Jesus; His divinity and His humanity. This dualism was decreed in the Council of Chalcedon in 451 A.D., in spite of the objection of the Coptic Pope Dioscorus." The Church then "was divided into two groups: Rome and Constantinople, who accepted the doctrine of two united natures, on one side, and Alexandria and Antioch who held the belief of one nature out of two natures of the Incarnate Lord."',
           pull: 'Two united natures · or one nature out of two natures.',
           sources: ['copticorthodox-dioscorus', 'lacopts-two-families'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -76,7 +76,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'Memorise this pairing — it is the whole division in one sentence, in the diocese\'s own words. Both sides confess Christ fully God and fully man. They divide on how the union is *said*: two united natures, or one nature out of two.',
           sources: ['lacopts-brief-history', 'copticorthodox-dioscorus'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-1-q1b',
@@ -93,7 +93,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'Twenty years earlier Alexandria had led the Church in condemning Nestorius for dividing Christ. When Chalcedon then decreed language of two natures, Alexandria read it as the same dualism coming back — which is why the objection was fierce rather than academic.',
           sources: ['lacopts-brief-history', 'copticorthodox-dioscorus'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-1-q2',
@@ -110,7 +110,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'The council of 449 at Ephesus, led by Dioscorus, rejected it; Chalcedon in 451 received it.',
           sources: ['copticorthodox-dioscorus'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-1-q3',
@@ -122,7 +122,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'Twenty years separate the council Alexandria led from the council that deposed its Pope.',
           sources: ['copticorthodox-dioscorus', 'lacopts-ephesus'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -139,7 +139,7 @@ export const CHALCEDON: FaithUnit = {
           pull: 'We anathematize the doctrines of both Nestorius and Eutyches.',
           glyph: 'Ⲭ',
           sources: ['shenouda-agreed-statement', 'shenouda-nature-of-christ'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-2-c2',
@@ -148,7 +148,7 @@ export const CHALCEDON: FaithUnit = {
             'The Coptic formula comes from St. Cyril: *one incarnate nature of God the Word*. One nature out of two — divine and human — united in the womb of the Virgin without mixture, without mingling, without confusion, and never separated. The word used for this is *miaphysite*: not "only one nature", but "one united nature", which is a different claim entirely.',
           pull: 'Perfect in His divinity, perfect in His humanity — not separated for a moment or the twinkling of an eye.',
           sources: ['shenouda-nature-of-christ', 'shenouda-agreed-statement'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-2-c3',
@@ -156,7 +156,7 @@ export const CHALCEDON: FaithUnit = {
           body:
             'To the charge that Alexandria denies one of Christ\'s natures, Pope Shenouda III asked simply: which of the two would we be denying? Not the divine — Alexandria is the Church that fought Arius for a century over exactly that. Not the human — that is what the Incarnation is for. The accusation, put plainly, does not survive contact with the Church\'s own history.',
           sources: ['shenouda-nature-of-christ'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -170,7 +170,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'Eutyches held that the humanity was absorbed into the divinity. The Coptic Church condemns him, alongside Nestorius, in the same breath.',
           sources: ['shenouda-agreed-statement'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-2-q2',
@@ -187,7 +187,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             '“One incarnate nature of God the Word” is St. Cyril’s phrase — which is why the Coptic Church regards its Christology as simply Ephesus, kept.',
           sources: ['shenouda-nature-of-christ'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-2-q3',
@@ -199,7 +199,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'That is Eutychianism, which the Church anathematizes. The union is without mixture, mingling, or confusion — both remain whole.',
           sources: ['shenouda-nature-of-christ', 'shenouda-agreed-statement'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-2-q4',
@@ -216,7 +216,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'And never separated — “not for a moment nor the twinkling of an eye” is the phrase the Church repeats.',
           sources: ['shenouda-agreed-statement'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -233,7 +233,7 @@ export const CHALCEDON: FaithUnit = {
           pull: 'Not fully God · not fully man · divided in two · humanity dissolved.',
           glyph: 'Ⲇ',
           sources: ['shenouda-nature-of-christ'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-2b-c2',
@@ -242,7 +242,7 @@ export const CHALCEDON: FaithUnit = {
             'Pope Shenouda\'s image for the union: ignited iron. We do not say there are two natures here, iron and fire — we say iron united with fire. The iron is not changed into fire, nor fire into iron; they are united without mingling, confusion or alteration, and the ignited iron keeps every property of iron and every property of fire at once. St. Cyril and St. Dioscorus used the same kind of image with the soul and the body: one human nature, neither soul alone nor body alone.',
           pull: 'One glowing iron. All the properties of both. Nothing lost, nothing blended.',
           sources: ['shenouda-nature-of-christ'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -261,7 +261,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'Arius made the Son a creature. Apollinarius taught that the Divinity of the Word replaced the human spirit in Him — a body without a full human mind. One error empties the divinity, the other empties the humanity.',
           sources: ['shenouda-nature-of-christ'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-2b-q2',
@@ -278,7 +278,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'Nestorius spoke as though the Logos merely dwelt in a man born of a woman. Eutyches said the humanity was absorbed "as a drop of vinegar in the ocean". The Coptic confession — one nature out of two, without mingling or confusion — is the narrow path between dividing Him and blending Him.',
           sources: ['shenouda-nature-of-christ'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-2b-q3',
@@ -295,7 +295,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'It is a guard against Eutyches on one side and Nestorius on the other. One glowing iron — you cannot pull the fire back out of it, and you cannot say the iron stopped being iron.',
           sources: ['shenouda-nature-of-christ'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -312,7 +312,7 @@ export const CHALCEDON: FaithUnit = {
           pull: 'Oriental = non-Chalcedonian. Eastern = Chalcedonian. Both are Orthodox.',
           glyph: 'Ⲃ',
           sources: ['lacopts-two-families'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-3-c2',
@@ -320,7 +320,7 @@ export const CHALCEDON: FaithUnit = {
           body:
             'It is not that one family believes in Christ\'s divinity and the other in His humanity. Both confess both. The difference is in which grammar is used to hold them together: the Eastern Orthodox say two natures in one person, the Oriental Orthodox say one united divine-human nature. The Joint Commission put it in a single sentence — those who speak of two natures do not thereby deny the union, and those who speak of one united nature do not thereby deny the continuing presence of the divine and the human.',
           sources: ['lacopts-two-families'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -339,7 +339,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'The Oriental Orthodox family is Coptic, Syriac, Armenian, Malankara, Ethiopian (and Eritrean). The other three named here are Eastern Orthodox.',
           sources: ['lacopts-two-families'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-3-q2',
@@ -351,7 +351,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'They are two distinct families, divided since Chalcedon in 451 — and not in communion with one another, even now.',
           sources: ['lacopts-two-families'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-3-q3',
@@ -368,7 +368,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'And the Oriental Orthodox say one united divine-human nature. The Joint Commission found these to be the same faith in different terminology.',
           sources: ['lacopts-two-families'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -385,7 +385,7 @@ export const CHALCEDON: FaithUnit = {
           pull: '1964–71 unofficial · 1985, 1989, 1990, 1993 official.',
           glyph: 'Ⲥ',
           sources: ['lacopts-two-families', 'chambesy-1990'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-4-c2',
@@ -394,7 +394,7 @@ export const CHALCEDON: FaithUnit = {
             'The 1990 statement records both families confessing that the natures are united hypostatically and naturally — without confusion, without change, without division, without separation; that the Logos became composite by uniting His divine uncreated nature with created human nature; and that they hold the first three ecumenical councils as their common heritage. It concludes that both families have always maintained the same Orthodox Christological faith, in different terms.',
           pull: 'The same faith, in two vocabularies — signed, by both.',
           sources: ['chambesy-1990', 'lacopts-two-families'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-4-c3',
@@ -403,7 +403,7 @@ export const CHALCEDON: FaithUnit = {
             'The statement recommends that all the anathemas and condemnations of the past be lifted by the churches — each deciding for itself how. It does not lift them. It leaves jurisdiction to local churches, sends concelebration to a sub-committee, and says a period of intense preparation of the people is needed first. Thirty-five years on, the two families are still not in communion. The theology was agreed. The rest was not.',
           pull: 'Agreement is signed. Communion is not restored.',
           sources: ['chambesy-1990', 'lacopts-two-families'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -416,7 +416,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'The 1990 statement *recommends* that both families lift them, each in its own manner. Recommending is not doing. The churches are still not in communion.',
           sources: ['chambesy-1990', 'lacopts-two-families'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-4-q3',
@@ -428,7 +428,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'They are not. The statement itself asks for the anathemas to be lifted and for a period of preparation; jurisdiction and concelebration were left unresolved.',
           sources: ['chambesy-1990', 'lacopts-two-families'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -445,7 +445,7 @@ export const CHALCEDON: FaithUnit = {
           pull: '“We believe in One Will and One Act.” — Pope Shenouda III',
           glyph: 'Ⲱ',
           sources: ['shenouda-one-will'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-5-c2',
@@ -453,7 +453,7 @@ export const CHALCEDON: FaithUnit = {
           body:
             'The Eastern Orthodox, following a later council the Coptic Church does not receive, confess two wills in Christ — divine and human — with the human freely and always consenting to the divine. Both sides are guarding the same thing from opposite directions: one against dividing Christ, the other against thinning His humanity. It is the clearest example of what the dialogues did and did not reach. The Christology was agreed; this was not on the page.',
           sources: ['shenouda-one-will', 'chambesy-1990'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -472,7 +472,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'He reasons from sinlessness: where there is no conflict between the human and the divine, the will is one. The humanity is not diminished by it.',
           sources: ['shenouda-one-will'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'chalcedon-5-q2',
@@ -483,7 +483,7 @@ export const CHALCEDON: FaithUnit = {
           explain:
             'The Coptic Church teaches one will and one act; the Eastern Orthodox confess two wills, the human always consenting. The agreed statements did not resolve this — they addressed the natures.',
           sources: ['shenouda-one-will', 'chambesy-1990'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },

@@ -31,7 +31,7 @@ export const TODAY: FaithUnit = {
           pull: 'Sealed on the altar. Drawn by a blindfolded child.',
           glyph: 'Ⲡ',
           sources: ['copticorthodox-tawadros', 'lacopts-tawadros'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'today-1-c2',
@@ -40,7 +40,7 @@ export const TODAY: FaithUnit = {
             'On 4 November 2012 — his sixtieth birthday — his name was drawn from the chalice by a blindfolded boy, at a liturgy led by Metropolitan Pachomios, locum tenens of the see. He was enthroned on 18 November 2012 as the 118th Pope of Alexandria and successor of St. Mark.',
           pull: '118th Pope · drawn 4 November 2012 · enthroned 18 November 2012.',
           sources: ['copticorthodox-tawadros', 'lacopts-tawadros'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -59,7 +59,7 @@ export const TODAY: FaithUnit = {
           explain:
             'Election narrows the field to three; the altar lot decides among them. The Church deliberately removes the last decision from human hands.',
           sources: ['copticorthodox-tawadros'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'today-1-q2',
@@ -76,7 +76,7 @@ export const TODAY: FaithUnit = {
           explain:
             'This is Unit I\'s claim about apostolicity, still being counted. The Church numbers its popes because the number is the claim: one continuous succession of hands from the evangelist who founded the see to the man who holds it now.',
           sources: ['copticorthodox-tawadros', 'lacopts-tawadros'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -93,7 +93,7 @@ export const TODAY: FaithUnit = {
           pull: 'Pope Kyrillos VI, 116th Pope, 1959–1971.',
           glyph: 'Ⲕ',
           sources: ['lacopts-kyrillos'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'today-2-c2',
@@ -102,7 +102,7 @@ export const TODAY: FaithUnit = {
             'On 2 April 1968, during his papacy, luminous appearances of the Virgin began over the domes of her church at Zeitoun, a suburb of Cairo. They continued on following nights for hours at a time, before crowds of every race and religion — a Muslim mechanic was among the first to see. It came a year after the country\'s defeat in the 1967 war, and the Church entered it into the Synaxarium on 24 Baramhat.',
           pull: 'Zeitoun, from 2 April 1968 · commemorated 24 Baramhat.',
           sources: ['synax-zeitoun', 'lacopts-kyrillos'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -116,7 +116,7 @@ export const TODAY: FaithUnit = {
           explain:
             'They were witnessed by crowds of every race and religion; a Muslim mechanic was among the first to report them.',
           sources: ['synax-zeitoun', 'lacopts-kyrillos'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -133,7 +133,7 @@ export const TODAY: FaithUnit = {
           pull: '117th Pope, from 1971. The Church’s most-published teacher.',
           glyph: 'Ϣ',
           sources: ['shenouda-nature-of-christ', 'shenouda-comparative-theology', 'lacopts-kyrillos'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'today-3-c2',
@@ -141,7 +141,7 @@ export const TODAY: FaithUnit = {
           body:
             'The same century scattered the Coptic Church across the world — dioceses in North America, Europe, Australia, and Africa, where none had existed. The diocesan sites this course cites are themselves a product of that: Los Angeles and the Southern United States teaching Coptic doctrine in English, because that is now a language the Church has to teach it in.',
           sources: ['lacopts-history', 'copticorthodox-what-is-coc'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -155,7 +155,7 @@ export const TODAY: FaithUnit = {
           explain:
             'The 116th, 117th and 118th successors of St. Mark: 1959–1971, from 1971, and from 2012.',
           sources: ['lacopts-kyrillos', 'copticorthodox-tawadros'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },

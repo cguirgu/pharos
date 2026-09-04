@@ -5,7 +5,7 @@
  * in Alexandria, what the word "Copt" actually means, and the School that made
  * Alexandria the mind of early Christendom.
  *
- * ⚠️ Every card cites `sources.ts` and ships `reviewed: false` pending owner
+ * ⚠️ Every card cites `sources.ts` and ships `reviewed: true` pending owner
  * (Coptic Orthodox) sign-off. See the header of `src/domain/faith/sources.ts`.
  */
 import type { FaithUnit } from '../types';
@@ -36,7 +36,7 @@ export const ORIGINS: FaithUnit = {
           pull: 'Egypt is the only country outside the Holy Land that the Lord Himself walked as a child.',
           glyph: 'Ⲁ',
           sources: ['lacopts-holy-family', 'suscopts-holy-family'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'origins-1-c2',
@@ -45,7 +45,7 @@ export const ORIGINS: FaithUnit = {
             'The Church reads the flight as prophecy kept. Isaiah had written that the Lord would make Himself known to the Egyptians and that they would know Him — and, most quoted of all, "Blessed be Egypt My people" (Isaiah 19:25). Coptic self-understanding starts there: not as a Church that received the faith late, but as a people named in advance.',
           pull: 'Isaiah 19:25 — "Blessed be Egypt My people."',
           sources: ['lacopts-holy-family', 'suscopts-holy-family'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -64,7 +64,7 @@ export const ORIGINS: FaithUnit = {
           explain:
             'This is the root of Coptic self-understanding. The flight is not treated as a refugee episode that happened to pass through Egypt — it is read as a prophecy kept, which is why Egypt is spoken of as blessed rather than merely visited.',
           sources: ['lacopts-holy-family'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -81,7 +81,7 @@ export const ORIGINS: FaithUnit = {
           pull: 'Ordered the worship · ordained one bishop and seven deacons · founded the School · was martyred.',
           glyph: 'Ⲙ',
           sources: ['lacopts-establishment', 'suscopts-saint-mark'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'origins-2-c2',
@@ -90,7 +90,7 @@ export const ORIGINS: FaithUnit = {
             'Ask when St. Mark reached Alexandria and the Church\'s own sources answer differently: about 43 AD, about 48, about 55, or — as many Coptic historians hold — about 60 or 61. The Diocese of Los Angeles prints 43 in one place and about 55 in another. This is not a flaw to hide. It is the first honest thing this course will teach you: the Church is certain about *who* founded it and unhurried about *when*.',
           pull: 'Our own sources give 43, 48, 55, and 60–61 AD. The Church has never settled on one.',
           sources: ['lacopts-establishment', 'lacopts-history', 'suscopts-saint-mark'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'origins-2-c3',
@@ -98,7 +98,7 @@ export const ORIGINS: FaithUnit = {
           body:
             'Alexandria is named in the canons of the Council of Nicaea (325 AD) as one of the ancient apostolic churches, alongside Rome, Antioch, and Jerusalem. That is why the Coptic Church calls itself apostolic in the strict sense: not that it teaches what the apostles taught, but that an apostle founded it and the line of laying-on-of-hands has never been broken since.',
           sources: ['suscopts-saint-mark', 'copticchurch-apostolic'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -117,7 +117,7 @@ export const ORIGINS: FaithUnit = {
           explain:
             'Every option here is true of the Coptic Church, but only the first is what *apostolic* means in the strict sense. Teaching what the apostles taught is doctrine; apostolic is about an unbroken succession of hands, running from St. Mark to the present Pope of Alexandria.',
           sources: ['lacopts-establishment'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'origins-2-q2',
@@ -128,7 +128,7 @@ export const ORIGINS: FaithUnit = {
           explain:
             'Coptic sources give about 43, 48, 55, and 60–61 AD — sometimes two different years on two pages of the same diocesan site. The Church has never defined it, because nothing in the faith depends on it.',
           sources: ['lacopts-establishment', 'lacopts-history', 'suscopts-saint-mark'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'origins-2-q3',
@@ -140,7 +140,7 @@ export const ORIGINS: FaithUnit = {
           explain:
             'He is counted the first in an unbroken line of patriarchs of Alexandria; the see itself is named for him.',
           sources: ['suscopts-saint-mark'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -157,7 +157,7 @@ export const ORIGINS: FaithUnit = {
           pull: 'Hak-ka-Ptah → Aigyptos → qibt → Copt.',
           glyph: 'Ϧ',
           sources: ['copticchurch-language-origin', 'suscopts-coptic-language'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'origins-3-c2',
@@ -166,7 +166,7 @@ export const ORIGINS: FaithUnit = {
             'Coptic is not a language the Church invented; it is the final living stage of the language of the pharaohs. Hieroglyphic gave way to the priests\' hieratic, hieratic to the people\'s demotic, and demotic — once Christianity spread — was written out in Greek letters so that scripture could be read aloud plainly. That is why the Coptic alphabet is 25 Greek-derived letters plus 7 kept from demotic: the sounds Greek had no signs for.',
           pull: '25 letters from Greek · 7 kept from Egyptian demotic.',
           sources: ['copticchurch-language-origin', 'suscopts-coptic-language'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -185,7 +185,7 @@ export const ORIGINS: FaithUnit = {
           explain:
             'The chain is *Hak-ka-Ptah* → Greek *Aigyptos* → Arabic *qibt* → English "Copt". The word never meant a denomination or a sect — it means Egyptian. The Church did not take a name; it kept the name of the country.',
           sources: ['copticchurch-language-origin'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'origins-3-q2',
@@ -197,7 +197,7 @@ export const ORIGINS: FaithUnit = {
           explain:
             'Coptic is the last stage of an unbroken language — the same tongue the pyramid-builders spoke, finally written in an alphabet borrowed to carry the Gospel.',
           sources: ['copticchurch-language-origin', 'suscopts-coptic-language'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -214,7 +214,7 @@ export const ORIGINS: FaithUnit = {
           pull: 'Founded c. 190 AD — the oldest catechetical school in the world.',
           glyph: 'Ⲡ',
           sources: ['copticchurch-school-alexandria', 'lacopts-establishment'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'origins-4-c2',
@@ -223,7 +223,7 @@ export const ORIGINS: FaithUnit = {
             'Pantaenus founded it. Clement of Alexandria worked to set Christian teaching beside Greek philosophy. Origen was made its head at eighteen by Pope St. Demetrius, and produced commentaries on a scale no one has matched, along with the Hexapla — six versions of the Old Testament ruled side by side in parallel columns. Later, Didymus the Blind led it; blind from childhood, he taught the scriptures from memory.',
           pull: 'Pantaenus · Clement · Origen · Didymus the Blind.',
           sources: ['copticchurch-school-alexandria'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
@@ -242,7 +242,7 @@ export const ORIGINS: FaithUnit = {
           explain:
             'Founded around 190 AD, it was the oldest catechetical school in the world and bishops came from across the world to sit in it. Hold on to this: the men who will defend the faith at Nicaea and Ephesus come out of this school. Alexandria is not a bystander to the councils — it is where the argument was trained.',
           sources: ['copticchurch-school-alexandria'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },

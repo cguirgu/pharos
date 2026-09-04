@@ -51,6 +51,11 @@ Check what is already live before choosing a version:
 ```bash
 npx eas-cli submit:status         # prints the live App Store version + TestFlight uploads
 ```
+Every version bump needs a matching entry in `src/content/releases.ts` — the
+"what's new" sheet reads it, and `__tests__/content/releases.test.ts` fails the
+build if `app.config.ts`'s version has no release notes, or if an item links to
+a route that does not exist.
+
 Bump `version` in `app.config.ts` if the current one is already **released** on
 the App Store — App Store Connect will not take a new TestFlight build under a
 version string that has already shipped. The build *number* auto-increments on
@@ -94,7 +99,11 @@ npx eas-cli env:list                     # what secrets the build will bake in
 
 ## ⚠️ Release gate — the Faith course
 
-`FAITH_SHOW_UNREVIEWED` in `src/content/flags.ts` is currently **`true`**.
+**Status: cleared.** All 156 cards were reviewed and approved by the project
+owner on 2026-09-04, and `FAITH_SHOW_UNREVIEWED` is now **`false`** — the course
+ships on the cards' own `reviewed` flags, as intended.
+
+The rest of this section stands as the rule for any future card.
 
 That is correct for **TestFlight**: every card in the theology course ships
 `reviewed: false`, and the point of the beta is for the project owner to read
