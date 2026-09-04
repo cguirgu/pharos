@@ -242,6 +242,12 @@ export const copy = {
     fastingNuance: 'Show fish-allowed nuance',
     aboutBody:
       'Coptic Daily Companion keeps your rule on this device alone. Liturgical and scriptural texts are drawn from the verified sources credited below; anything not yet supplied is clearly marked as a placeholder.',
+    // open source
+    openSourceTitle: 'Built in the open',
+    openSourceBody:
+      'This app is open source, under the MIT licence. Anyone may read how it works, check the liturgical rules against their own sources, or help build it — and contributors who have never worked on an open-source project before are especially welcome; the guide walks through every step.',
+    openSourceLink: 'Read the source on GitHub',
+    contributingLink: 'How to contribute',
     attributionsTitle: 'Attributions & sources',
     attributions: [
       {

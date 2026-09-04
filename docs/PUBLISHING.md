@@ -100,9 +100,17 @@ That is correct for **TestFlight**: every card in the theology course ships
 `reviewed: false`, and the point of the beta is for the project owner to read
 the content in situ and sign it off. It is **not** correct for the App Store.
 
-**Before submitting for App Store review**, either:
-- flip each approved card to `reviewed: true` in `src/domain/faith/units/*.ts`, or
-- set `FAITH_SHOW_UNREVIEWED = false`, which withholds every unreviewed card.
+**Before submitting for App Store review**, the cards must be reviewed and
+flipped to `reviewed: true` in `src/domain/faith/units/*.ts`.
+
+> ⚠️ **Setting `FAITH_SHOW_UNREVIEWED = false` is NOT a safe alternative while
+> zero cards are reviewed.** Measured, not assumed: with the gate closed and no
+> card approved, the course has **0 ready lessons and 0 of 9 units showing any
+> content** — the Faith tab renders as an empty screen with a rank card and a
+> ledger of zeros. That is an App Review **guideline 2.1 (App Completeness)**
+> rejection risk and a poor experience besides. There are only two safe states
+> for a public release: review the content, or remove the Faith tab from
+> `app/(tabs)/_layout.tsx` for that build.
 
 Shipping to the public with the flag `true` and cards unreviewed would put
 unvetted doctrinal text in front of users. See `docs/CONTENT-SOURCES.md` →
