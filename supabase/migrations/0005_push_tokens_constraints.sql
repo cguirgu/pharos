@@ -23,6 +23,21 @@
 -- until it is taken, the send script's dead-token pruning is the backstop —
 -- Expo reports fabricated tokens as DeviceNotRegistered and they are deleted.
 
+-- ON THE LOCK: `ALTER TABLE ... ADD CONSTRAINT ... CHECK` takes an ACCESS
+-- EXCLUSIVE lock and scans the table to validate existing rows, which on a
+-- large table would block writes for the duration. The standard avoidance is
+-- `ADD CONSTRAINT ... NOT VALID` followed by `VALIDATE CONSTRAINT`, which takes
+-- only a SHARE UPDATE EXCLUSIVE lock for the scan.
+--
+-- The plain form is used here deliberately: push_tokens was created empty by
+-- 0004 and still held zero rows when this ran, so the scan was instantaneous
+-- and nothing could be blocked. Rewriting it to NOT VALID now would also make
+-- this file disagree with the database, where all three constraints are
+-- recorded as validated.
+--
+-- If a future migration adds a constraint to this table once it holds real
+-- rows, use the NOT VALID / VALIDATE CONSTRAINT split.
+
 alter table public.push_tokens
   drop constraint if exists push_tokens_token_format;
 alter table public.push_tokens
