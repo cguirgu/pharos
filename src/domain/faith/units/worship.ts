@@ -15,6 +15,11 @@ export const WORSHIP: FaithUnit = {
   title: 'How We Pray',
   subtitle: 'Three liturgies, seven hours, and a year that is more than half fast.',
   glyph: 'Ⲗ',
+  essentials: [
+    'Say what distinguishes the three liturgies — including which Person of the Trinity each is addressed to.',
+    'Explain what fasting is for in the Church’s own reason, and why it is described as joyful rather than grim.',
+    'Recognise how much of the Coptic year is fasted, and what that says about the shape of the life.',
+  ],
   creedClauseId: 'ascended',
   lessons: [
     {
@@ -30,7 +35,7 @@ export const WORSHIP: FaithUnit = {
           pull: 'St. Basil most of the year · St. Gregory on feasts · St. Cyril in part.',
           glyph: 'Ⲅ',
           sources: ['lacopts-liturgies'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-1-c2',
@@ -38,42 +43,50 @@ export const WORSHIP: FaithUnit = {
           body:
             'This is the detail worth carrying: the Liturgy of St. Basil is addressed to God the Father. The Liturgy of St. Gregory is addressed to the Son — it dwells on the Incarnation, the Passion, the Resurrection and the Ascension, speaking to Christ directly. St. Cyril\'s, like St. Mark\'s before it, is again addressed to the Father. The Church prays the Trinity by praying to the Persons in turn.',
           sources: ['lacopts-liturgies'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
         {
           id: 'worship-1-q1',
           kind: 'choice',
-          prompt: 'The Liturgy of St. Gregory is addressed to:',
-          answer: 'God the Son',
-          options: ['God the Son', 'God the Father', 'The Holy Spirit', 'The Theotokos'],
+          tier: 'core',
+          prompt: 'What distinguishes the Liturgy of St. Gregory from the Liturgy of St. Basil?',
+          answer: 'St. Gregory is addressed to the Son; St. Basil is addressed to the Father',
+          options: [
+            'St. Gregory is addressed to the Son; St. Basil is addressed to the Father',
+            'St. Gregory is addressed to the Father; St. Basil to the Holy Spirit',
+            'St. Gregory is prayed in Coptic; St. Basil in Greek',
+            'St. Gregory omits the consecration; St. Basil includes it',
+          ],
           explain:
-            'It speaks to Christ directly, dwelling on His Incarnation, Passion, Resurrection and Ascension. St. Basil’s and St. Cyril’s are addressed to the Father.',
+            'St. Gregory speaks to Christ directly, dwelling on His Incarnation, Passion, Resurrection and Ascension. St. Basil’s and St. Cyril’s are addressed to the Father. The Church does not use one prayer for all occasions — it turns to different Persons of the Trinity by name.',
           sources: ['lacopts-liturgies'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-1-q2',
           kind: 'choice',
+          tier: 'support',
           prompt: 'Which liturgy is used on most days of the year?',
           answer: 'St. Basil',
           options: ['St. Basil', 'St. Gregory', 'St. Cyril', 'St. Mark'],
           explain:
             'St. Gregory is kept for feasts and special occasions; only portions of St. Cyril are used today.',
           sources: ['lacopts-liturgies'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-1-q3',
           kind: 'truefalse',
+          tier: 'support',
           prompt: 'The Liturgy of St. Cyril is the Coptic form of a liturgy traced to St. Mark.',
           answer: 'True',
           options: [],
           explain:
             'St. Cyril rearranged the rites of St. Mark’s liturgy and added litanies to it — which is why the oldest liturgy in the Church carries the later name.',
           sources: ['lacopts-liturgies'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -90,7 +103,7 @@ export const WORSHIP: FaithUnit = {
           pull: 'Midnight · Prime · Terce · Sext · None · Vespers · Compline.',
           glyph: 'Ⲍ',
           sources: ['copticorthodox-what-is-coc'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-2-c2',
@@ -98,31 +111,33 @@ export const WORSHIP: FaithUnit = {
           body:
             'The Midnight prayer is not one prayer but three watches, prayed in succession — the tradition of keeping vigil against the parable of the bridegroom who comes at an unknown hour. It is the longest of the hours, and it is the one that shapes monastic life most directly.',
           sources: ['copticorthodox-what-is-coc'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
         {
           id: 'worship-2-q1',
           kind: 'choice',
+          tier: 'support',
           prompt: 'How many hours does the Agpeya divide the day into?',
           answer: 'Seven',
           options: ['Seven', 'Three', 'Five', 'Twelve'],
           explain:
             'Midnight, Prime, Terce, Sext, None, Vespers, and Compline — the same seven the Hours screen of this app carries.',
           sources: ['copticorthodox-what-is-coc'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-2-q2',
           kind: 'truefalse',
+          tier: 'support',
           prompt: 'The Midnight prayer of the Agpeya is prayed in three watches.',
           answer: 'True',
           options: [],
           explain:
             'Three successive watches — the vigil kept for a bridegroom whose hour is not announced.',
           sources: ['copticorthodox-what-is-coc'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },
@@ -139,7 +154,7 @@ export const WORSHIP: FaithUnit = {
           pull: 'Over 210 fasting days in a 365-day year.',
           glyph: 'Ⲛ',
           sources: ['st-takla-fasting', 'lacopts-lent'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-3-c2',
@@ -148,7 +163,7 @@ export const WORSHIP: FaithUnit = {
             'Not endurance, and not a diet. The purpose given is to give up a measure of dependence on the material world in order to feel, personally, one\'s hunger for God. And the Church insists the days are not gloomy: they are described as days of repentance and contrition that are at the same time periods of joy, because something is being won rather than merely given up.',
           pull: 'Days of repentance that are also days of joy.',
           sources: ['lacopts-lent', 'st-takla-fasting'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-3-c3',
@@ -157,24 +172,31 @@ export const WORSHIP: FaithUnit = {
             'Because the Lord fasted it Himself — forty days and forty nights, on our behalf. The Coptic Great Lent is 55 days: the forty, with a preparatory week before and Holy Week after, all kept as one continuous fast.',
           pull: 'Great Lent: 55 days.',
           sources: ['lacopts-lent'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
       questions: [
         {
           id: 'worship-3-q1',
           kind: 'choice',
-          prompt: 'Roughly how many days of the year does the Coptic Church fast?',
-          answer: 'Over 210',
-          options: ['Over 210', 'About 40', 'About 90', 'About 150'],
+          tier: 'core',
+          prompt: 'The Copts fast over 210 days of a 365-day year. What follows from that?',
+          answer: 'Fasting is the ordinary condition of the Coptic year, and feasting is the exception',
+          options: [
+            'Fasting is the ordinary condition of the Coptic year, and feasting is the exception',
+            'Fasting is reserved for monks and clergy',
+            'The fasts are optional outside Great Lent',
+            'Most fasts fall in a single season',
+          ],
           explain:
-            'More than half the year — the Nativity fast, Great Lent, the Apostles’ fast, St. Mary’s fast, most Wednesdays and Fridays, and Nineveh.',
+            'More than half the year: the Nativity fast (43 days), Great Lent (55), the Apostles’ fast, St. Mary’s fast (14), Nineveh, and most Wednesdays and Fridays. A Copt is not someone who fasts occasionally — fasting is the default state of the calendar.',
           sources: ['st-takla-fasting'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-3-q2',
           kind: 'choice',
+          tier: 'support',
           prompt: 'The Fast of Nineveh is:',
           answer: 'A three-day fast of repentance, two weeks before Great Lent',
           options: [
@@ -186,11 +208,12 @@ export const WORSHIP: FaithUnit = {
           explain:
             'Named for Jonah’s preaching to Nineveh, and kept as three days of repentance in preparation for the Great Fast.',
           sources: ['st-takla-fasting'],
-          reviewed: false,
+          reviewed: true,
         },
         {
           id: 'worship-3-q3',
           kind: 'choice',
+          tier: 'core',
           prompt: 'The reason given for fasting is chiefly:',
           answer: 'To loosen dependence on the material world and feel one’s hunger for God',
           options: [
@@ -202,7 +225,7 @@ export const WORSHIP: FaithUnit = {
           explain:
             'The Church describes the fast as freeing, not punitive — days of contrition that are also days of joy.',
           sources: ['lacopts-lent'],
-          reviewed: false,
+          reviewed: true,
         },
       ],
     },

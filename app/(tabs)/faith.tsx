@@ -27,6 +27,8 @@ import {
 import { evaluateFaithMilestones } from '../../src/domain/faith/milestones';
 import { faithRankFor } from '../../src/domain/faith/ranks';
 import { CREED_CLAUSES, unsealedCount } from '../../src/domain/faith/creed';
+import { isReviewLesson } from '../../src/domain/faith/review';
+import { Emphasis } from '../../src/ui/Emphasis';
 
 export default function FaithScreen() {
   const styles = useStyles(makeStyles);
@@ -100,6 +102,14 @@ export default function FaithScreen() {
                 <Caps size={8.5} ls={1.8} color={t.gold}>{unit.numeral}</Caps>
                 <Text style={styles.unitSub}>{unit.subtitle}</Text>
               </View>
+              {/* What the unit is FOR — stated before it is taught, so the
+                  learner knows what they are meant to carry out of it. */}
+              <View style={styles.essentials}>
+                <Caps size={7.5} ls={1.8} color={t.ink3}>{copy.faith.essentialsLabel}</Caps>
+                {unit.essentials.map((e) => (
+                  <Emphasis key={e} style={styles.essential}>{`· ${e}`}</Emphasis>
+                ))}
+              </View>
               {unitLessons.map((lesson) => {
                 const record = lessons[lesson.id];
                 const perfect = isLessonPerfect(record);
@@ -108,6 +118,7 @@ export default function FaithScreen() {
                 const unlocked = isLessonUnlocked(lesson.id, passed);
                 const pct = lessonPercent(record);
                 const markState = didPass ? 'kept' : attempted ? 'part' : 'open';
+                const isReview = isReviewLesson(lesson.id);
                 const subtitle = perfect
                   ? copy.faith.perfect
                   : didPass
@@ -115,7 +126,7 @@ export default function FaithScreen() {
                     : attempted
                       ? `${pct}% · ${copy.faith.needNinety}`
                       : unlocked
-                        ? copy.faith.begin
+                        ? (isReview ? copy.faith.reviewLabel : copy.faith.begin)
                         : copy.faith.locked;
                 return (
                   <Pressable
@@ -126,7 +137,7 @@ export default function FaithScreen() {
                   >
                     <Mark state={markState} />
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.rowName}>{lesson.title}</Text>
+                      <Text style={[styles.rowName, isReview && styles.rowNameReview]}>{lesson.title}</Text>
                       <Caps size={8.5} ls={1.4} color={perfect ? t.gold : t.ink3}>{subtitle}</Caps>
                     </View>
                     {perfect ? (
@@ -174,6 +185,9 @@ const makeStyles = (t: Palette) => StyleSheet.create({
   unitSubRow: { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 2, marginBottom: 4 },
   unitSub: { flex: 1, fontFamily: font.bodyItalic, fontSize: 14, color: t.ink2 },
   lamp: { fontFamily: font.body, fontSize: 15 },
+  essentials: { marginTop: 8, marginBottom: 10, paddingLeft: 2, gap: 3 },
+  essential: { fontFamily: font.body, fontSize: 13, lineHeight: 19, color: t.ink2 },
+  rowNameReview: { fontFamily: font.displayItalic, color: t.goldHi },
   row: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
   rowName: { fontFamily: font.display, fontSize: 21, color: t.parch },
 });

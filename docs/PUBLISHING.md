@@ -51,6 +51,11 @@ Check what is already live before choosing a version:
 ```bash
 npx eas-cli submit:status         # prints the live App Store version + TestFlight uploads
 ```
+Every version bump needs a matching entry in `src/content/releases.ts` — the
+"what's new" sheet reads it, and `__tests__/content/releases.test.ts` fails the
+build if `app.config.ts`'s version has no release notes, or if an item links to
+a route that does not exist.
+
 Bump `version` in `app.config.ts` if the current one is already **released** on
 the App Store — App Store Connect will not take a new TestFlight build under a
 version string that has already shipped. The build *number* auto-increments on
@@ -94,15 +99,27 @@ npx eas-cli env:list                     # what secrets the build will bake in
 
 ## ⚠️ Release gate — the Faith course
 
-`FAITH_SHOW_UNREVIEWED` in `src/content/flags.ts` is currently **`true`**.
+**Status: cleared.** All 156 cards were reviewed and approved by the project
+owner on 2026-09-04, and `FAITH_SHOW_UNREVIEWED` is now **`false`** — the course
+ships on the cards' own `reviewed` flags, as intended.
+
+The rest of this section stands as the rule for any future card.
 
 That is correct for **TestFlight**: every card in the theology course ships
 `reviewed: false`, and the point of the beta is for the project owner to read
 the content in situ and sign it off. It is **not** correct for the App Store.
 
-**Before submitting for App Store review**, either:
-- flip each approved card to `reviewed: true` in `src/domain/faith/units/*.ts`, or
-- set `FAITH_SHOW_UNREVIEWED = false`, which withholds every unreviewed card.
+**Before submitting for App Store review**, the cards must be reviewed and
+flipped to `reviewed: true` in `src/domain/faith/units/*.ts`.
+
+> ⚠️ **Setting `FAITH_SHOW_UNREVIEWED = false` is NOT a safe alternative while
+> zero cards are reviewed.** Measured, not assumed: with the gate closed and no
+> card approved, the course has **0 ready lessons and 0 of 9 units showing any
+> content** — the Faith tab renders as an empty screen with a rank card and a
+> ledger of zeros. That is an App Review **guideline 2.1 (App Completeness)**
+> rejection risk and a poor experience besides. There are only two safe states
+> for a public release: review the content, or remove the Faith tab from
+> `app/(tabs)/_layout.tsx` for that build.
 
 Shipping to the public with the flag `true` and cards unreviewed would put
 unvetted doctrinal text in front of users. See `docs/CONTENT-SOURCES.md` →
@@ -123,3 +140,60 @@ unvetted doctrinal text in front of users. See `docs/CONTENT-SOURCES.md` →
 - [ ] Age rating; category (Lifestyle / Reference).
 - [ ] Resolve any open `TODO(verify-liturgical)` items + supply licensed Agpeya /
       Synaxarium text (see `TESTING.md`).
+
+---
+
+## Announcing a release
+
+Two channels, and they read from the same source of truth
+(`src/content/releases.ts`), so the push and the in-app sheet can never drift.
+
+### 1. The in-app "what's new" sheet — automatic
+Add the release entry, ship the build, done. Anyone who updates sees it once on
+their next launch; a brand-new install never sees it (a changelog for an app you
+have never opened is noise). No permissions, nothing to declare.
+
+### 2. The push notification — manual, and opt-in only
+```bash
+SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=… npm run announce -- --version 1.2.0 --dry-run
+SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=… npm run announce -- --version 1.2.0
+```
+The title and body come from the release entry; the script only picks which one.
+It skips devices already on that version, prompts before sending, and prunes
+tokens Expo reports as dead.
+
+**Send it a day or two AFTER the App Store release goes live.** A push the moment
+you submit reaches people whose App Store has not offered them the update yet,
+so the notification lands with nothing to show for it.
+
+> ⚠️ `SUPABASE_SERVICE_ROLE_KEY` bypasses RLS completely. It belongs in your
+> shell for the minute the script runs — never in the repo, `app.config.ts`, or
+> EAS build env. The `push_tokens` table deliberately has **no select policy**,
+> so the shipped anon key cannot read it: a leaked anon key cannot harvest the
+> userbase's push tokens.
+
+### Why this is opt-in
+App Store guideline **4.5.4**: push "should not be used for promotions or direct
+marketing purposes unless customers have explicitly opted in to receive them via
+consent language displayed in your app's UI, and you provide a method in your app
+for a user to opt out". A feature announcement is promotional, so:
+
+- the switch ships **off** (`src/domain/notifications/announcements.ts`),
+- the consent text sits **above** the switch on the Reminders screen and says
+  what is sent and how often, before it is touched,
+- the same switch is the opt-out, and turning it off deletes the stored token.
+
+Do not repurpose this channel for anything else. It is the one remote channel in
+an app of otherwise entirely local notifications, and the consent language is a
+promise about what it carries.
+
+## Regenerating App Store screenshots
+```bash
+npx expo export --platform web --output-dir /tmp/web
+node scripts/screenshots/serve.cjs /tmp/web &
+node scripts/screenshots/capture.cjs          # real screens, 1320x2868
+node scripts/screenshots/compose.cjs <captures> <out>   # adds captions
+```
+These are captures of the actual running app (web build), framed under a caption
+— not mockups. Requires `.wasm` in `metro.config.js` `assetExts`, without which
+the web bundle cannot resolve expo-sqlite and the export fails.

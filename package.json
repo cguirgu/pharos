@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "main": "expo-router/entry",
-  "description": "Pharos — Coptic Orthodox daily-practice app. See handoff/ for the spec and docs/ for the living reference.",
+  "description": "Pharos \u2014 Coptic Orthodox daily-practice app. See handoff/ for the spec and docs/ for the living reference.",
   "scripts": {
     "start": "expo start",
     "ios": "expo start --ios",
@@ -12,7 +12,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "typecheck": "tsc --noEmit",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "announce": "node scripts/announce.mjs",
+    "screenshots": "npm run screenshots:export && npm run screenshots:capture && npm run screenshots:compose",
+    "screenshots:export": "expo export --platform web --output-dir .screenshots/web",
+    "screenshots:capture": "node scripts/screenshots/serve.cjs .screenshots/web & sleep 2 && node scripts/screenshots/capture.cjs .screenshots/captures; kill %1 2>/dev/null || true",
+    "screenshots:compose": "node scripts/screenshots/compose.cjs .screenshots/captures .screenshots/appstore"
   },
   "devDependencies": {
     "@testing-library/react-native": "^14.0.0",
@@ -23,6 +28,7 @@
     "drizzle-kit": "^0.31.10",
     "jest": "^29.7.0",
     "jest-expo": "~54.0.18",
+    "playwright": "^1.62.1",
     "react-test-renderer": "19.1.0",
     "ts-jest": "^29.1.5",
     "typescript": "^5.5.4"

@@ -384,6 +384,10 @@ export function isLessonPerfect(result: LessonResult | undefined): boolean {
  */
 export function isLessonPassed(result: LessonResult | undefined): boolean {
   if (!result || result.total <= 0) return false;
+  // At least one right answer is always required. Without this, the "forgive
+  // one slip" allowance means a single-question lesson passes on zero correct
+  // — you could tap the wrong answer and still unlock the next lesson.
+  if (result.correct <= 0) return false;
   const allowed = Math.max(1, Math.floor(result.total * 0.1));
   return result.total - result.correct <= allowed;
 }

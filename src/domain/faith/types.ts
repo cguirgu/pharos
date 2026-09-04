@@ -54,9 +54,25 @@ export type QuestionKind =
 export const STANDINGS = ['Defined', 'Held in mystery', 'Still disputed'] as const;
 export type Standing = (typeof STANDINGS)[number];
 
+/**
+ * How load-bearing a question is.
+ *
+ * `core`    — one of the things a learner MUST walk away holding. Core questions
+ *             are the only ones drawn into the cumulative review lessons, so
+ *             they are the ones that get spaced retrieval practice.
+ * `support` — true, cited, worth meeting once, but not something the course will
+ *             drill. Detail that colours in a core idea.
+ *
+ * The rule that keeps this honest: if forgetting the answer would leave the
+ * learner's grasp of the faith intact, it is `support`, not `core`. A date, a
+ * place name, or a count is almost never core.
+ */
+export type QuestionTier = 'core' | 'support';
+
 export interface Question extends Attributed {
   readonly id: string;
   readonly kind: QuestionKind;
+  readonly tier: QuestionTier;
   readonly prompt: string;
   /** The correct answer, verbatim as it appears in `options`. */
   readonly answer: string;
@@ -85,6 +101,13 @@ export interface FaithUnit {
   readonly title: string;
   readonly subtitle: string;
   readonly glyph: string;
+  /**
+   * The enduring understandings — what the learner can say, and say *why*, once
+   * the unit is done. These are authored FIRST and the questions written
+   * backwards from them (Wiggins & McTighe, backward design), so nothing gets
+   * tested merely because it is easy to test. Shown at the head of the unit.
+   */
+  readonly essentials: readonly string[];
   readonly lessons: readonly FaithLesson[];
   /**
    * The clause of the Creed this unit unseals (see `creed.ts`). Completing the

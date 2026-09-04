@@ -5,6 +5,13 @@
 export const copy = {
   tabs: { today: 'Today', hours: 'Hours', word: 'Word', coptic: 'Coptic', faith: 'Faith', rule: 'Rule', you: 'You', saved: 'Saved' },
 
+  whatsNew: {
+    eyebrow: 'New in this version',
+    title: 'What\u2019s new',
+    dismiss: 'Got it',
+    laterHint: 'You can find all of this again from the You screen.',
+  },
+
   errorBoundary: {
     title: 'A moment of stillness',
     body: 'Something interrupted the page. Your saved rule and data are safe. Take a breath and try again.',
@@ -242,6 +249,12 @@ export const copy = {
     fastingNuance: 'Show fish-allowed nuance',
     aboutBody:
       'Coptic Daily Companion keeps your rule on this device alone. Liturgical and scriptural texts are drawn from the verified sources credited below; anything not yet supplied is clearly marked as a placeholder.',
+    // open source
+    openSourceTitle: 'Built in the open',
+    openSourceBody:
+      'This app is open source, under the MIT licence. Anyone may read how it works, check the liturgical rules against their own sources, or help build it — and contributors who have never worked on an open-source project before are especially welcome; the guide walks through every step.',
+    openSourceLink: 'Read the source on GitHub',
+    contributingLink: 'How to contribute',
     attributionsTitle: 'Attributions & sources',
     attributions: [
       {
@@ -448,6 +461,11 @@ export const copy = {
     clauseUnsealed: 'Clause of the Creed unsealed',
     tryAgain: 'Try again',
     done: 'Done',
+    // teaching design
+    essentialsLabel: 'By the end of this unit you can',
+    reviewLabel: 'Recollection',
+    reviewIntro:
+      'No new material. These are the things worth keeping, asked again now that time has passed \u2014 recalling them is what makes them stay.',
     // the creed seal
     creedHead: 'The Creed, clause by clause',
     creedTitle: 'The Creed',
@@ -468,6 +486,7 @@ export const copy = {
   },
 
   reminders: {
+    announceSection: 'From the makers',
     head: 'Reminders',
     title: 'A gentle word',
     subtitle: 'Choose what to be reminded of, and when. Never to shame — only to tend.',

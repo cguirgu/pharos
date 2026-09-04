@@ -296,7 +296,7 @@ Unit IV is the most contested material in the app; Unit IX makes claims about wh
 Church has *not* defined, which is as much a doctrinal claim as any other and just as easy
 to get wrong.
 
-### Curriculum (9 units, 33 lessons, 158 cards and questions)
+### Curriculum (9 units, 37 lessons — 34 taught + 3 cumulative reviews)
 | # | Unit | Covers |
 |---|---|---|
 | I | Where We Come From | Holy Family in Egypt · St. Mark and the see · what "Copt" means · School of Alexandria |
@@ -308,6 +308,47 @@ to get wrong.
 | VII | Our Fathers | Athanasius · Cyril · Anthony and Pachomius |
 | VIII | The Church Now | The altar lot · Kyrillos VI and Zeitoun · Shenouda III · Tawadros II |
 | IX | What We Hold in Silence | Defined vs mystery vs disputed · where our own sources differ · what is still open |
+
+### Teaching design (why the questions are what they are)
+
+The first version of this course tested what was easiest to test — where Pope
+Dioscorus was exiled, how many bishops sat at Nicaea, which year Zeitoun began.
+All true and all cited, and all forgettable without any loss to a learner's grasp
+of the faith. The curriculum was rebuilt around retention:
+
+- **Backward design.** Every unit declares `essentials` — the enduring
+  understandings, written *first*, as what the learner can say and say *why*.
+  Questions are written backwards from them. `__tests__/faith/curriculum.test.ts`
+  fails the build if a unit promises more understandings than it has core
+  questions to carry.
+- **Tiered questions.** Every question is `core` or `support`. The rule: *if
+  forgetting the answer would leave the learner's grasp of the faith intact, it
+  is support.* A date, a place name, or a count is almost never core. The suite
+  enforces a majority-core course.
+- **Elaborative interrogation.** Questions ask *why* and *what follows*, not
+  *which* and *how many*. "Where was Dioscorus exiled?" became "Why did Alexandria
+  hear Chalcedon's wording as dangerous, so soon after Ephesus?"
+- **Retrieval practice, spaced and interleaved.** `src/domain/faith/review.ts`
+  appends a cumulative **Recollection** lesson at the end of each of three acts
+  (units I–III, IV–VI, VII–IX). Reviews carry no teaching cards — being shown the
+  answer again is what would rob retrieval of its value — and they round-robin
+  across their source units so consecutive questions come from different units.
+  A test asserts zero same-unit adjacencies.
+- **Concrete anchors.** Unit IV now teaches the four heresies as four *opposite*
+  failures (Arius: not fully God · Apollinarius: not fully man · Nestorius:
+  divided in two · Eutyches: humanity dissolved "as a drop of vinegar in the
+  ocean"), and Pope Shenouda III's **iron in the fire** image for the union.
+- **One causal spine.** The course now teaches Chalcedon the way the Diocese of
+  Los Angeles states it: Nestorius's refusal of *Theotokos* "led to the inference
+  of the dual nature… This dualism was decreed in the Council of Chalcedon in 451
+  A.D., in spite of the objection of the Coptic Pope Dioscorus," after which the
+  Church "was divided into two groups: Rome and Constantinople, who accepted the
+  doctrine of two united natures… and Alexandria and Antioch who held the belief
+  of one nature out of two natures." That sentence pair is the keystone the whole
+  unit is built to make memorable.
+
+A named list of the cut trivia is asserted **gone** in the test suite, so
+re-adding one means arguing with a test rather than with a reviewer's memory.
 
 ### Gamification
 Mirrors the Coptic course (level · XP · 90% to unlock · 100% for the mark) so the two feel

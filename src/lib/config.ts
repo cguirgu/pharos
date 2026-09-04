@@ -24,3 +24,6 @@ export function isBackendConfigured(): boolean {
 export function isPurchasesConfigured(): boolean {
   return Boolean(REVENUECAT_IOS_KEY);
 }
+
+/** The running app version, e.g. "1.2.0" — from app.config.ts `version`. */
+export const APP_VERSION = Constants.expoConfig?.version ?? '0.0.0';

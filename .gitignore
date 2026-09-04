@@ -21,3 +21,6 @@ expo-env.d.ts
 # Apple signing material — App Store Connect API keys. Never commit.
 *.p8
 AuthKey_*.p8
+
+# Generated App Store screenshots (npm run screenshots)
+.screenshots/

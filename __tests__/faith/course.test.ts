@@ -150,6 +150,12 @@ describe('progress math', () => {
     expect(isLessonPassed({ correct: 3, total: 4 })).toBe(true);
     expect(isLessonPassed({ correct: 2, total: 4 })).toBe(false);
     expect(isLessonPassed(undefined)).toBe(false);
+    // A wrong-only run never passes, however short the lesson. Before this,
+    // `total - correct <= max(1, ...)` let a single-question lesson through on
+    // zero correct answers, silently unlocking the next lesson.
+    expect(isLessonPassed({ correct: 0, total: 1 })).toBe(false);
+    expect(isLessonPassed({ correct: 0, total: 9 })).toBe(false);
+    expect(isLessonPassed({ correct: 1, total: 1 })).toBe(true);
   });
 
   test('level counts attempts; xp is 10 per correct answer', () => {

@@ -9,6 +9,7 @@
  * from an unimportant one.
  */
 import type { FaithUnit } from '../types';
+import { withReviews } from '../review';
 import { ORIGINS } from './origins';
 import { MARTYRS } from './martyrs';
 import { COUNCILS } from './councils';
@@ -19,7 +20,8 @@ import { FATHERS } from './fathers';
 import { TODAY } from './today';
 import { MYSTERY } from './mystery';
 
-export const UNITS: readonly FaithUnit[] = [
+/** The curriculum as authored, before cumulative reviews are woven in. */
+const TAUGHT: readonly FaithUnit[] = [
   ORIGINS,
   MARTYRS,
   COUNCILS,
@@ -30,6 +32,14 @@ export const UNITS: readonly FaithUnit[] = [
   TODAY,
   MYSTERY,
 ];
+
+/**
+ * The course as the learner meets it: the authored units, with a cumulative
+ * review appended at the end of each act (see `../review.ts`). Reviews are
+ * generated from the `core` questions already taught, so the curriculum has one
+ * source of truth and the reviews can never drift from it.
+ */
+export const UNITS: readonly FaithUnit[] = withReviews(TAUGHT);
 
 /** Every lesson, flattened in course order. */
 export const LESSONS = UNITS.flatMap((u) => u.lessons);
