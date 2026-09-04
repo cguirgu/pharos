@@ -486,6 +486,7 @@ export const copy = {
   },
 
   reminders: {
+    announceSection: 'From the makers',
     head: 'Reminders',
     title: 'A gentle word',
     subtitle: 'Choose what to be reminded of, and when. Never to shame — only to tend.',

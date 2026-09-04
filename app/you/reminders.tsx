@@ -12,6 +12,13 @@ import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
 import { useNotifications } from '../../src/state/notifications';
 import { CHANNELS, type ChannelConfig, type NotificationChannel } from '../../src/domain/notifications/types';
+import {
+  ANNOUNCEMENTS_TITLE,
+  CONSENT_TEXT,
+  OPTED_IN_TEXT,
+} from '../../src/domain/notifications/announcements';
+import { useAuth } from '../../src/state/auth';
+import { GUEST_ACCOUNT_ID } from '../../src/db/repo';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const parse = (t: string): [number, number] => {
@@ -25,6 +32,9 @@ export default function RemindersScreen() {
   const router = useRouter();
   const config = useNotifications((s) => s.config);
   const setChannel = useNotifications((s) => s.setChannel);
+  const announcements = useNotifications((s) => s.announcements);
+  const setAnnouncements = useNotifications((s) => s.setAnnouncements);
+  const accountId = useAuth((s) => s.account?.id ?? null);
 
   return (
     <Page>
@@ -51,6 +61,33 @@ export default function RemindersScreen() {
               </View>
             );
           })}
+        </View>
+
+        {/* Release announcements — the one REMOTE channel, and the only
+            promotional one. App Store guideline 4.5.4 requires an explicit
+            opt-in "via consent language displayed in your app's UI" plus an
+            in-app way out: the consent text sits above the switch, and the
+            switch itself is the opt-out. Separated from the local cues above
+            so it is never mistaken for one of them. */}
+        <View style={styles.announceBlock}>
+          <Caps size={8.5} ls={2} color={t.gold}>{copy.reminders.announceSection}</Caps>
+          <View style={[styles.channelHead, { marginTop: 12 }]}>
+            <View style={{ flex: 1, paddingRight: 14 }}>
+              <Text style={styles.name}>{ANNOUNCEMENTS_TITLE}</Text>
+            </View>
+            <Toggle
+              value={announcements.enabled}
+              onChange={(v) => {
+                void setAnnouncements(
+                  v,
+                  accountId && accountId !== GUEST_ACCOUNT_ID ? accountId : null,
+                );
+              }}
+            />
+          </View>
+          <Text style={styles.consent}>
+            {announcements.enabled ? OPTED_IN_TEXT : CONSENT_TEXT}
+          </Text>
         </View>
       </ScrollView>
     </Page>
@@ -87,6 +124,13 @@ function TimeEditor({
 const makeStyles = (t: Palette) => StyleSheet.create({
   title: { fontFamily: font.display, fontSize: 30, color: t.parch, marginTop: 6 },
   subtitle: { fontFamily: font.bodyItalic, fontSize: 15, color: t.ink2, marginTop: 6 },
+  announceBlock: {
+    marginTop: 26,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: t.rule,
+  },
+  consent: { fontFamily: font.body, fontSize: 13.5, lineHeight: 21, color: t.ink2, marginTop: 10 },
   channel: { paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: t.ruleDim },
   channelHead: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   name: { fontFamily: font.display, fontSize: 21, color: t.parch },

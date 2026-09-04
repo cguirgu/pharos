@@ -140,3 +140,60 @@ unvetted doctrinal text in front of users. See `docs/CONTENT-SOURCES.md` →
 - [ ] Age rating; category (Lifestyle / Reference).
 - [ ] Resolve any open `TODO(verify-liturgical)` items + supply licensed Agpeya /
       Synaxarium text (see `TESTING.md`).
+
+---
+
+## Announcing a release
+
+Two channels, and they read from the same source of truth
+(`src/content/releases.ts`), so the push and the in-app sheet can never drift.
+
+### 1. The in-app "what's new" sheet — automatic
+Add the release entry, ship the build, done. Anyone who updates sees it once on
+their next launch; a brand-new install never sees it (a changelog for an app you
+have never opened is noise). No permissions, nothing to declare.
+
+### 2. The push notification — manual, and opt-in only
+```bash
+SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=… npm run announce -- --version 1.2.0 --dry-run
+SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=… npm run announce -- --version 1.2.0
+```
+The title and body come from the release entry; the script only picks which one.
+It skips devices already on that version, prompts before sending, and prunes
+tokens Expo reports as dead.
+
+**Send it a day or two AFTER the App Store release goes live.** A push the moment
+you submit reaches people whose App Store has not offered them the update yet,
+so the notification lands with nothing to show for it.
+
+> ⚠️ `SUPABASE_SERVICE_ROLE_KEY` bypasses RLS completely. It belongs in your
+> shell for the minute the script runs — never in the repo, `app.config.ts`, or
+> EAS build env. The `push_tokens` table deliberately has **no select policy**,
+> so the shipped anon key cannot read it: a leaked anon key cannot harvest the
+> userbase's push tokens.
+
+### Why this is opt-in
+App Store guideline **4.5.4**: push "should not be used for promotions or direct
+marketing purposes unless customers have explicitly opted in to receive them via
+consent language displayed in your app's UI, and you provide a method in your app
+for a user to opt out". A feature announcement is promotional, so:
+
+- the switch ships **off** (`src/domain/notifications/announcements.ts`),
+- the consent text sits **above** the switch on the Reminders screen and says
+  what is sent and how often, before it is touched,
+- the same switch is the opt-out, and turning it off deletes the stored token.
+
+Do not repurpose this channel for anything else. It is the one remote channel in
+an app of otherwise entirely local notifications, and the consent language is a
+promise about what it carries.
+
+## Regenerating App Store screenshots
+```bash
+npx expo export --platform web --output-dir /tmp/web
+node scripts/screenshots/serve.cjs /tmp/web &
+node scripts/screenshots/capture.cjs          # real screens, 1320x2868
+node scripts/screenshots/compose.cjs <captures> <out>   # adds captions
+```
+These are captures of the actual running app (web build), framed under a caption
+— not mockups. Requires `.wasm` in `metro.config.js` `assetExts`, without which
+the web bundle cannot resolve expo-sqlite and the export fails.
