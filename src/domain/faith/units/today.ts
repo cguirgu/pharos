@@ -118,6 +118,18 @@ export const TODAY: FaithUnit = {
           sources: ['synax-zeitoun', 'lacopts-kyrillos'],
           reviewed: true,
         },
+        {
+          id: 'today-2-q3',
+          kind: 'choice',
+          tier: 'support',
+          prompt: 'What was Pope Kyrillos VI before he was patriarch?',
+          answer: 'A monk and a hermit',
+          options: ['A monk and a hermit', 'A parish priest in Cairo', 'A professor of theology', 'A bishop of Alexandria'],
+          explain:
+            'Remembered as both practical and mystical, and his papacy (1959–1971) is the hinge on which the modern revival of Coptic monasticism turns.',
+          sources: ['lacopts-kyrillos'],
+          reviewed: true,
+        },
       ],
     },
     {
@@ -155,6 +167,23 @@ export const TODAY: FaithUnit = {
           explain:
             'The 116th, 117th and 118th successors of St. Mark: 1959–1971, from 1971, and from 2012.',
           sources: ['lacopts-kyrillos', 'copticorthodox-tawadros'],
+          reviewed: true,
+        },
+        {
+          id: 'today-3-q2',
+          kind: 'choice',
+          tier: 'core',
+          prompt: 'Why do English-language diocesan sites — Los Angeles, the Southern United States — exist at all?',
+          answer: 'Because the twentieth century scattered the Coptic Church worldwide, and it now has to teach its doctrine in English',
+          options: [
+            'Because the twentieth century scattered the Coptic Church worldwide, and it now has to teach its doctrine in English',
+            'Because the Coptic language was abandoned by the Church',
+            'Because the Holy Synod moved its seat out of Egypt',
+            'Because English became a liturgical language of the Church',
+          ],
+          explain:
+            'Dioceses now stand in North America, Europe, Australia and across Africa where none existed. The sources this whole course cites are themselves a product of that scattering.',
+          sources: ['lacopts-history', 'copticorthodox-what-is-coc'],
           reviewed: true,
         },
       ],

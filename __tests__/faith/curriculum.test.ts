@@ -125,6 +125,20 @@ describe('cumulative reviews', () => {
   });
 });
 
+describe('no lesson is too thin to be meaningful', () => {
+  it('gives every taught lesson at least two questions', () => {
+    // Trimming trivia left six lessons with a single question — and with the
+    // "forgive one slip" allowance, a one-question lesson could be PASSED with
+    // zero correct answers. `isLessonPassed` now requires at least one correct
+    // answer, and this keeps lessons substantial enough to be worth passing.
+    for (const lesson of LESSONS.filter((l) => !isReviewLesson(l.id))) {
+      expect(`${lesson.id}: ${lesson.questions.length}`).toBe(
+        `${lesson.id}: ${Math.max(lesson.questions.length, 2)}`,
+      );
+    }
+  });
+});
+
 describe('the trivia that prompted this redesign is gone', () => {
   // Named explicitly so a future contributor re-adding one has to argue with a
   // test rather than with a reviewer's memory.

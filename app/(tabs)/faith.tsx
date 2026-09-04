@@ -28,6 +28,7 @@ import { evaluateFaithMilestones } from '../../src/domain/faith/milestones';
 import { faithRankFor } from '../../src/domain/faith/ranks';
 import { CREED_CLAUSES, unsealedCount } from '../../src/domain/faith/creed';
 import { isReviewLesson } from '../../src/domain/faith/review';
+import { Emphasis } from '../../src/ui/Emphasis';
 
 export default function FaithScreen() {
   const styles = useStyles(makeStyles);
@@ -106,7 +107,7 @@ export default function FaithScreen() {
               <View style={styles.essentials}>
                 <Caps size={7.5} ls={1.8} color={t.ink3}>{copy.faith.essentialsLabel}</Caps>
                 {unit.essentials.map((e) => (
-                  <Text key={e} style={styles.essential}>· {e}</Text>
+                  <Emphasis key={e} style={styles.essential}>{`· ${e}`}</Emphasis>
                 ))}
               </View>
               {unitLessons.map((lesson) => {

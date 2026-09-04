@@ -107,6 +107,23 @@ export const FATHERS: FaithUnit = {
           sources: ['lacopts-ephesus', 'synax-cyril'],
           reviewed: true,
         },
+        {
+          id: 'fathers-2-q2',
+          kind: 'choice',
+          tier: 'core',
+          prompt: 'Which formula, still the Coptic confession today, comes from St. Cyril?',
+          answer: 'One incarnate nature of God the Word',
+          options: [
+            'One incarnate nature of God the Word',
+            'Two natures in one person, without confusion',
+            'Of one essence with the Father',
+            'Perfect God and perfect man, in two wills',
+          ],
+          explain:
+            '“Of one essence with the Father” is Nicaea’s, defended by Athanasius. The two-natures formula is Chalcedon’s. St. Cyril’s is the one Alexandria kept — which is why the Coptic Church regards its Christology as simply Ephesus, held on to.',
+          sources: ['synax-cyril', 'shenouda-nature-of-christ'],
+          reviewed: true,
+        },
       ],
     },
     {

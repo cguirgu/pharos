@@ -66,6 +66,23 @@ export const ORIGINS: FaithUnit = {
           sources: ['lacopts-holy-family'],
           reviewed: true,
         },
+        {
+          id: 'origins-1-q2',
+          kind: 'choice',
+          tier: 'core',
+          prompt: 'Why does the Coptic Church keep the Holy Family’s route as named places rather than as a general story?',
+          answer: 'Because the places are treated as sacred geography — the ground itself is part of the inheritance',
+          options: [
+            'Because the places are treated as sacred geography — the ground itself is part of the inheritance',
+            'Because the route settles a dispute about the date of the Nativity',
+            'Because each site marks where a Gospel was later written',
+            'Because the sites mark the boundaries of the ancient patriarchate',
+          ],
+          explain:
+            'Al-Farma, Tal Basta, Mostorod, and on to Al-Muharraq are kept as places you can still go. For the Coptic Church the flight is not a story that happened somewhere else — it happened here, and the map is part of the memory.',
+          sources: ['lacopts-holy-family', 'suscopts-holy-family'],
+          reviewed: true,
+        },
       ],
     },
     {
@@ -241,6 +258,23 @@ export const ORIGINS: FaithUnit = {
           ],
           explain:
             'Founded around 190 AD, it was the oldest catechetical school in the world and bishops came from across the world to sit in it. Hold on to this: the men who will defend the faith at Nicaea and Ephesus come out of this school. Alexandria is not a bystander to the councils — it is where the argument was trained.',
+          sources: ['copticchurch-school-alexandria'],
+          reviewed: true,
+        },
+        {
+          id: 'origins-4-q2',
+          kind: 'choice',
+          tier: 'core',
+          prompt: 'The School of Alexandria began as a *catechetical* school. What does that mean it was originally for?',
+          answer: 'Teaching the faith to those preparing for baptism',
+          options: [
+            'Teaching the faith to those preparing for baptism',
+            'Training scribes to copy the scriptures',
+            'Settling disputes between bishops',
+            'Teaching Greek to Egyptian converts',
+          ],
+          explain:
+            'It started as instruction for candidates for baptism, and grew from there into the most important centre of religious learning in Christendom. The Church’s greatest school of theology began as a class for beginners.',
           sources: ['copticchurch-school-alexandria'],
           reviewed: true,
         },

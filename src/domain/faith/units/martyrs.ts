@@ -137,6 +137,23 @@ export const MARTYRS: FaithUnit = {
           sources: ['copticchurch-calendar'],
           reviewed: true,
         },
+        {
+          id: 'martyrs-2-q2',
+          kind: 'choice',
+          tier: 'core',
+          prompt: 'How does a history of persecution shape the way this Church holds its doctrine?',
+          answer: 'It makes the Church slow to soften what it confesses, having seen people die rather than adjust it',
+          options: [
+            'It makes the Church slow to soften what it confesses, having seen people die rather than adjust it',
+            'It makes the Church avoid defining doctrine at all',
+            'It makes the Church defer to the decisions of other patriarchates',
+            'It makes the Church keep its teachings secret',
+          ],
+          explain:
+            'Hold this when Unit IV reaches Chalcedon. The Alexandrian refusal to accept a new formula was not stubbornness about vocabulary — it came from a community for whom a formula had already cost lives.',
+          sources: ['copticorthodox-history', 'copticorthodox-dioscorus'],
+          reviewed: true,
+        },
       ],
     },
     {
