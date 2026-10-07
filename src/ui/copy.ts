@@ -279,7 +279,7 @@ export const copy = {
       },
       {
         title: 'Typefaces',
-        body: 'Cormorant Garamond and Spectral, under the SIL Open Font License.',
+        body: 'Cormorant Garamond, Spectral, and New Athena Unicode, under the SIL Open Font License. New Athena Unicode is distributed by the Society for Classical Studies.',
       },
     ],
     awaiting: 'Still to be supplied (from verified, official sources)',

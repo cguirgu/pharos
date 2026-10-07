@@ -45,7 +45,7 @@ export const CHALCEDON: FaithUnit = {
           id: 'chalcedon-1-c2',
           heading: 'Deposed and exiled',
           body:
-            'Chalcedon, in 451 AD, adopted the two-natures formula and deposed Dioscorus. He was exiled to Gangra, an island off Paphlagonia on the coast of Asia Minor, and stayed there five years until his departure in 454. The Coptic Church has never recognised the deposition: it commemorates him as a saint and calls him a champion of orthodoxy.',
+            'Chalcedon, in 451 AD, adopted the two-natures formula and deposed Dioscorus. He was exiled to Gangra and remained in exile until his departure in 454 — about three years later. The Coptic Church has never recognised the deposition: it commemorates him as a saint and calls him a champion of orthodoxy.',
           pull: 'Exiled to Gangra · departed 454 · commemorated as a saint.',
           sources: ['copticorthodox-dioscorus', 'synax-dioscorus'],
           reviewed: true,
@@ -239,9 +239,9 @@ export const CHALCEDON: FaithUnit = {
           id: 'chalcedon-2b-c2',
           heading: 'Iron in the fire',
           body:
-            'Pope Shenouda\'s image for the union: ignited iron. We do not say there are two natures here, iron and fire — we say iron united with fire. The iron is not changed into fire, nor fire into iron; they are united without mingling, confusion or alteration, and the ignited iron keeps every property of iron and every property of fire at once. St. Cyril and St. Dioscorus used the same kind of image with the soul and the body: one human nature, neither soul alone nor body alone.',
+            'Pope Shenouda III highlights an older patristic image: iron glowing in fire, which he explicitly attributes to St. Cyril the Great and St. Dioscorus. Iron and fire retain their properties in the union; neither is turned into the other. The image helps us confess the fullness of Christ’s divinity and humanity without confusion. Every analogy has limits: iron can cool, whereas Christ’s divinity and humanity are never separated.',
           pull: 'One glowing iron. All the properties of both. Nothing lost, nothing blended.',
-          sources: ['shenouda-nature-of-christ'],
+          sources: ['shenouda-iron-and-fire'],
           reviewed: true,
         },
       ],
@@ -293,8 +293,8 @@ export const CHALCEDON: FaithUnit = {
             'That the two natures take turns acting',
           ],
           explain:
-            'It is a guard against Eutyches on one side and Nestorius on the other. One glowing iron — you cannot pull the fire back out of it, and you cannot say the iron stopped being iron.',
-          sources: ['shenouda-nature-of-christ'],
+            'Pope Shenouda highlights the analogy used by St. Cyril and St. Dioscorus: the union does not erase either set of properties. He also notes its limit — iron can cool, but the union in Christ is permanent.',
+          sources: ['shenouda-iron-and-fire'],
           reviewed: true,
         },
       ],
@@ -439,20 +439,28 @@ export const CHALCEDON: FaithUnit = {
       cards: [
         {
           id: 'chalcedon-5-c1',
-          heading: 'A real difference that survives the agreement',
+          heading: 'What Pope Shenouda means by one will',
           body:
-            'Pope Shenouda III taught that as the Incarnate Logos has one nature, so the will and the act are each one. His argument: sin is precisely the conflict of a human will with God\'s, and Christ is sinless, so no such division can be in Him; a divided will would mean internal conflict in the one who is our guide.',
-          pull: '“We believe in One Will and One Act.” — Pope Shenouda III',
+            'Pope Shenouda III uses St. Cyril’s language of the one Incarnate Logos to explain one will and one act. He stresses that Christ’s humanity and divinity never oppose one another: His human willing is not sinful or in conflict with God. Read this as an account of the unity of Christ, not as the disappearance of His human capacity to will.',
+          pull: 'Unity without conflict does not mean incomplete humanity.',
           glyph: 'Ⲱ',
           sources: ['shenouda-one-will'],
           reviewed: true,
         },
         {
           id: 'chalcedon-5-c2',
-          heading: 'Why this is worth knowing',
+          heading: 'Cyril, Maximus, and the meaning of will',
           body:
-            'The Eastern Orthodox, following a later council the Coptic Church does not receive, confess two wills in Christ — divine and human — with the human freely and always consenting to the divine. Both sides are guarding the same thing from opposite directions: one against dividing Christ, the other against thinning His humanity. It is the clearest example of what the dialogues did and did not reach. The Christology was agreed; this was not on the page.',
-          sources: ['shenouda-one-will', 'chambesy-1990'],
+            'St. Cyril’s teaching on the one incarnate Son is a shared point of reference for both Orthodox families. In the Eastern Orthodox tradition, St. Maximus the Confessor defended Christ’s human will against teaching that left Him only a divine will. Speaking of divine and human willing need not mean two rival persons. Ask what a writer means by will before comparing formulas; a simple “one versus two” tally misses the question of Christ’s complete humanity and personal unity.',
+          sources: ['shenouda-one-will', 'oca-maximus', 'chambesy-1990'],
+          reviewed: true,
+        },
+        {
+          id: 'chalcedon-5-c3',
+          heading: 'What the dialogue actually says',
+          body:
+            'The 1990 Second Agreed Statement explicitly addresses wills and energies in paragraphs 3–5: divine and human willing and activity belong to the united natures, and the one incarnate Logos is the acting subject. This was a real agreement of the Joint Commission. Its reception and the restoration of communion must be distinguished from what the text itself affirms.',
+          sources: ['chambesy-1990'],
           reviewed: true,
         },
       ],
@@ -476,13 +484,14 @@ export const CHALCEDON: FaithUnit = {
         },
         {
           id: 'chalcedon-5-q2',
-          kind: 'standing',
+          kind: 'truefalse',
           tier: 'core',
-          prompt: 'Whether Christ has one will or two.',
-          answer: 'Still disputed',
+          prompt: 'The 1990 Second Agreed Statement leaves Christ’s wills and energies unaddressed.',
+          answer: 'False',
+          options: [],
           explain:
-            'The Coptic Church teaches one will and one act; the Eastern Orthodox confess two wills, the human always consenting. The agreed statements did not resolve this — they addressed the natures.',
-          sources: ['shenouda-one-will', 'chambesy-1990'],
+            'Paragraphs 3–5 address them explicitly. Agreement in the commission’s text and its reception by the churches are distinct matters.',
+          sources: ['chambesy-1990'],
           reviewed: true,
         },
       ],

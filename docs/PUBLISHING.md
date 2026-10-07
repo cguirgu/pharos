@@ -129,7 +129,7 @@ unvetted doctrinal text in front of users. See `docs/CONTENT-SOURCES.md` →
 ## Store assets / checklist (before review)
 - [ ] Final `ios.bundleIdentifier`, app name, `version`.
 - [ ] App icon + splash (generate from `PharosSeal`, gold beacon on `#0C1020`).
-- [x] Bundle **Noto Sans Coptic** `.ttf` — ships via `@expo-google-fonts/noto-sans-coptic`, loaded in `app/_layout.tsx`.
+- [x] Bundle **New Athena Unicode** `.ttf` and its license — ships in `assets/fonts`, loaded in `app/_layout.tsx`.
 - [ ] Screenshots (6.7"/6.5"/5.5" or current required sizes).
 - [ ] Description, keywords, support URL, **privacy policy URL**.
 - [ ] App Privacy: no tracking and no analytics SDK. The app is local-first, but it

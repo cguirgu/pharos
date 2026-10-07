@@ -60,7 +60,8 @@ export const MYSTERY: FaithUnit = {
           tier: 'core',
           prompt: 'That St. Mary is rightly called Theotokos.',
           answer: 'Defined',
-          explain: 'Defined at Ephesus in 431 — one of the three councils the Coptic Church receives.',
+          explain:
+            'Defined at Ephesus in 431 — one of the three councils the Coptic Church receives.',
           sources: ['lacopts-ephesus', 'synax-ephesus'],
           reviewed: true,
         },
@@ -81,7 +82,8 @@ export const MYSTERY: FaithUnit = {
           tier: 'core',
           prompt: 'That the Son is of one essence with the Father.',
           answer: 'Defined',
-          explain: 'Nicaea, 325. The council was convened precisely because Arius had denied it.',
+          explain:
+            'Nicaea, 325. The council was convened precisely because Arius had denied it.',
           sources: ['lacopts-brief-history'],
           reviewed: true,
         },
@@ -154,10 +156,10 @@ export const MYSTERY: FaithUnit = {
         },
         {
           id: 'mystery-3-c2',
-          heading: 'One will, or two',
+          heading: 'Read the terms in context',
           body:
-            'The clearest surviving difference. The Coptic Church, with Pope Shenouda III, teaches one will and one act in Christ. The Eastern Orthodox confess two wills, the human always freely consenting to the divine. The agreed statements addressed the union of the natures; this question was not on the page, and it remains open.',
-          sources: ['shenouda-one-will', 'chambesy-1990'],
+            'Pope Shenouda’s language of one will stresses the absence of conflict in Christ. Eastern Orthodox teaching, defended by St. Maximus, protects His human willing as well as His divine willing. The 1990 dialogue addressed both, affirming their union in the one incarnate Logos. The remaining work concerns the churches’ reception of the agreement and restored communion; it cannot be described as a subject the dialogue never discussed.',
+          sources: ['shenouda-one-will', 'oca-maximus', 'chambesy-1990'],
           reviewed: true,
         },
       ],
@@ -186,13 +188,14 @@ export const MYSTERY: FaithUnit = {
         },
         {
           id: 'mystery-3-q3',
-          kind: 'standing',
+          kind: 'truefalse',
           tier: 'core',
-          prompt: 'Whether Christ has one will or two.',
-          answer: 'Still disputed',
+          prompt: 'An agreement of the Joint Commission automatically restores full communion between the churches.',
+          answer: 'False',
+          options: [],
           explain:
-            'The Coptic Church teaches one will and one act; the Eastern Orthodox confess two. The dialogues did not reach it.',
-          sources: ['shenouda-one-will', 'chambesy-1990'],
+            'A commission’s agreement still requires reception and action by the churches. Its affirmation about wills and energies should not be confused with completed reunion.',
+          sources: ['chambesy-1990'],
           reviewed: true,
         },
       ],

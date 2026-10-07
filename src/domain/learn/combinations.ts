@@ -85,6 +85,15 @@ export const COMBO_UNIT: ComboUnit = {
     },
     // — Shifting consonants —
     {
+      id: 'nt',
+      glyphs: 'ⲛⲧ',
+      sound: 'nd — as in “under”',
+      rule: 'In Greek-derived words, ⲧ after ⲛ is voiced: ⲛⲧ sounds “nd”. The spelling stays ⲛⲧ, as in the title “the Almighty”.',
+      example: 'ⲡⲓⲡⲁⲛⲧⲟⲕⲣⲁⲧⲱⲣ',
+      exampleTranslit: 'pipandokratōr',
+      exampleEnglish: 'the Almighty',
+    },
+    {
       id: 'gg',
       glyphs: 'ⲅⲅ',
       sound: 'ng — as in “angel”',

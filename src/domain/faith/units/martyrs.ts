@@ -175,9 +175,9 @@ export const MARTYRS: FaithUnit = {
           id: 'martyrs-3-c2',
           heading: 'Entered in the Synaxarium within the week',
           body:
-            'On 21 February 2015 — a week after their deaths became known — Pope Tawadros II declared them martyrs and their names were entered into the Synaxarium, commemorated on 8 Amshir. The book of the martyrs is not closed. It is a living record, and the Church added to it in our lifetime.',
-          pull: 'Commemorated 8 Amshir · declared 21 February 2015.',
-          sources: ['lacopts-libya-martyrs'],
+            'On 21 February 2015, Pope Tawadros II announced the Church’s inclusion of the twenty-one martyrs in the Synaxarium, commemorated on 8 Amshir. This belongs to the Church’s synodal life: the Pope presides over the Holy Synod, the Church’s highest authority, as a shepherd among fellow bishops. The book of the martyrs is a living record, and the Church added to it in our lifetime.',
+          pull: 'Commemorated 8 Amshir · inclusion announced 21 February 2015.',
+          sources: ['lacopts-libya-martyrs', 'suscopts-priesthood'],
           reviewed: true,
         },
       ],
