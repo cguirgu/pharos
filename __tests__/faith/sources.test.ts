@@ -37,7 +37,7 @@ describe('faith source registry', () => {
     }
   });
 
-  it('cites only Coptic Orthodox, patristic, or signed inter-church sources', () => {
+  it('cites only approved Orthodox, patristic, or signed inter-church sources', () => {
     // Guards against a well-meaning contributor citing a blog or an encyclopaedia
     // as the authority for a doctrinal claim. `reference`-tier entries exist for
     // cross-checking dates and are held to the same host allow-list.
@@ -49,6 +49,7 @@ describe('faith source registry', () => {
       'st-takla.org',
       'coptic-treasures.com',
       'ecupatria.org',
+      'oca.org', // Eastern Orthodox teaching on Maximus, labelled as such.
     ];
     for (const s of SOURCES) {
       const host = new URL(s.url).hostname.replace(/^(www|cdn|mail|ml)\./, '');

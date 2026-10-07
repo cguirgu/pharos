@@ -129,7 +129,7 @@ export const highlightWash = darkPalette.highlightWash;
 /**
  * Exact loaded font-family names (each weight is a distinct family with custom
  * fonts in RN). These strings match the keys registered via `useFonts` in
- * `app/_layout.tsx` from the @expo-google-fonts packages.
+ * `app/_layout.tsx` from bundled font assets and the @expo-google-fonts packages.
  */
 export const font = {
   /** Cormorant Garamond — display / headlines / numerals. */
@@ -142,8 +142,8 @@ export const font = {
   bodyMed: 'Spectral_500Medium',
   caps: 'Spectral_600SemiBold',
   bodyItalic: 'Spectral_400Regular_Italic',
-  /** Noto Sans Coptic — accurate Coptic letterforms (bundled in app/_layout). */
-  coptic: 'NotoSansCoptic_400Regular',
+  /** New Athena Unicode — Coptic letterforms (bundled in app/_layout). */
+  coptic: 'NewAthenaUnicode',
 } as const;
 
 /** Sharp corners everywhere. */

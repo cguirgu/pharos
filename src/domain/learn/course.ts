@@ -147,7 +147,7 @@ function alphabetLessons(): Lesson[] {
 const COMBO_GROUPS: readonly { readonly title: string; readonly ids: readonly string[] }[] = [
   { title: 'Vowel pairs', ids: ['ou', 'oi'] },
   { title: 'The av · ev pairs', ids: ['au', 'eu'] },
-  { title: 'Shifting consonants', ids: ['gg', 'shi', 'gh'] },
+  { title: 'Shifting consonants', ids: ['gg', 'shi', 'gh', 'nt'] },
 ];
 
 function comboLessons(): Lesson[] {

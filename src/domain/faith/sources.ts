@@ -350,6 +350,29 @@ export const SOURCES: readonly FaithSource[] = [
     tier: 'patristic',
   },
 
+  {
+    id: 'shenouda-iron-and-fire',
+    title: 'The Example of the Union Between Iron and Fire — The Nature of Christ (H.H. Pope Shenouda III)',
+    publisher: 'St-Takla.org',
+    url: 'https://st-takla.org/books/en/pope-shenouda-iii/nature-of-christ/iron-and-fire.html',
+    tier: 'patristic',
+  },
+  {
+    id: 'suscopts-priesthood',
+    title: 'The Sacrament of Priesthood — Patriarch, Pope, Archbishop',
+    publisher: 'Coptic Orthodox Diocese of the Southern United States',
+    url: 'https://suscopts.org/wiki/The_Sacrament_of_Priesthood',
+    tier: 'official',
+  },
+  // Eastern Orthodox account, cited specifically for that tradition’s teaching.
+  {
+    id: 'oca-maximus',
+    title: 'Venerable Maximus the Confessor',
+    publisher: 'Orthodox Church in America',
+    url: 'https://www.oca.org/saints/lives/2026/01/21/100249-venerable-maximus-the-confessor',
+    tier: 'official',
+  },
+
   // --- Signed inter-church statements --------------------------------------
   {
     id: 'chambesy-1990',

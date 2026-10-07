@@ -11,8 +11,8 @@ import type { ExpoConfig } from 'expo/config';
  * the App Store marketing icon; Expo derives every smaller size from it. The
  * splash (assets/splash.png) recomposites that same emblem onto oxford ink so
  * the launch screen fades seamlessly into the app background.
- * Fonts: all three families ship as bundled assets via @expo-google-fonts
- * (noto-sans-coptic, cormorant-garamond, spectral) and are loaded with
+ * Fonts: New Athena Unicode ships in assets/fonts; Cormorant Garamond and
+ * Spectral ship via @expo-google-fonts. All three are loaded with
  * `useFonts` in app/_layout.tsx — nothing is fetched at runtime, so the Coptic
  * ornament glyphs render offline and in a store build.
  */

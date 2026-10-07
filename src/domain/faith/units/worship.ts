@@ -31,8 +31,8 @@ export const WORSHIP: FaithUnit = {
           id: 'worship-1-c1',
           heading: 'Basil, Gregory, Cyril',
           body:
-            'The Coptic Church has three eucharistic liturgies. **St. Basil** is used through most of the year. **St. Gregory** is used on feasts and certain occasions. **St. Cyril** is the Coptic form of the liturgy attributed to St. Mark himself — long, and today only partly used.',
-          pull: 'St. Basil most of the year · St. Gregory on feasts · St. Cyril in part.',
+            'The Coptic Church has three eucharistic liturgies. **St. Basil** is used through most of the year. **St. Gregory** may be prayed throughout the year; some priests especially choose it for feasts and special occasions. **St. Cyril** is the Coptic form of the liturgy attributed to St. Mark himself — long, and today only partly used.',
+          pull: 'St. Basil most commonly · St. Gregory throughout the year · St. Cyril in part.',
           glyph: 'Ⲅ',
           sources: ['lacopts-liturgies'],
           reviewed: true,
@@ -72,7 +72,7 @@ export const WORSHIP: FaithUnit = {
           answer: 'St. Basil',
           options: ['St. Basil', 'St. Gregory', 'St. Cyril', 'St. Mark'],
           explain:
-            'St. Gregory is kept for feasts and special occasions; only portions of St. Cyril are used today.',
+            'St. Basil is the most commonly used. St. Gregory may also be prayed throughout the year, even where priests especially choose it for feasts; only portions of St. Cyril are used today.',
           sources: ['lacopts-liturgies'],
           reviewed: true,
         },

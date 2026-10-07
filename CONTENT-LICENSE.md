@@ -43,3 +43,11 @@ Any pull request that adds or edits scripture, prayers, saints' lives, or transl
 
 Corrections to existing text are very welcome — please cite the authority you are correcting
 it against. Use the **Liturgical correction** issue template.
+
+
+## Coptic typeface
+
+New Athena Unicode 5.008 is distributed by the Society for Classical Studies under
+SIL OFL 1.1. The unmodified font and publisher’s license are bundled in
+[`assets/fonts`](assets/fonts/README.md). This font is separately licensed from
+the app’s MIT code.

@@ -337,7 +337,7 @@ of the faith. The curriculum was rebuilt around retention:
 - **Concrete anchors.** Unit IV now teaches the four heresies as four *opposite*
   failures (Arius: not fully God · Apollinarius: not fully man · Nestorius:
   divided in two · Eutyches: humanity dissolved "as a drop of vinegar in the
-  ocean"), and Pope Shenouda III's **iron in the fire** image for the union.
+  ocean"), and the patristic **iron in the fire** image highlighted by Pope Shenouda III for the union.
 - **One causal spine.** The course now teaches Chalcedon the way the Diocese of
   Los Angeles states it: Nestorius's refusal of *Theotokos* "led to the inference
   of the dual nature… This dualism was decreed in the Council of Chalcedon in 451
@@ -400,3 +400,41 @@ inflate the other's level, XP and rank.
 - St. Athanasius, *On the Incarnation*: https://ml.coptic-treasures.com/book/on-the-incarnation-saint-athanasius/
 - Second Agreed Statement, Joint Commission of the Orthodox and Oriental Orthodox Churches
   (Chambésy, 23–28 September 1990): https://www.ecupatria.org/documents/second-agreed-statement-1990/
+
+
+### October 2026 feedback corrections
+
+- Omicron is shown by its full name. The stable letter ID `o` is unchanged.
+- The Almighty is read `pipandokratōr` (`pi-pan-do-KRA-tor`); the spelling and
+  stable word ID `pipantokrator` remain unchanged. The owner-supplied Greco-Bohairic
+  rule ⲛⲧ → “nd” in Greek-derived words is included in the existing shifting
+  consonants lesson and Tav’s notes.
+- The Twenty-One: distinguish Pope Tawadros II’s **announcement** on 21 February
+  2015 from an individual act of canonization. Explain the Holy Synod’s authority
+  with the Southern US Diocese’s priesthood teaching; do not invent a dated synodal
+  decree that the announcement does not provide.
+- Dioscorus: use the Papal see’s 451–454 chronology (about three years in exile).
+  The Synaxarium’s five-year duration is not combined with those dates.
+- Iron and fire: cite [Pope Shenouda’s specific chapter](https://st-takla.org/books/en/pope-shenouda-iii/nature-of-christ/iron-and-fire.html),
+  which credits St. Cyril and St. Dioscorus and notes the limits of the analogy.
+- Wills: read Pope Shenouda in context, introduce St. Maximus from an explicitly
+  Eastern Orthodox source, and correct both lessons and quizzes against paragraphs
+  3–5 of the [1990 Second Agreed Statement](https://www.ecupatria.org/documents/second-agreed-statement-1990/).
+  It explicitly addresses wills and energies. Commission agreement and reception
+  by the churches are distinct. The OCA source describes its own tradition; it is
+  not used to define Coptic doctrine.
+- Gregory’s liturgy: the owner’s parish-practice correction clarifies that it may
+  be prayed throughout the year, even where priests especially choose it on feasts.
+  The Los Angeles source describes common usage, not an exclusive calendar rule.
+
+### Coptic typeface
+
+The shared `font.coptic` now loads the unmodified **New Athena Unicode 5.008**
+regular font locally, under the SIL Open Font License. Font and original license
+are in `assets/fonts/`; provenance is recorded in that directory’s README.
+[Coptic Heritage’s collection](https://copticheritage.org/library/coptic-fonts/)
+was considered. Its legacy CS fonts would require different text encoding;
+[CopticChurch.net recommends Unicode for new projects](https://www.copticchurch.net/coptic_fonts).
+Antinoou was also evaluated, but its license requires separate permission for
+software bundling. New Athena supplies Unicode Coptic with an explicit bundling
+license, preserving the app’s searchable Coptic text.

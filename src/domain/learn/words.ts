@@ -215,7 +215,7 @@ export const WORD_UNITS: readonly WordUnit[] = [
     glyph: 'Ⲟ',
     words: [
       { id: 'tennahti', coptic: 'ⲧⲉⲛⲛⲁϩϯ', translit: 'tennahti', sound: 'ten-NAH-ti', english: 'We believe' },
-      { id: 'pipantokrator', coptic: 'ⲡⲓⲡⲁⲛⲧⲟⲕⲣⲁⲧⲱⲣ', translit: 'pipantokratōr', sound: 'pi-pan-to-KRA-tor', english: 'the Almighty' },
+      { id: 'pipantokrator', coptic: 'ⲡⲓⲡⲁⲛⲧⲟⲕⲣⲁⲧⲱⲣ', translit: 'pipandokratōr', sound: 'pi-pan-do-KRA-tor', english: 'the Almighty' },
       { id: 'logos', coptic: 'ⲗⲟⲅⲟⲥ', translit: 'logos', sound: 'LO-ghos', english: 'the Word' },
     ],
   },

@@ -51,11 +51,11 @@ export const ALPHABET: readonly CopticLetter[] = [
   { id: 'mey', order: 13, upper: 'Ⲙ', lower: 'ⲙ', name: 'Mey', translit: 'm', sound: 'm — as in “man”' },
   { id: 'ney', order: 14, upper: 'Ⲛ', lower: 'ⲛ', name: 'Ney', translit: 'n', sound: 'n — as in “net”' },
   { id: 'eksi', order: 15, upper: 'Ⲝ', lower: 'ⲝ', name: 'Eksi', translit: 'x', sound: 'ks — as in “box”' },
-  { id: 'o', order: 16, upper: 'Ⲟ', lower: 'ⲟ', name: 'O', translit: 'o', sound: 'o — short, as in “lot”' },
+  { id: 'o', order: 16, upper: 'Ⲟ', lower: 'ⲟ', name: 'Omicron', translit: 'o', sound: 'o — short, as in “lot”' },
   { id: 'pi', order: 17, upper: 'Ⲡ', lower: 'ⲡ', name: 'Pi', translit: 'p', sound: 'p — as in “pen”' },
   { id: 'ro', order: 18, upper: 'Ⲣ', lower: 'ⲣ', name: 'Ro', translit: 'r', sound: 'r — rolled, as in Italian' },
   { id: 'sima', order: 19, upper: 'Ⲥ', lower: 'ⲥ', name: 'Sima', translit: 's', sound: 's — as in “sun”' },
-  { id: 'tav', order: 20, upper: 'Ⲧ', lower: 'ⲧ', name: 'Tav', translit: 't', sound: 't — as in “top”' },
+  { id: 'tav', order: 20, upper: 'Ⲧ', lower: 'ⲧ', name: 'Tav', translit: 't', sound: 't — as in “top”', notes: 'In Greek-derived words, ⲛⲧ is pronounced “nd”: ⲡⲓⲡⲁⲛⲧⲟⲕⲣⲁⲧⲱⲣ is read “pipandokratōr”.' },
   // NB: "Epsilon" is the traditional Coptic Orthodox name for Greek upsilon Ⲩ
   // (printed verbatim on copticchurch.net's chart) — NOT a typo for letter 5 (Ⲉ
   // "Ei"). The academic name is "He"; the Church form is used here on purpose.
