@@ -129,7 +129,8 @@ the **safest neutral behaviour** and flags rather than guesses.
 
 - Agpeya litany/prayer text (copyright-clear) — schema + reader to be built with
   visibly-marked placeholders; **do not scrape or fabricate**.
-- Synaxarium entries (~14 seeded, `draft: true`).
+- Synaxarium **lives** — bundled but withheld pending permission (the commemorations ship;
+  see item 2 below). Six seeded feasts are the fallback.
 - World English Bible JSON/SQLite bundle (public domain).
 - Final fasting food lists to verify against house custom.
 
@@ -146,10 +147,28 @@ See `docs/CONTENT-SOURCES.md` for the full sourcing/licensing plan. Status:
    **reader shows real text on device** (validated in `__tests__/content/bible-data.test.ts`).
    The chosen **NKJV is copyrighted** and **cannot be bundled** — owner licenses it via
    **API.Bible** (runtime async provider, KJV offline fallback). *(Verify the reader on device.)*
-2. **Synaxarium** — ✅ **ingested + wired (draft)** from randogoth/coptic-synaxarium →
-   `content/synaxarium/synaxarium.json`, loaded at startup via `initContent` so the
-   **Saint card shows real lives** (`__tests__/content/synaxarium-data.test.ts`).
-   ⚠️ Confirm permission for the **St. George C.O.C. (Chicago)** translation before release.
+2. **Synaxarium** — ✅ **ingested + wired**, and shipped in **two tiers**:
+   - **Tier 1, commemorations** (`SYNAXARIUM_NAMES = true`) — which saints/feasts fall on
+     which Coptic day. Facts about the calendar; **shipped**. Drives the Today card, the
+     `/saint/<date>` screen, Word, Ordo, and the commemoration reminder.
+   - **Tier 2, the lives** (`CONTENT_LICENSED = false`) — the written account. Copyrighted
+     translation; **withheld**, and blanked in the *domain* (`gateDayLife`) so no UI bug can
+     leak it. Flip the flag to light it up — nothing else changes.
+
+   ⚠️ Permission for the **St. George C.O.C. (Chicago)** translation is **requested and
+   pending** — see `docs/permissions/01-st-george-chicago.md`. Tests:
+   `synaxarium-day.test.ts`, `gating.test.ts` (four-combination tier table),
+   `commemoration-label.test.ts`, `ui/saint-labels.test.ts`.
+
+   ✅ **UI verified on device by the project owner, 2026-08-17** — `/saint/<date>` walked
+   across today ±3 days: commemorations render, long lines wrap, multi-commemoration days
+   list in full, no placeholder reachable. (jest covers the string/logic path only; component
+   rendering is not wired for RN 0.81 / React 19.)
+
+   **Kill switch:** if the names themselves are objected to, `SYNAXARIUM_NAMES = false`
+   degrades to six project-authored feasts with no third-party wording anywhere. Exercised
+   by the "SYNAXARIUM_NAMES kill switch" block in `synaxarium-day.test.ts`; flipping it
+   deliberately trips one named test as the tripwire.
 3. **Lectionary (Katameros)** — ✅ **parser + online fetch wired**. `parseKatameros`
    (references only, tested in `__tests__/content/katameros.test.ts`) + a best-effort
    `fetchTodaysReadings` from katameros.app populates the Word "day's readings" when online;

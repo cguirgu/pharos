@@ -8,7 +8,7 @@ import type { CivilDate } from '../coptic';
 import { addDays, getDayInfo } from '../coptic';
 import type { Practice, PracticeLog } from '../rule';
 import { isDueOn } from '../rule';
-import { primarySaint } from '../content/synaxarium';
+import { primaryCommemoration, notificationBody } from '../content/synaxarium';
 import {
   CHANNEL_TEXT,
   type NotificationChannel,
@@ -108,8 +108,11 @@ export function buildSchedule(
       push('prayerHours', date, txt.prayerHours.title, txt.prayerHours.body, config.prayerHours.time);
     }
     if (config.commemoration.enabled) {
-      const saint = primarySaint(info.coptic);
-      if (saint) push('commemoration', date, txt.commemoration.title, saint.name, config.commemoration.time);
+      // The commemoration only — never the account, which is tier 2 and gated.
+      const commemoration = primaryCommemoration(info.coptic);
+      if (commemoration) {
+        push('commemoration', date, txt.commemoration.title, notificationBody(commemoration), config.commemoration.time);
+      }
     }
     if (config.reading.enabled && ctx.hasReadingPlan) {
       push('reading', date, txt.reading.title, txt.reading.body, config.reading.time);

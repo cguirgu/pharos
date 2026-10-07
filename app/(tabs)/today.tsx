@@ -13,7 +13,7 @@ import { DevDate } from '../../src/ui/DevDate';
 import { font, type Palette } from '../../src/ui/theme';
 import { useStyles, useThemeColors } from '../../src/ui/useStyles';
 import { copy } from '../../src/ui/copy';
-import { HOURS_READY, CONTENT_LICENSED } from '../../src/content/flags';
+import { HOURS_READY } from '../../src/content/flags';
 import { folioDate, liturgicalLabel, practiceSubtitle } from '../../src/ui/format';
 import { useClock } from '../../src/state/clock';
 import { useRule } from '../../src/state/rule';
@@ -22,7 +22,7 @@ import { useJournal } from '../../src/state/journal';
 import { getRepo } from '../../src/db/repo';
 import { keptFeedback } from '../../src/platform/haptics';
 import { getDayInfo } from '../../src/domain/coptic';
-import { primarySaint } from '../../src/domain/content/synaxarium';
+import { commemorationsOn } from '../../src/domain/content/synaxarium';
 import { isDueOn, effectiveStatus, dateKey, globalFlame, type Practice } from '../../src/domain/rule';
 
 /** Per-device preference for the Home commemoration card (persists across sessions). */
@@ -39,7 +39,7 @@ export default function TodayScreen() {
   const router = useRouter();
 
   const info = getDayInfo(today);
-  const saint = primarySaint(info.coptic);
+  const commemorations = commemorationsOn(info.coptic);
 
   // Commemoration card: minimized state persists across sessions (per device).
   const [commemOpen, setCommemOpen] = useState(true);
@@ -127,9 +127,10 @@ export default function TodayScreen() {
           </View>
         ) : null}
 
-        {/* commemoration of the day — collapsible, remembers its state.
-            Hidden until the saint-life text is licensed (no placeholder shown). */}
-        {CONTENT_LICENSED && saint ? (
+        {/* Commemoration of the day — collapsible, remembers its state. Shows
+            whom the Church remembers (a calendar fact); the written account
+            lives on the Saint screen and only once its text is licensed. */}
+        {commemorations.length > 0 ? (
           <View style={styles.commem}>
             <Pressable style={styles.commemHead} onPress={toggleCommem} hitSlop={6}>
               <Caps size={10.5} ls={2.6} color={t.rubricHi}>
@@ -138,11 +139,11 @@ export default function TodayScreen() {
               <Caps size={13} color={t.ink3}>{commemOpen ? '▾' : '▸'}</Caps>
             </Pressable>
             {commemOpen ? (
-              <Pressable onPress={() => router.navigate('/(tabs)/word?focus=commemoration' as never)}>
-                <Text style={styles.commemName}>{saint.name}</Text>
-                {saint.title ? (
+              <Pressable onPress={() => router.push(`/saint/${dateKey(today)}`)}>
+                <Text style={styles.commemName}>{commemorations[0]}</Text>
+                {commemorations.length > 1 ? (
                   <Caps size={8.5} ls={1.4} color={t.ink3} style={{ marginTop: 4 }}>
-                    {saint.title}
+                    {copy.today.commemorationMore(commemorations.length - 1)}
                   </Caps>
                 ) : null}
               </Pressable>

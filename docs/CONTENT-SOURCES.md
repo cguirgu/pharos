@@ -131,12 +131,48 @@ The NKJV is **© Thomas Nelson** (1982). It may **not** be copied/bundled; fair 
   **NKJV** access, drop the key + NKJV bible-id into app config.
 - ❌ **Do NOT** use unlicensed "NKJV API" scrapes on GitHub — that is copyright infringement.
 
-### Synaxarium — ingested (draft)
+### Synaxarium — ingested (draft), shipped in two tiers
 Ingested from **randogoth/coptic-synaxarium** (Codeberg, "free to use") → 366 days keyed by
 Coptic month/day in `content/synaxarium/synaxarium.json`, wired via `setSynaxariumData`.
 ⚠️ The English text is a translation by **St. George C.O.C., Chicago**; the repo's "free to
-use" is not a formal license from that church. Entries are `draft: true` — **confirm written
-permission** with St. George (Chicago) before release.
+use" is the dataset author's word, not a licence from that church. An MIT (or any) licence on a
+repository cannot grant rights its author never held — this applies equally to `coptic.io`,
+`katameros-api`, and every other open dataset carrying this text.
+
+#### The two-tier release
+
+| Tier | What | Flag | State |
+|---|---|---|---|
+| 1 | **Commemorations** — which saints/feasts fall on which Coptic day | `SYNAXARIUM_NAMES` | `true` — shipped |
+| 2 | **Lives** — the day's written account | `CONTENT_LICENSED` | `false` — withheld |
+
+Tier 1 is a calendar of facts and needs nobody's permission; tier 2 is authored translation and
+does. The reasoning, and the residual risk we accepted, is in
+[`CONTENT-LICENSE.md`](../CONTENT-LICENSE.md#why-the-synaxarium-ships-in-two-halves). The requests
+themselves are in [`docs/permissions/`](./permissions/) — St. George (Chicago) is the one that
+matters, since a grant there lights up the text already bundled with no data work at all.
+
+**`life` is per DAY, not per saint.** The source supplies one account covering all of a day's
+commemorations. We do not split it per saint — that would be an editorial act on text we have not
+verified, and it would break `SynaxariumAnchor` (keyed by Coptic month/day + character offsets into
+`life`), silently corrupting saved highlights. Hence `SynaxariumDay.commemorations[]` alongside a
+single `life`.
+
+**Revert path**, if permission is refused for the names as well as the lives:
+1. `SYNAXARIUM_NAMES = false` — falls back to the six project-authored seed feasts in
+   `src/domain/content/synaxarium.ts`. No third-party wording renders anywhere. One failing test,
+   `two-tier gating › TIER 1 is on in the shipped configuration`, deliberately fires as the tripwire.
+2. If asked to remove the data too: delete `content/synaxarium/synaxarium.json`. `initContent`
+   already tolerates its absence (`src/state/content.ts`, try/catch → seeds).
+
+**Follow-up worth doing regardless:** cross-source the commemoration names against
+copticchurch.net and st-takla.org so tier 1 stops depending on a single translation. That turns a
+single-source copy into a genuinely corroborated factual compilation.
+
+**Known unknown for flag-flip day:** `synaxarium.json` is 1.4 MB and `require`d wholesale in
+`src/state/content.ts`; the longest `life` is ~29,600 characters and `SelectableProse` has never
+been exercised at that size. Check the longest day for scroll jank before shipping tier 2 — better
+found now, in this note, than on the morning permission arrives.
 
 ### Lectionary (Katameros) — adopted; references next
 Use the **open Katameros references** (day → book/chapter/verse) from **coptic.io** /

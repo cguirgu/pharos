@@ -78,10 +78,29 @@ Reviewers could reach screens showing "to be supplied" / "coming soon". **Gated 
 launch** (flags in `src/content/flags.ts`):
 - `HOURS_READY = false` — the Today fast/feast banner no longer opens the Hours; this
   also removes the Ordo (reached only from Hours). Removes the placeholder Agpeya prose.
-- `CONTENT_LICENSED = false` (existing) — the daily commemoration is hidden on Today,
-  Word, and Ordo instead of showing "⟨ commemoration to be supplied ⟩".
+- `CONTENT_LICENSED = false` (existing) — now governs the **written lives only**. The daily
+  **commemorations** do render (Today, the Saint screen, Word, Ordo); what is withheld is
+  the prose account, and when it is withheld the section is **omitted entirely** rather than
+  showing "⟨ commemoration to be supplied ⟩". No placeholder string is reachable.
 - Removed the Learn "Audio coming soon" label.
 Flip these flags back on when the verified Agpeya text / Synaxarium license land.
+
+### Saint of the day — the 2.1 discipline
+The `/saint/<date>` screen is new reachable surface, so the rule is absolute: with
+`CONTENT_LICENSED = false`, no "⟨ … ⟩" string may render anywhere under `/saint/*`. The screen
+is genuinely complete without the account — Coptic date, Anno Martyrum, every commemoration of
+the day, feast, season, and the fast ruling — which is the honest answer to a reviewer, not a
+workaround. Guarded by a test (`__tests__/ui/saint-labels.test.ts` → "no saint-screen string is
+a placeholder") and by the manual check below.
+
+**Pre-submission check:** walk `/saint/<today>` and ±3 days via the DEV date bar; confirm no
+"⟨" appears on any of them, in both themes and at the largest text scale.
+
+> ✅ **Verified by the project owner, 2026-08-17.** The `/saint/<date>` screen was walked on
+> device: commemorations render, long lines wrap without clipping, multi-commemoration days
+> list every entry, and no placeholder string is reachable. The automated suite covers the
+> string/logic path (`__tests__/ui/saint-labels.test.ts`); this was the manual pass that
+> jest cannot do, since component rendering is not wired for RN 0.81 / React 19.
 
 ## Rebuild + resubmit
 The current version is **Waiting for Review** with the un-fixed binary. Since these
@@ -109,8 +128,8 @@ use Sign in with Apple.
 
 **Review notes:**
 > Coptic Daily Companion is a Coptic Orthodox devotional app — a daily rule of life, the Coptic
-> calendar (fasts/feasts), an offline King James Bible with reading plans, a Coptic
-> alphabet learning path, a journal, and highlights.
+> calendar (fasts/feasts), the saints commemorated each day, an offline King James Bible with
+> reading plans, a Coptic alphabet learning path, a journal, and highlights.
 >
 > No sign-in is required: choose "Continue without an account" on the welcome screen
 > to use every feature with data stored on-device. Creating an account (Sign in with

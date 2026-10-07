@@ -1,4 +1,8 @@
+import { readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { nextTriggers, buildSchedule, type ScheduleContext } from '../../src/domain/notifications/schedule';
+import { setSynaxariumData, type SynaxariumDataset } from '../../src/domain/content/synaxarium';
+import { SYNAXARIUM_NAMES } from '../../src/content/flags';
 import { DEFAULT_CONFIG, normalizeConfig, type NotificationConfig } from '../../src/domain/notifications/types';
 import type { Practice } from '../../src/domain/rule';
 import type { CivilDate } from '../../src/domain/coptic';
@@ -62,6 +66,38 @@ describe('buildSchedule (configurable channels)', () => {
     const cfg = on({ reading: { enabled: true } });
     expect(buildSchedule(cfg, { ...ctx, hasReadingPlan: false }, FROM, 7)).toHaveLength(0);
     expect(buildSchedule(cfg, { ...ctx, hasReadingPlan: true }, FROM, 7)).toHaveLength(7);
+  });
+
+  /**
+   * The commemoration channel carries a tier-1 label only. It must never be a
+   * vehicle for the tier-2 account, which is why the body is length-capped and
+   * single-line rather than just "whatever the Synaxarium says".
+   */
+  describe('commemoration channel', () => {
+    // The app loads the dataset at boot; without it only the six seeded feasts
+    // resolve and most windows would be empty.
+    const FILE = join(__dirname, '..', '..', 'content', 'synaxarium', 'synaxarium.json');
+    const hasData = existsSync(FILE);
+    beforeAll(() => {
+      if (hasData) setSynaxariumData(JSON.parse(readFileSync(FILE, 'utf8')) as SynaxariumDataset);
+    });
+    afterAll(() => setSynaxariumData(null));
+
+    test('is opt-in — off by default', () => {
+      expect(DEFAULT_CONFIG.commemoration.enabled).toBe(false);
+    });
+
+    (hasData && SYNAXARIUM_NAMES ? test : test.skip)('fires once a day with a short, single-line commemoration', () => {
+      const s = buildSchedule(on({ commemoration: { enabled: true, time: '08:00' } }), ctx, FROM, 7);
+      expect(s.length).toBeGreaterThan(0);
+      expect(s.every((n) => n.channel === 'commemoration' && n.time === '08:00')).toBe(true);
+      for (const n of s) {
+        expect(n.body.length).toBeGreaterThan(0);
+        // No life prose could survive either of these two assertions.
+        expect(n.body.length).toBeLessThanOrEqual(111);
+        expect(n.body).not.toContain('\n');
+      }
+    });
   });
 
   test('fast channel only on fast days (Wed/Fri in this ordinary week)', () => {
