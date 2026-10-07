@@ -43,6 +43,24 @@ export interface Release {
 /** Newest first. */
 export const RELEASES: readonly Release[] = [
   {
+    version: '1.2.1',
+    headline: 'Clearer Coptic pronunciation and more precise Faith lessons.',
+    items: [
+      {
+        title: 'Coptic reading refinements',
+        body: 'A new Coptic typeface, the full Omicron name, and a pronunciation lesson on ⲛⲧ in Greek-derived words, including Pipandokratōr.',
+        route: '/(tabs)/coptic',
+        routeLabel: 'Open Coptic',
+      },
+      {
+        title: 'Faith lessons refined',
+        body: 'Corrections and fuller context for the Twenty-One, St. Dioscorus, the iron-and-fire analogy, Christ’s wills, and the Liturgy of St. Gregory, with updated questions and sources.',
+        route: '/(tabs)/faith',
+        routeLabel: 'Open Faith',
+      },
+    ],
+  },
+  {
     version: '1.2.0',
     headline: 'A new Faith tab — learn Coptic theology, not just the language.',
     items: [
